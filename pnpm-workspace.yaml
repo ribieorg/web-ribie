@@ -1,0 +1,8 @@
+# Allowlist de scripts de instalación — ver ~/.claude/vault/100-Buenas-Practicas/pnpm-obligatorio.md
+#
+# pnpm 11 bloquea TODOS los scripts postinstall por defecto. Aquí se aprueban,
+# uno por uno y con justificación, solo los estrictamente necesarios.
+allowBuilds:
+  # Bundler que usa Vite (y por tanto Astro). Su postinstall descarga el binario
+  # nativo para la plataforma; sin él, `astro build` no compila.
+  esbuild: true

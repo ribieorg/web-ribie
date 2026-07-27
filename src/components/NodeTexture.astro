@@ -1,0 +1,59 @@
+---
+/**
+ * Textura de red de nodos — decorativa.
+ * Rima con el isotipo de RIBIE (constelación de nodos conectados).
+ * Es `aria-hidden`: no aporta información, solo atmósfera.
+ */
+interface Props {
+  variante?: 'clara' | 'oscura';
+  opacidad?: number;
+}
+const { variante = 'clara', opacidad = 1 } = Astro.props;
+
+const trazo = variante === 'oscura' ? 'rgba(255,255,255,.28)' : 'var(--node-1)';
+const nodo  = variante === 'oscura' ? 'rgba(255,255,255,.45)' : 'var(--brand)';
+
+// Posiciones fijas: la textura debe ser idéntica en cada build (nada aleatorio)
+const puntos = [
+  [6, 18], [17, 9], [14, 34], [27, 24], [23, 48], [36, 13], [38, 39],
+  [48, 28], [46, 55], [59, 18], [62, 43], [72, 31], [70, 60], [83, 22],
+  [86, 47], [93, 35], [31, 68], [55, 76], [77, 80], [12, 60],
+];
+const enlaces = [
+  [0, 1], [0, 2], [1, 5], [2, 3], [3, 4], [3, 6], [5, 6], [6, 7], [7, 8],
+  [7, 9], [9, 11], [10, 11], [11, 12], [11, 13], [13, 15], [14, 15], [12, 14],
+  [4, 16], [16, 17], [17, 18], [18, 12], [19, 2], [19, 16], [8, 17], [10, 8],
+];
+---
+
+<svg
+  class="textura"
+  viewBox="0 0 100 90"
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  focusable="false"
+  style={`--o:${opacidad}`}
+>
+  {enlaces.map(([a, b]) => (
+    <line
+      x1={puntos[a][0]} y1={puntos[a][1]}
+      x2={puntos[b][0]} y2={puntos[b][1]}
+      stroke={trazo}
+      stroke-width="0.18"
+    />
+  ))}
+  {puntos.map(([x, y], i) => (
+    <circle cx={x} cy={y} r={i % 4 === 0 ? 0.85 : 0.5} fill={nodo} />
+  ))}
+</svg>
+
+<style>
+  .textura {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: var(--o);
+    pointer-events: none;
+  }
+</style>

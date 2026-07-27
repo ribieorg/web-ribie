@@ -1,0 +1,46 @@
+---
+/**
+ * Envoltura de sección: encabezado (eyebrow + título bicolor) y contenido.
+ * Centraliza el ritmo vertical para que ninguna sección invente su propio espaciado.
+ */
+import Marca from './Marca.astro';
+
+interface Props {
+  id: string;
+  eyebrow?: string;
+  titulo?: string;
+  destacado?: string;
+  alterna?: boolean;
+  provisional?: boolean;
+  ancho?: 'normal' | 'estrecho';
+}
+const {
+  id, eyebrow, titulo, destacado,
+  alterna = false, provisional = false, ancho = 'normal',
+} = Astro.props;
+---
+
+<section id={id} class:list={['seccion', alterna && 'seccion--alt']}>
+  <div class="contenedor">
+    {(eyebrow || titulo) && (
+      <header class:list={['encabezado', ancho === 'estrecho' && 'medida', 'reveal']}>
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        {titulo && (
+          <h2>
+            {titulo}{' '}
+            {destacado && <span class="destacado">{destacado}</span>}
+          </h2>
+        )}
+        {provisional && (
+          <p class="marca-linea"><Marca /></p>
+        )}
+      </header>
+    )}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .encabezado { margin-bottom: var(--space-12); }
+  .marca-linea { margin-top: var(--space-4); }
+</style>

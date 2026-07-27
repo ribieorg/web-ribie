@@ -1,0 +1,49 @@
+---
+/**
+ * Logotipo oficial de RIBIE.
+ *
+ * Fuente: `02_portal_web/material-grafico/OneDrive_1_23-7-2026/Logo ribie azul curvas.png`
+ * (597 × 182, RGBA), entregado por RIBIE el 23 jul 2026.
+ *
+ * La variante en blanco se genera a partir del alfa del original — es un uso
+ * AUTORIZADO por el manual de marca (logo en blanco sobre fondo oscuro o teal):
+ * no se altera la forma, solo el color.
+ *
+ * `astro:assets` lo convierte a WebP y emite `width`/`height` en el HTML, lo que
+ * evita el salto de maquetación (CLS) sin trabajo manual. Ver docs/DESIGN.md §10.
+ */
+import { Image } from 'astro:assets';
+import logoColor from '../assets/logo-ribie.png';
+import logoBlanco from '../assets/logo-ribie-blanco.png';
+
+interface Props {
+  variante?: 'color' | 'blanco';
+  alto?: number;
+  prioridad?: boolean;
+}
+const { variante = 'color', alto = 44, prioridad = false } = Astro.props;
+
+const fuente = variante === 'blanco' ? logoBlanco : logoColor;
+// Proporción original 597:182 — el ancho se deriva del alto pedido
+const ancho = Math.round((alto * 597) / 182);
+---
+
+<Image
+  src={fuente}
+  alt="RIBIE — Red Iberoamericana de Informática Educativa"
+  width={ancho * 2}
+  height={alto * 2}
+  densities={[1, 2]}
+  format="webp"
+  quality={90}
+  loading={prioridad ? 'eager' : 'lazy'}
+  class="logo"
+  style={`height:${alto}px;width:auto`}
+/>
+
+<style>
+  .logo {
+    display: block;
+    width: auto;
+  }
+</style>

@@ -1,0 +1,185 @@
+/* ==========================================================================
+   RIBIE — estilos base
+   Deriva de docs/DESIGN.md. Los valores viven en tokens.css: aquí no se
+   escriben colores, tamaños ni duraciones a mano.
+   ========================================================================== */
+
+@import './tokens.css';
+
+/* --- Reset mínimo ---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem; /* el header fijo no tapa el destino del ancla */
+}
+
+body {
+  font-family: var(--font-text);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--ink);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+}
+
+img, picture, svg { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+ul { list-style: none; padding: 0; }
+
+:target { scroll-margin-top: 6rem; }
+
+/* --- Tipografía ------------------------------------------------------------ */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--text-hero); font-weight: 600; line-height: var(--leading-hero); }
+h2 { font-size: var(--text-h2); }
+h3 { font-size: var(--text-h3); }
+
+p { text-wrap: pretty; }
+
+/* Título bicolor — el patrón de marca que aportan los mockups de RIBIE */
+.destacado { color: var(--brand); }
+.destacado--verde { color: var(--node-lime); }
+
+.eyebrow {
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: var(--space-3);
+}
+
+.lead { font-size: var(--text-lead); color: var(--ink-soft); }
+
+.medida { max-width: var(--measure); }
+
+/* --- Layout ---------------------------------------------------------------- */
+.contenedor {
+  width: min(100% - 2.5rem, 72rem);
+  margin-inline: auto;
+}
+
+.seccion { padding-block: var(--section-gap); }
+
+.seccion--alt { background: var(--surface-alt); }
+
+/* --- Botones --------------------------------------------------------------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;                    /* objetivo táctil */
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-small);
+  text-decoration: none;
+  transition: transform var(--dur-micro) var(--ease-out),
+              background-color var(--dur-micro) var(--ease-out);
+}
+
+/* ⚠️ Ámbar SIEMPRE con texto oscuro: blanco sobre ámbar da 2.6:1 y reprueba WCAG */
+.boton--accion {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.boton--accion:hover { transform: translateY(-1px); }
+
+.boton--fantasma {
+  color: var(--brand);
+  box-shadow: var(--ring);
+}
+.boton--fantasma:hover { background: var(--brand-tint); }
+
+.boton--claro {
+  background: var(--surface);
+  color: var(--brand-deep);
+}
+.boton--claro:hover { transform: translateY(-1px); }
+
+/* --- Foco visible ---------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Marca de contenido provisional ---------------------------------------- */
+.provisional {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--radius-full);
+  background: oklch(72.8% 0.156 65.9 / 0.14);
+  color: oklch(38% 0.09 65.9);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.provisional::before {
+  content: '';
+  width: 0.375rem; height: 0.375rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Sobre fondo oscuro (hero, banda del Foro, pie) el ámbar translúcido con texto
+   oscuro se vuelve ilegible. Ahí la marca va en ámbar SÓLIDO con texto casi negro
+   —el mismo par del botón, 7.59:1— en vez de invertir los colores. */
+.hero .provisional,
+.banda .provisional,
+.pie .provisional {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.hero .provisional::before,
+.banda .provisional::before,
+.pie .provisional::before {
+  background: var(--accent-ink);
+  opacity: 0.55;
+}
+
+/* --- Reveal al hacer scroll (un solo patrón, una sola vez) ------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-standard) var(--ease-out),
+              transform var(--dur-standard) var(--ease-out);
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* Sin JavaScript, el contenido se ve igual: nunca oculto de forma permanente */
+.no-js .reveal { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* Al imprimir no hay scroll que dispare el observer: todo visible y sin adornos */
+@media print {
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .cabecera { position: static; }
+  .textura { display: none; }
+}

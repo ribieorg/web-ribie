@@ -1,0 +1,92 @@
+---
+// Fuentes auto-hospedadas: nada de CDN de Google. Es un sitio institucional
+// público y no hay razón para filtrar la IP de cada visitante a un tercero.
+//
+// Solo los subsets LATINOS: importar el paquete completo arrastra cirílico y
+// vietnamita (23 archivos, ~600 KB en disco) que este sitio nunca va a servir.
+import '@fontsource/oswald/latin-400.css';
+import '@fontsource/oswald/latin-500.css';
+import '@fontsource/oswald/latin-600.css';
+import '@fontsource/onest/latin-400.css';
+import '@fontsource/onest/latin-500.css';
+import '@fontsource/onest/latin-600.css';
+import '../styles/global.css';
+
+import { sitio } from '../data/contenido';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+const {
+  titulo = `${sitio.nombre} — ${sitio.nombreLargo}`,
+  descripcion = 'Red académica que reúne a investigadores, docentes e instituciones de Iberoamérica en torno a la informática aplicada a la educación.',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#096D84" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_ES" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      // Marca de JS disponible: sin esto, el contenido con reveal se ve igual
+      document.documentElement.classList.remove('no-js');
+    </script>
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <slot />
+
+    <script>
+      // Reveal: un solo patrón, una sola vez por elemento. Solo opacity y transform.
+      const objetivos = document.querySelectorAll('.reveal');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+        const observador = new IntersectionObserver(
+          (entradas) => {
+            entradas.forEach((entrada) => {
+              if (entrada.isIntersecting) {
+                entrada.target.classList.add('visible');
+                observador.unobserve(entrada.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+        );
+        objetivos.forEach((el) => observador.observe(el));
+      } else {
+        objetivos.forEach((el) => el.classList.add('visible'));
+      }
+    </script>
+
+    <style>
+      .saltar {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        padding: var(--space-3) var(--space-6);
+        background: var(--surface);
+        color: var(--brand);
+        font-weight: 600;
+        box-shadow: var(--lift);
+        border-radius: 0 0 var(--radius-md) 0;
+      }
+      .saltar:focus { left: 0; }
+    </style>
+  </body>
+</html>

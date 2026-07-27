@@ -1,0 +1,105 @@
+---
+/**
+ * Banda del XV Foro — el único bloque "elevado" del sitio (DESIGN.md §4).
+ * Los datos de fecha, sede y modalidad están VERIFICADOS en los requerimientos
+ * oficiales del 13 jul 2026; falta el día exacto y el enlace de inscripción.
+ */
+import NodeTexture from './NodeTexture.astro';
+import Marca from './Marca.astro';
+import { foro } from '../data/contenido';
+---
+
+<section id="foro" class="banda">
+  <div class="fondo" aria-hidden="true">
+    <NodeTexture variante="oscura" opacidad={0.45} />
+  </div>
+
+  <div class="contenedor cuerpo reveal">
+    <p class="eyebrow eyebrow--claro">{foro.eyebrow}</p>
+    <h2>{foro.nombre}</h2>
+
+    <ul class="datos">
+      <li>
+        <span class="clave">Fecha</span>
+        <span class="valor">
+          {foro.fecha}
+          {foro.fechaProvisional && <Marca texto="Días por confirmar" />}
+        </span>
+      </li>
+      <li>
+        <span class="clave">Sede</span>
+        <span class="valor">{foro.lugar}</span>
+      </li>
+      <li>
+        <span class="clave">Modalidad</span>
+        <span class="valor">{foro.modalidad}</span>
+      </li>
+    </ul>
+
+    <p class="descripcion">{foro.descripcion}</p>
+
+    <div class="acciones">
+      {foro.cta.url ? (
+        <a href={foro.cta.url} class="boton boton--accion" rel="noopener">{foro.cta.texto}</a>
+      ) : (
+        <>
+          <span class="boton boton--claro boton--inactivo" aria-disabled="true">{foro.cta.texto}</span>
+          <Marca texto="Enlace pendiente de RIBIE" />
+        </>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .banda {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(115deg, var(--brand-deep) 0%, var(--brand) 100%);
+    color: #fff;
+    padding-block: var(--section-gap);
+  }
+  .fondo { position: absolute; inset: 0; z-index: -1; }
+  /* Tercio izquierdo limpio para que el texto blanco se lea sin competencia */
+  .fondo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--brand-deep) 12%, transparent 72%);
+  }
+
+  .cuerpo { position: relative; max-width: 48rem; }
+  .eyebrow--claro { color: rgba(255, 255, 255, 0.72); }
+  h2 { color: #fff; }
+
+  .datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+  }
+  .datos li { display: flex; flex-direction: column; gap: var(--space-1); }
+  .clave {
+    font-size: var(--text-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .valor { font-weight: 500; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+  .descripcion {
+    margin-top: var(--space-8);
+    color: rgba(255, 255, 255, 0.86);
+    max-width: 52ch;
+  }
+
+  .acciones {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+  /* Un botón sin destino no se disfraza de botón activo */
+  .boton--inactivo { opacity: 0.55; cursor: not-allowed; }
+</style>

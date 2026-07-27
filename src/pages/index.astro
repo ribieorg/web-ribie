@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Seccion from '../components/Seccion.astro';
+import StatRow from '../components/StatRow.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import EventCard from '../components/EventCard.astro';
+import ListaPendiente from '../components/ListaPendiente.astro';
+import LogoWall from '../components/LogoWall.astro';
+import Footer from '../components/Footer.astro';
+
+import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradores } from '../data/contenido';
+---
+
+<Base>
+  <Header />
+
+  <main id="contenido">
+    <Hero />
+
+    <Seccion
+      id="quienes-somos"
+      eyebrow={quienesSomos.eyebrow}
+      titulo={quienesSomos.titulo}
+      destacado={quienesSomos.tituloDestacado}
+      provisional={quienesSomos.provisional}
+      ancho="estrecho"
+    >
+      <div class="prosa medida reveal">
+        {quienesSomos.parrafos.map((p) => <p class="lead">{p}</p>)}
+      </div>
+    </Seccion>
+
+    <Seccion
+      id="historia"
+      eyebrow={historia.eyebrow}
+      titulo={historia.titulo}
+      destacado={historia.tituloDestacado}
+      provisional={historia.provisional}
+      alterna
+    >
+      <div class="historia">
+        <div class="prosa medida reveal">
+          {historia.parrafos.map((p) => <p>{p}</p>)}
+        </div>
+        <StatRow />
+      </div>
+    </Seccion>
+
+    <Seccion
+      id="objetivos"
+      eyebrow={objetivos.eyebrow}
+      titulo={objetivos.titulo}
+      destacado={objetivos.tituloDestacado}
+      provisional={objetivos.provisional}
+    >
+      <FeatureGrid />
+    </Seccion>
+
+    <EventCard />
+
+    <Seccion
+      id="nodos"
+      eyebrow={organizaciones.eyebrow}
+      titulo={organizaciones.titulo}
+      destacado={organizaciones.tituloDestacado}
+      provisional={organizaciones.provisional}
+      alterna
+    >
+      <LogoWall />
+    </Seccion>
+
+    <Seccion
+      id="colaboradores"
+      eyebrow={colaboradores.eyebrow}
+      titulo={colaboradores.titulo}
+      destacado={colaboradores.tituloDestacado}
+      provisional={colaboradores.provisional}
+    >
+      <ListaPendiente
+        texto="Aquí irán el comité científico, la organización y la dirección de la red."
+        formato="Por persona: nombre, cargo, institución y retrato cuadrado de mín. 800 × 800 px."
+        huecos={4}
+      />
+    </Seccion>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  .prosa { display: flex; flex-direction: column; gap: var(--space-6); }
+  .historia { display: flex; flex-direction: column; gap: var(--space-16); }
+</style>

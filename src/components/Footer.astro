@@ -1,0 +1,122 @@
+---
+import Logo from './Logo.astro';
+import Marca from './Marca.astro';
+import NodeTexture from './NodeTexture.astro';
+import { sitio, navegacion, contacto, redes, aliado } from '../data/contenido';
+
+const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
+---
+
+<footer id="contacto" class="pie">
+  <div class="fondo" aria-hidden="true">
+    <NodeTexture variante="oscura" opacidad={0.3} />
+  </div>
+
+  <div class="contenedor rejilla">
+    <div class="col col--marca">
+      <Logo variante="blanco" alto={60} />
+      <p class="tagline">
+        {sitio.tagline}
+        {sitio.taglineProvisional && <Marca texto="Frase por confirmar" />}
+      </p>
+    </div>
+
+    <nav class="col" aria-label="Secciones">
+      <h2 class="titulo-col">Secciones</h2>
+      <ul>
+        {navegacion.map((item) => (
+          <li><a href={item.ancla}>{item.texto}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="col">
+      <h2 class="titulo-col">Contacto</h2>
+      <ul>
+        <li>
+          {contacto.correo
+            ? <a href={`mailto:${contacto.correo}`}>{contacto.correo}</a>
+            : <span class="pendiente">Correo institucional <Marca texto="Se define el 25 jul" /></span>}
+        </li>
+        <li>{contacto.ciudad}</li>
+      </ul>
+
+      {redes.items.length > 0 ? (
+        <ul class="redes">
+          {redes.items.map((r) => (
+            <li><a href={r.url} rel="noopener noreferrer" target="_blank">{r.nombre}</a></li>
+          ))}
+        </ul>
+      ) : (
+        <p class="pendiente">Redes sociales <Marca texto="Enlaces pendientes" /></p>
+      )}
+    </div>
+  </div>
+
+  <div class="contenedor barra">
+    <p>© {anio} {sitio.nombreLargo}</p>
+    <p class="aliado">
+      {aliado.texto}:
+      <a href={aliado.url} rel="noopener noreferrer" target="_blank">{aliado.nombre}</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--brand-deep);
+    color: rgba(255, 255, 255, 0.82);
+    padding-top: var(--section-gap);
+  }
+  .fondo { position: absolute; inset: 0; z-index: -1; }
+
+  .rejilla {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(16rem, 2fr) repeat(2, minmax(11rem, 1fr));
+    gap: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+  @media (max-width: 52rem) {
+    .rejilla { grid-template-columns: 1fr; gap: var(--space-8); }
+  }
+
+  .col--marca { max-width: 26rem; }
+  .tagline { margin-top: var(--space-4); font-size: var(--text-small); }
+
+  .titulo-col {
+    font-family: var(--font-text);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: var(--space-4);
+  }
+  .col ul { display: flex; flex-direction: column; gap: var(--space-2); }
+  .col a {
+    font-size: var(--text-small);
+    text-decoration: none;
+    transition: color var(--dur-micro) var(--ease-out);
+  }
+  .col a:hover { color: #fff; }
+
+  .redes { margin-top: var(--space-6); }
+  .pendiente { font-size: var(--text-small); display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+
+  .barra {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: var(--text-small);
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .aliado a { color: #fff; text-decoration: none; font-weight: 500; }
+</style>

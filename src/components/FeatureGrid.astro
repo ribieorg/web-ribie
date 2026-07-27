@@ -1,0 +1,44 @@
+---
+/**
+ * Objetivos y beneficios.
+ * Sin tarjetas: solo una regla superior por ítem y aire alrededor.
+ * Es la corrección del "cardocalypse" del mockup (DESIGN.md §1).
+ */
+import { objetivos } from '../data/contenido';
+---
+
+<ul class="rejilla">
+  {objetivos.items.map((item, i) => (
+    <li class="item reveal" style={`--i:${i}`}>
+      <span class="regla" aria-hidden="true"></span>
+      <h3>{item.titulo}</h3>
+      <p>{item.texto}</p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-12) var(--space-8);
+  }
+  .item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    /* escalonado máximo de 60 ms entre hermanos (DESIGN.md §5) */
+    transition-delay: calc(var(--i) * 60ms);
+  }
+  .regla {
+    width: 2.5rem;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--node-lime);
+  }
+  .item:nth-child(3n + 2) .regla { background: var(--node-1); }
+  .item:nth-child(3n + 3) .regla { background: var(--node-5); }
+
+  h3 { font-weight: 500; }
+  p { color: var(--ink-soft); font-size: var(--text-small); }
+</style>

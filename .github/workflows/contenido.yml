@@ -1,0 +1,42 @@
+name: Sincronizar contenido desde las hojas
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # cada hora, en punto (UTC)
+  workflow_dispatch:       # y a demanda, desde la pestaña Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contenido
+  cancel-in-progress: false
+
+jobs:
+  sincronizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Descargar el contenido de las hojas
+        run: node scripts/sync-contenido.mjs
+
+      # Solo se hace commit si algo cambió. Ese push dispara el despliegue
+      # (deploy.yml), así que el sitio se reconstruye sin pasos extra.
+      - name: Publicar si hubo cambios
+        run: |
+          if git diff --quiet -- src/data/contenido.json; then
+            echo "Sin cambios en el contenido."
+            exit 0
+          fi
+          git config user.name  "Contenido RIBIE"
+          git config user.email "administracion.ribie@gmail.com"
+          git add src/data/contenido.json
+          git commit -m "Contenido actualizado desde las hojas"
+          git push

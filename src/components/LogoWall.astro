@@ -1,0 +1,113 @@
+---
+/**
+ * Nodos y organizaciones de la red.
+ *
+ * Los logos los descarga `sync-contenido.mjs` desde el Drive a `src/assets/remoto/`,
+ * y aquí se resuelven con `import.meta.glob` para que Astro los optimice a WebP con
+ * `width`/`height`. Así el sitio no depende de Google en tiempo de ejecución ni hace
+ * *hotlinking* al servidor de cada universidad.
+ *
+ * En escala de grises por defecto, a color al pasar el cursor: veinte logos con
+ * veinte paletas distintas compiten entre sí y con la marca de RIBIE.
+ */
+import { Image } from 'astro:assets';
+import ListaPendiente from './ListaPendiente.astro';
+import { organizaciones } from '../data/contenido';
+
+// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
+  { eager: true }
+);
+const porNombre = new Map(
+  Object.entries(archivos).map(([ruta, mod]) => [ruta.split('/').pop()!, mod.default])
+);
+
+const items = organizaciones.items ?? [];
+---
+
+{items.length === 0 ? (
+  <ListaPendiente
+    texto="Aquí irán las instituciones y grupos que integran la red."
+    formato="Por institución: nombre oficial, país y logo en PNG con fondo transparente o SVG (mín. 600 px de ancho)."
+  />
+) : (
+  <ul class="muro reveal">
+    {items.map((n) => {
+      const img = n.logo ? porNombre.get(n.logo) : undefined;
+      const Contenido = (
+        <>
+          {img ? (
+            <Image src={img} alt={n.nombre} height={72} format="webp" quality={88} class="logo" />
+          ) : (
+            <span class="sin-logo">{n.nombre}</span>
+          )}
+          <span class="pie">
+            <span class="nombre">{n.nombre}</span>
+            {n.pais && <span class="pais">{n.pais}</span>}
+          </span>
+        </>
+      );
+
+      return (
+        <li class="celda">
+          {n.sitio ? (
+            <a href={n.sitio} target="_blank" rel="noopener noreferrer">{Contenido}</a>
+          ) : (
+            <div>{Contenido}</div>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+)}
+
+<style>
+  .muro {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: var(--space-8);
+  }
+  .celda a, .celda div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--ring);
+    background: var(--surface);
+    text-decoration: none;
+    text-align: center;
+    height: 100%;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  .celda a:hover { transform: translateY(-2px); }
+
+  .logo {
+    height: 4.5rem;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.75;
+    transition: filter var(--dur-standard) var(--ease-out),
+                opacity var(--dur-standard) var(--ease-out);
+  }
+  .celda a:hover .logo { filter: none; opacity: 1; }
+
+  /* Sin logo no se inventa un recuadro vacío: se muestra el nombre con dignidad */
+  .sin-logo {
+    display: grid;
+    place-items: center;
+    height: 4.5rem;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    color: var(--brand);
+    line-height: 1.1;
+  }
+
+  .pie { display: flex; flex-direction: column; gap: 2px; }
+  .nombre { font-size: var(--text-small); font-weight: 500; color: var(--ink); }
+  .pais { font-size: var(--text-eyebrow); color: var(--ink-soft); }
+</style>

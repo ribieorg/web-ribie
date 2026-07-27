@@ -1,0 +1,86 @@
+/* ==========================================================================
+   RIBIE — tokens de diseño
+   Generados desde docs/DESIGN.md (24 jul 2026). Fuente única de verdad de
+   color, tipografía, espacio, radios y motion. No escribir valores sueltos
+   fuera de este archivo.
+   ========================================================================== */
+
+:root {
+  /* --- Marca ------------------------------------------------------------ */
+  --brand:            oklch(49.5% 0.088 219.7);   /* #096D84 — 5.95:1 sobre blanco  */
+  --brand-deep:       oklch(40.3% 0.071 220.1);   /* #065163 — 8.88:1 sobre blanco  */
+  --brand-tint:       oklch(49.5% 0.088 219.7 / .08);
+  --brand-ring:       oklch(49.5% 0.088 219.7 / .12);
+
+  /* --- Acento funcional (NO es color de marca; solo acciones) ----------- */
+  --accent:           oklch(72.8% 0.156 65.9);    /* #E8901A                        */
+  --accent-ink:       oklch(21% 0.03 265);        /* texto sobre ámbar → 7.59:1     */
+  /* ⚠️ ámbar sobre blanco = 2.49:1 → PROHIBIDO como color de texto        */
+
+  /* --- Tinta y superficies --------------------------------------------- */
+  --ink:              oklch(21% 0.03 265);        /* #111827 — 16.9:1               */
+  --ink-soft:         oklch(45% 0.02 265);        /* #4B5563 —  7.5:1               */
+  --surface:          #ffffff;
+  --surface-alt:      #f6f8f9;                    /* frío, no gris neutro           */
+  --border:           oklch(49.5% 0.088 219.7 / .16);
+
+  /* --- Paleta del isotipo — DECORATIVA -----------------------------------
+     Ninguno alcanza 4.5:1 sobre blanco (2.53–3.79). Prohibido como texto
+     sobre fondo claro. Excepción: --node-lime en títulos ≥24px (3.79 ✅).  */
+  --node-1:           oklch(66.5% 0.110 204.1);   /* #15A7B3 */
+  --node-2:           oklch(70.8% 0.149 234.4);   /* #00AEEF */
+  --node-3:           oklch(64.6% 0.108 183.8);   /* #20A395 */
+  --node-4:           oklch(68.5% 0.125 222.2);   /* #0BAAD1 */
+  --node-5:           oklch(62.9% 0.118 165.8);   /* #2A9F78 */
+  --node-lime:        oklch(59.6% 0.165 136.8);   /* #4A941E */
+  --node-6:           oklch(61.4% 0.136 152.0);   /* #359B5A */
+  --node-7:           oklch(60.5% 0.155 142.8);   /* #3F983C */
+
+  /* --- Tipografía ------------------------------------------------------- */
+  --font-display:     "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-text:        "Onest", ui-sans-serif, system-ui, sans-serif;
+
+  --text-hero:        clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
+  --text-h2:          clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --text-h3:          clamp(1.375rem, 1.2rem + .8vw, 1.75rem);
+  --text-lead:        clamp(1.125rem, 1.05rem + .4vw, 1.375rem);
+  --text-body:        1.0625rem;                  /* 17px — nunca bajar de 16px    */
+  --text-small:       .9375rem;
+  --text-eyebrow:     .8125rem;
+
+  --leading-hero:     .95;
+  --leading-heading:  1.05;
+  --leading-body:     1.7;
+  --tracking-display: -.02em;
+  --tracking-eyebrow: .12em;
+
+  /* --- Espacio (grid 4pt) ------------------------------------------------ */
+  --space-1: .25rem;  --space-2: .5rem;   --space-3: .75rem;  --space-4: 1rem;
+  --space-6: 1.5rem;  --space-8: 2rem;    --space-12: 3rem;   --space-16: 4rem;
+  --space-24: 6rem;   --space-32: 8rem;
+  --section-gap:      clamp(4rem, 8vw, 8rem);
+  --measure:          68ch;                       /* 65–75 caracteres              */
+
+  /* --- Radios ------------------------------------------------------------ */
+  --radius-sm: 6px;  --radius-md: 10px;  --radius-lg: 16px;  --radius-full: 9999px;
+
+  /* --- Profundidad: whisper borders, no cardocalypse -------------------- */
+  --ring:  0 0 0 1px var(--brand-ring);
+  --lift:  0 1px 2px oklch(21% 0.03 265 / .04), 0 8px 24px oklch(21% 0.03 265 / .06);
+
+  /* --- Motion ------------------------------------------------------------ */
+  --dur-micro:    120ms;
+  --dur-standard: 220ms;
+  --dur-max:      320ms;
+  --ease-out:     cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Solo transform y opacity. Nunca height, top ni box-shadow. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

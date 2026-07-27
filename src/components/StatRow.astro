@@ -1,0 +1,49 @@
+---
+/**
+ * Cifras de la red. Sin cajas: tipografía grande y una línea divisoria.
+ * Es la corrección deliberada del "bloque de métricas" del mockup.
+ * Las cifras sin verificar se pintan como pendientes — nunca se inventa un número.
+ */
+import { cifras } from '../data/contenido';
+---
+
+<ul class="cifras reveal">
+  {cifras.items.map((item) => (
+    <li class:list={['cifra', !item.verificado && 'cifra--pendiente']}>
+      <span class="valor">{item.valor}</span>
+      <span class="etiqueta">{item.etiqueta}</span>
+      {!item.verificado && <span class="nota">por confirmar</span>}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .cifras {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-8);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--border);
+  }
+  .cifra { display: flex; flex-direction: column; gap: var(--space-1); }
+
+  .valor {
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 1.8rem + 3.4vw, 4rem);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+  }
+  .etiqueta { font-size: var(--text-small); color: var(--ink-soft); }
+
+  .cifra--pendiente .valor { color: var(--border); }
+
+  .nota {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: oklch(38% 0.09 65.9);
+  }
+</style>
