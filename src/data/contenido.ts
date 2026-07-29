@@ -1,4 +1,5 @@
 import externo from './contenido.json';
+import demostracion from './demo.json';
 
 /**
  * CONTENIDO DEL SITIO.
@@ -35,14 +36,44 @@ type Externo = {
 };
 const ext = externo as Externo;
 
+/**
+ * MODO DEMOSTRACIÓN — solo para ver la maqueta llena mientras el Drive se carga.
+ *
+ * Activo en `pnpm dev` y en cualquier build lanzado con `PUBLIC_DEMO=1`. El build
+ * de producción NO lo activa, así que **nada de `demo.json` llega a `ribie.org`**.
+ *
+ * Por qué existe esta puerta y no se pegó el contenido directamente: los datos de
+ * `demo.json` son plausibles pero inventados —"Chile → Universidad de Chile" no lo
+ * ha confirmado nadie—, y el aprendizaje del proyecto es explícito en que *el dato
+ * de un mockup termina dándose por cierto*. Separarlo por entorno es lo que permite
+ * enseñar la maqueta completa sin que exista ninguna forma de publicarla por
+ * descuido.
+ *
+ * ⚠️ El modo demo NO apaga las marcas de "contenido provisional" ni convierte una
+ * cifra inventada en verificada: solo rellena huecos visuales.
+ */
+export const MODO_DEMO =
+  import.meta.env.DEV || import.meta.env.PUBLIC_DEMO === '1';
+
+const D = MODO_DEMO ? (demostracion as typeof demostracion) : null;
+
 /** Claves de la hoja que son configuración, no contenido publicable. */
 const CONTROL = new Set(['mostrar_marcas']);
 
-/** Texto de la hoja `textos` si existe y no está vacío; si no, el valor base. */
+/**
+ * Texto de la hoja `textos` si existe y no está vacío. Si no, el de demostración
+ * (solo en modo demo). Si tampoco, el valor base de este archivo.
+ *
+ * El orden importa: la hoja SIEMPRE manda sobre la demostración, de modo que en
+ * cuanto RIBIE escriba una celda, lo suyo desplaza al relleno sin tocar código.
+ */
 const T = (clave: string, base: string): string => {
   if (CONTROL.has(clave)) return base;
   const v = ext.textos?.[clave];
-  return v && v.trim() ? v.trim() : base;
+  if (v && v.trim()) return v.trim();
+  const d = (D?.textos as Record<string, string> | undefined)?.[clave];
+  if (d && d.trim()) return d.trim();
+  return base;
 };
 /**
  * ¿Este texto puede darse por definitivo?
@@ -98,12 +129,41 @@ export const quienesSomos = {
   eyebrow: 'Quiénes somos',
   titulo: 'Una red de',
   tituloDestacado: 'investigadores',
+  /** Frase de entrada, en la tipografía de titular: dice qué es la red antes de
+   *  explicarla. Se redactó a partir de los dos párrafos que siguen. */
+  entradilla: T('quienes_entradilla', 'Una comunidad de investigación, no un catálogo de tecnología'),
   parrafos: [
     T('quienes_p1', 'RIBIE reúne a instituciones y grupos que desarrollan o aplican tecnologías de la información a la solución de problemas educativos, y a equipos dedicados a la investigación, el desarrollo y la innovación de tecnologías en la educación y la cultura.'),
     T('quienes_p2', 'La red propicia la comunicación y la colaboración entre sus miembros alrededor de la gestión de proyectos, la formulación de políticas y el desarrollo de estrategias para el mejoramiento de la educación desde su perspectiva científica y tecnológica.'),
   ].filter(Boolean),
   // Base redactada a partir de `99_referencias/ribiecol.pdf`; la hoja la reemplaza
   provisional: !propio('quienes_p1'),
+  /**
+   * Ejes de trabajo — bloques claros con un filete de color arriba.
+   *
+   * Aquí el color es un FILETE y no el fondo entero, a diferencia de los
+   * objetivos. Es deliberado: si las dos secciones usaran el mismo recurso, el
+   * bloque de color dejaría de significar nada. Al ser filete y no fondo, el
+   * color no lleva texto encima y la regla de tinta no lo alcanza — por eso
+   * pueden usarse los tres saturados sin medir contraste de lectura.
+   */
+  ejes: [
+    {
+      titulo: T('eje1_titulo', 'Investigación'),
+      texto: T('eje1_texto', 'Proyectos conjuntos entre grupos de la red y publicación arbitrada.'),
+      filete: 'var(--viv-cian)',
+    },
+    {
+      titulo: T('eje2_titulo', 'Formación'),
+      texto: T('eje2_texto', 'Encuentros, tutorías y movilidad entre instituciones asociadas.'),
+      filete: 'var(--viv-magenta)',
+    },
+    {
+      titulo: T('eje3_titulo', 'Divulgación'),
+      texto: T('eje3_texto', 'Memorias, publicaciones y foros abiertos a la comunidad académica.'),
+      filete: 'var(--viv-purpura)',
+    },
+  ],
 };
 
 export const historia = {
@@ -117,17 +177,44 @@ export const historia = {
   provisional: !propio('historia_p1'),
 };
 
-/** ⚠️ Cifras SIN confirmar por RIBIE. No publicar hasta validación (§8 del brief). */
+/**
+ * ⚠️ Cifras SIN confirmar por RIBIE. No publicar hasta validación (§8 del brief).
+ *
+ * Tres estados y no dos, porque "no hay número" y "hay número sin confirmar" no
+ * son lo mismo y no deben verse igual:
+ *   - `verificado`  → se pinta a todo color, sin nota.
+ *   - hay valor pero sin verificar → color normal y nota "por confirmar" (es el
+ *     caso del modo demo: la maqueta se ve completa y el aviso sigue puesto).
+ *   - sin valor (`—`) → se apaga a gris, para que el hueco se note.
+ */
+const cifra = (clave: string, etiqueta: string, base = '—') => {
+  const valor = T(clave, base);
+  return { valor, etiqueta, verificado: propio(clave), hayDato: valor !== base };
+};
+
 export const cifras = {
   provisional: !propio('cifra_paises'),
   items: [
-    { valor: T('cifra_anios', '36'), etiqueta: 'años de trayectoria', verificado: true },
-    { valor: T('cifra_paises', '—'), etiqueta: 'países miembros', verificado: propio('cifra_paises') },
-    { valor: T('cifra_grupos', '—'), etiqueta: 'grupos de investigación', verificado: propio('cifra_grupos') },
-    { valor: T('cifra_instituciones', '—'), etiqueta: 'instituciones asociadas', verificado: propio('cifra_instituciones') },
+    { valor: T('cifra_anios', '36'), etiqueta: 'años de trayectoria', verificado: true, hayDato: true },
+    cifra('cifra_paises', 'países miembros'),
+    cifra('cifra_grupos', 'grupos de investigación'),
+    cifra('cifra_instituciones', 'instituciones asociadas'),
   ],
 };
 
+/**
+ * Objetivos — cada uno ES un bloque de color plano, no una tarjeta con un icono.
+ *
+ * La maqueta va en el dato y no en el CSS porque el escalonado es irregular a
+ * propósito: `inicio`/`ancho` son la columna de arranque y el tramo dentro de una
+ * retícula de doce, y `desfase` baja el bloque en píxeles. Un 3×2 simétrico es la
+ * firma de layout más reconocible del contenido generado (§11.3), y esos números
+ * son lo único que lo evita. Reordenar los ítems obliga a revisarlos.
+ *
+ * `variante` decide el par fondo/tinta según la regla medida en `tokens.css`:
+ * los luminosos (amarillo) llevan tinta oscura; los profundos (púrpura, azul),
+ * blanca. No se invierte ninguna.
+ */
 export const objetivos = {
   eyebrow: 'Retos y oportunidades',
   titulo: 'Construimos juntos el futuro',
@@ -137,28 +224,97 @@ export const objetivos = {
     {
       titulo: 'Innovación tecnológica',
       texto: 'Integrar tecnologías emergentes para transformar los procesos de enseñanza y aprendizaje.',
+      variante: 'blanco', inicio: 1, ancho: 5, desfase: 0,
     },
     {
       titulo: 'Colaboración regional',
       texto: 'Fortalecer redes de cooperación entre investigadores e instituciones iberoamericanas.',
+      variante: 'negro', inicio: 7, ancho: 4, desfase: 64,
     },
     {
       titulo: 'Formación continua',
       texto: 'Promover el desarrollo de competencias digitales en docentes y estudiantes.',
+      variante: 'purpura', inicio: 2, ancho: 4, desfase: 48,
     },
     {
       titulo: 'Impacto social',
       texto: 'Generar soluciones educativas inclusivas que respondan a los desafíos de la región.',
+      variante: 'amarillo', inicio: 7, ancho: 5, desfase: 20,
     },
     {
       titulo: 'Investigación aplicada',
       texto: 'Impulsar proyectos que trasladen los hallazgos científicos a la práctica pedagógica.',
+      variante: 'blanco', inicio: 1, ancho: 4, desfase: 48,
     },
     {
       titulo: 'Divulgación académica',
       texto: 'Difundir experiencias, memorias y publicaciones de la comunidad de la red.',
+      variante: 'azul', inicio: 6, ancho: 5, desfase: 0,
     },
-  ],
+  ] as const satisfies readonly {
+    titulo: string;
+    texto: string;
+    variante: 'blanco' | 'negro' | 'purpura' | 'amarillo' | 'azul';
+    inicio: number;
+    ancho: number;
+    desfase: number;
+  }[],
+};
+
+/**
+ * ACTUALIDAD DE LA RED — mosaico de noticias.
+ *
+ * `items` está vacío a propósito: RIBIE no ha entregado ni una noticia, y no hay
+ * todavía una hoja `noticias` en el cuaderno del Drive. Mientras siga vacío, el
+ * mosaico se pinta con **huecos declarados** —cada celda dice qué va en ella y en
+ * qué formato— en vez de con titulares inventados.
+ *
+ * `plantilla` es lo que se muestra en esos huecos, y describe el mosaico celda a
+ * celda: cuáles son de texto, cuáles de foto, cuáles sangran hasta el borde y de
+ * qué color es el filete. La maqueta no cambia cuando lleguen las noticias: solo
+ * se sustituye el hueco por su contenido.
+ */
+export const actualidad = {
+  eyebrow: 'Actualidad',
+  titulo: 'Actualidad',
+  tituloDestacado: 'de la red',
+  enlaceArchivo: 'Ver todo el archivo →',
+  provisional: true,
+  items: (D?.actualidad ?? []) as {
+    titulo: string; entradilla: string; origen: string; seccion: string; etiquetas: string;
+  }[],
+  /** Ocho celdas, en el orden en que se leen. Texto y foto se alternan sin simetría. */
+  plantilla: [
+    { tipo: 'texto', sangra: 'izquierda' },
+    { tipo: 'foto', filete: 'var(--viv-cian)', pie: '[ foto: taller de formación docente — 1200 × 1200 ]', inclinacion: 4.5 },
+    { tipo: 'foto', filete: 'var(--viv-magenta)', pie: '[ foto: sesión plenaria del XIV Foro — 1200 × 1200 ]', inclinacion: -4.5 },
+    { tipo: 'texto', sangra: 'derecha' },
+    { tipo: 'foto', filete: 'var(--viv-amarillo)', pie: '[ foto: firma de convenio interinstitucional — 1200 × 1200 ]', inclinacion: 4.5 },
+    { tipo: 'texto' },
+    { tipo: 'texto', acento: true },
+    { tipo: 'foto', filete: 'var(--viv-purpura)', pie: '[ foto: laboratorio de informática educativa — 1200 × 1200 ]', inclinacion: -4.5 },
+  ] as const,
+};
+
+/**
+ * PROYECTOS Y GOBERNANZA — bloque apaisado + dos columnas.
+ *
+ * Mismo criterio que `actualidad`: sin material propio, se declara el hueco.
+ */
+export const proyectos = {
+  provisional: true,
+  items: (D?.proyectos ?? []) as {
+    titulo: string; entradilla: string; origen: string; seccion: string; etiquetas: string;
+  }[],
+  destacado: {
+    pie: '[ vídeo o foto apaisada: mesa redonda de coordinadores de nodo — 2400 × 1400 ]',
+    formato: 'Titular de hasta 80 caracteres sobre la imagen',
+    titulo: D?.proyectoDestacado?.titulo ?? '',
+  },
+  columnas: [
+    { pie: '[ foto: investigador con prototipo de aula — 1200 × 1200 ]', inclinacion: -4.5, filete: 'var(--viv-cian)' },
+    { pie: '[ retratos: nuevas coordinaciones de nodo — 1200 × 1200 ]', inclinacion: 4.5, filete: 'var(--viv-magenta)' },
+  ] as const,
 };
 
 /** Evento destacado. Base verificada en los requerimientos oficiales del 13 jul 2026;
@@ -178,21 +334,43 @@ export const foro = {
   cta: { texto: 'Información e inscripción', url: destacado?.enlace ?? '' },
 };
 
+type Nodo = { nombre: string; pais: string; sitio?: string; logo?: string };
+
+/**
+ * Nodos de la red.
+ *
+ * En modo demo la lista base es la de demostración, pero **cada entrada que exista
+ * en el Drive pisa a la suya**: así el nodo de Colombia conserva su sitio web y su
+ * logotipo reales —y con ellos la demostración de que las imágenes se descargan
+ * solas de las carpetas— mientras el resto se rellena para ver el muro completo.
+ */
+const nodosDelDrive = (ext.nodos ?? []) as Nodo[];
+const nodosDemo = (D?.nodos ?? []) as Nodo[];
+const nodosCombinados: Nodo[] = MODO_DEMO
+  ? nodosDemo.map((d) => nodosDelDrive.find((r) => r.pais === d.pais) ?? d)
+      .concat(nodosDelDrive.filter((r) => !nodosDemo.some((d) => d.pais === r.pais)))
+  : nodosDelDrive;
+
 export const organizaciones = {
   eyebrow: 'Nodos y organizaciones',
   titulo: 'Instituciones que',
   tituloDestacado: 'integran la red',
-  nota: 'Listado pendiente de confirmación por RIBIE.',
+  nota: 'Listado provisional, tomado de la memoria institucional de la red. Pendiente de confirmación por RIBIE: las instituciones que integran hoy la red se cargan desde la hoja «nodos» del Drive.',
   provisional: forzarMarcas || !ext.nodos?.length,
-  items: (ext.nodos ?? []) as { nombre: string; pais: string; sitio?: string; logo?: string }[],
+  items: nodosCombinados,
 };
 
 export const colaboradores = {
   eyebrow: 'Colaboradores',
   titulo: 'Quienes hacen',
   tituloDestacado: 'posible la red',
+  intro: 'Organismos y programas que acompañan el trabajo de la red, sus foros y sus publicaciones.',
   provisional: forzarMarcas || !ext.colaboradores?.length,
-  items: (ext.colaboradores ?? []) as { nombre: string; cargo: string; institucion: string; grupo?: string; foto?: string }[],
+  items: (ext.colaboradores?.length
+    ? ext.colaboradores
+    : (D?.colaboradores ?? [])) as {
+      nombre: string; cargo?: string; institucion?: string; grupo?: string; foto?: string; pendiente?: boolean;
+    }[],
 };
 
 export const redes = {
@@ -218,6 +396,7 @@ export const aliado = {
 export const navegacion = [
   { texto: 'La red', ancla: '#quienes-somos' },
   { texto: 'Historia', ancla: '#historia' },
+  { texto: 'Actualidad', ancla: '#actualidad' },
   { texto: 'Objetivos', ancla: '#objetivos' },
   { texto: 'XV Foro', ancla: '#foro' },
   { texto: 'Nodos', ancla: '#nodos' },

@@ -1,20 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
+import AvisoContenido from '../components/AvisoContenido.astro';
 import Hero from '../components/Hero.astro';
 import Seccion from '../components/Seccion.astro';
 import StatRow from '../components/StatRow.astro';
+import Actualidad from '../components/Actualidad.astro';
+import Proyectos from '../components/Proyectos.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import EventCard from '../components/EventCard.astro';
-import ListaPendiente from '../components/ListaPendiente.astro';
+import MuroColaboradores from '../components/MuroColaboradores.astro';
 import LogoWall from '../components/LogoWall.astro';
 import Footer from '../components/Footer.astro';
 
-import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradores } from '../data/contenido';
+import { quienesSomos, historia, objetivos, organizaciones, colaboradores } from '../data/contenido';
 ---
 
 <Base>
   <Header />
+  <AvisoContenido />
 
   <main id="contenido">
     <Hero />
@@ -25,10 +29,27 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
       titulo={quienesSomos.titulo}
       destacado={quienesSomos.tituloDestacado}
       provisional={quienesSomos.provisional}
-      ancho="estrecho"
     >
-      <div class="prosa medida reveal">
-        {quienesSomos.parrafos.map((p) => <p class="lead">{p}</p>)}
+      <div class="quienes">
+        <div class="reveal">
+          {/* Entradilla en la tipografía de titular: el primer párrafo no es un
+              párrafo, es la frase que resume qué es la red. */}
+          <p class="entradilla">{quienesSomos.entradilla}</p>
+          <div class="prosa">
+            {quienesSomos.parrafos.map((p) => <p class="parrafo">{p}</p>)}
+          </div>
+        </div>
+
+        {/* Pila de ejes: el contrapeso del texto. La línea que los separa es el
+            fondo tinta asomando por un hueco de 1px — filete, no borde. */}
+        <ul class="ejes reveal">
+          {quienesSomos.ejes.map((eje) => (
+            <li class="eje" style={`--filete:${eje.filete}`}>
+              <p class="eje-titulo">{eje.titulo}</p>
+              <p class="eje-texto">{eje.texto}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </Seccion>
 
@@ -38,15 +59,16 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
       titulo={historia.titulo}
       destacado={historia.tituloDestacado}
       provisional={historia.provisional}
-      alterna
+      entradilla={historia.parrafos[0]}
+      tono="oscuro"
     >
-      <div class="historia">
-        <div class="prosa medida reveal">
-          {historia.parrafos.map((p) => <p>{p}</p>)}
-        </div>
-        <StatRow />
-      </div>
+      <StatRow />
     </Seccion>
+
+    {/* Las dos secciones a sangre van juntas y entre bandas de fondo plano: es el
+        contraste de retícula lo que las hace funcionar (§11.3). */}
+    <Actualidad />
+    <Proyectos />
 
     <Seccion
       id="objetivos"
@@ -54,6 +76,7 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
       titulo={objetivos.titulo}
       destacado={objetivos.tituloDestacado}
       provisional={objetivos.provisional}
+      tono="turquesa"
     >
       <FeatureGrid />
     </Seccion>
@@ -66,7 +89,6 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
       titulo={organizaciones.titulo}
       destacado={organizaciones.tituloDestacado}
       provisional={organizaciones.provisional}
-      alterna
     >
       <LogoWall />
     </Seccion>
@@ -77,12 +99,10 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
       titulo={colaboradores.titulo}
       destacado={colaboradores.tituloDestacado}
       provisional={colaboradores.provisional}
+      entradilla={colaboradores.intro}
+      tono="oscuro"
     >
-      <ListaPendiente
-        texto="Aquí irán el comité científico, la organización y la dirección de la red."
-        formato="Por persona: nombre, cargo, institución y retrato cuadrado de mín. 800 × 800 px."
-        huecos={4}
-      />
+      <MuroColaboradores />
     </Seccion>
   </main>
 
@@ -90,6 +110,57 @@ import { quienesSomos, historia, cifras, objetivos, organizaciones, colaboradore
 </Base>
 
 <style>
+  /* Columnas desiguales: la prosa pesa millón y medio contra uno. Un 50/50 aquí
+     devolvería la banda a la simetría que §11.3 prohíbe. */
+  .quienes {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(var(--space-8), 7vw, var(--space-24));
+    align-items: start;
+  }
+
+  .entradilla {
+    margin-bottom: var(--space-8);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.875rem, 1.2rem + 2.2vw, 2.875rem);
+    line-height: 1.02;
+    letter-spacing: var(--tracking-display);
+    max-width: 24ch;
+  }
+
   .prosa { display: flex; flex-direction: column; gap: var(--space-6); }
-  .historia { display: flex; flex-direction: column; gap: var(--space-16); }
+  .parrafo { font-size: var(--text-lead); color: var(--ink-soft); max-width: 70ch; }
+
+  /* El gap de 1px deja ver el fondo tinta: es la línea más fina que se puede
+     dibujar sin recurrir a un borde, y separa sin encajonar cada bloque. */
+  .ejes {
+    display: grid;
+    gap: 1px;
+    background: var(--ink);
+  }
+  .eje {
+    background: var(--surface-alt);
+    padding: var(--space-6);
+    border-top: 4px solid var(--filete);
+  }
+  .eje-titulo {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.375rem;
+  }
+  .eje-texto {
+    margin-top: var(--space-2);
+    font-size: var(--text-small);
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 60rem) {
+    .quienes { grid-template-columns: 1fr; }
+    .ejes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 40rem) {
+    .ejes { grid-template-columns: 1fr; }
+  }
 </style>

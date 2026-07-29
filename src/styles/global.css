@@ -71,10 +71,19 @@ p { text-wrap: pretty; }
 .medida { max-width: var(--measure); }
 
 /* --- Layout ---------------------------------------------------------------- */
+/* A SANGRE, sin ancho máximo centrado. La versión anterior era
+   `min(100% - 10vw, 80rem)` con `margin-inline: auto`, y ese tope centrado es lo
+   que dejaba todas las bandas dentro de la misma columna estrecha — la firma de
+   layout que §11.3 prohíbe. Ahora el bloque ocupa el ancho de la pantalla menos
+   el margen, y quien limita la medida de lectura es cada párrafo con su `ch`.
+   Los mosaicos que deben tocar el borde usan `.a-sangre`. */
 .contenedor {
-  width: min(100% - 2.5rem, 72rem);
-  margin-inline: auto;
+  padding-inline: var(--margen);
 }
+
+/* Anula el margen para los bloques que van de borde a borde (mosaicos, fotos
+   apaisadas). El texto que viva dentro recupera el margen por su cuenta. */
+.a-sangre { padding-inline: 0; }
 
 .seccion { padding-block: var(--section-gap); }
 
@@ -144,18 +153,22 @@ p { text-wrap: pretty; }
   background: var(--accent);
 }
 
-/* Sobre fondo oscuro (hero, banda del Foro, pie) el ámbar translúcido con texto
-   oscuro se vuelve ilegible. Ahí la marca va en ámbar SÓLIDO con texto casi negro
-   —el mismo par del botón, 7.59:1— en vez de invertir los colores. */
+/* Sobre fondo oscuro (hero, banda del Foro, pie) y sobre FOTOGRAFÍA, el ámbar
+   translúcido con texto oscuro se vuelve ilegible. Ahí la marca va en ámbar SÓLIDO
+   con texto casi negro —el mismo par del botón, 7.59:1— en vez de invertir los
+   colores. Una foto puede tener cualquier cosa debajo: el sólido es lo único que
+   aguanta sin medir el contraste imagen por imagen. */
 .hero .provisional,
 .banda .provisional,
-.pie .provisional {
+.pie .provisional,
+figcaption .provisional {
   background: var(--accent);
   color: var(--accent-ink);
 }
 .hero .provisional::before,
 .banda .provisional::before,
-.pie .provisional::before {
+.pie .provisional::before,
+figcaption .provisional::before {
   background: var(--accent-ink);
   opacity: 0.55;
 }

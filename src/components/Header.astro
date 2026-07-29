@@ -89,11 +89,12 @@ import { navegacion } from '../data/contenido';
     background: var(--surface);
     box-shadow: var(--lift);
   }
+  /* Al mismo margen que el resto del sitio: el ancho fijo de 72rem centrado que
+     había aquí desalineaba el menú respecto a la marca que tiene justo encima. */
   .menu-movil ul {
     display: flex;
     flex-direction: column;
-    width: min(100% - 2.5rem, 72rem);
-    margin-inline: auto;
+    padding-inline: var(--margen);
     padding-block: var(--space-2);
   }
   .menu-movil a {

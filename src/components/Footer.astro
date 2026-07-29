@@ -1,10 +1,24 @@
 ---
+import { Image } from 'astro:assets';
 import Logo from './Logo.astro';
 import Marca from './Marca.astro';
 import NodeTexture from './NodeTexture.astro';
+import logoRenovatio from '../assets/logo-renovatio-horizontal-oscuro.png';
 import { sitio, navegacion, contacto, redes, aliado } from '../data/contenido';
 
 const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
+
+// La firma de autoría es un bloque propio a sangre con **fondo negro**: el azul #0000FF
+// del isotipo de Renovatio es invisible sobre el teal del pie (1.01:1) y sobre negro se
+// sostiene sin recolorearse.
+//
+// La fuente es el lockup horizontal del membrete (`01_INSTITUCIONAL/marca/logo_membrete.png`),
+// que está hecho para papel blanco: se le derivó la variante para fondo oscuro
+// —`logo-renovatio-horizontal-oscuro.png`— con dos cambios y ninguno más: se retiró el
+// recuadro gris que el recorte arrastraba tras el isotipo, y la palabra "Renovatio",
+// en #333, pasó a blanco (sobre negro daba 1.7:1). "Software" conserva su gris (5.9:1).
+const RENOVATIO_ALTO = 46;
+const RENOVATIO_ANCHO = Math.round((RENOVATIO_ALTO * 1010) / 319);
 ---
 
 <footer id="contacto" class="pie">
@@ -33,10 +47,13 @@ const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
     <div class="col">
       <h2 class="titulo-col">Contacto</h2>
       <ul>
+        {/* La dirección YA existe en Email Routing desde el 27 jul; lo que falta es
+            publicarla en la hoja `textos` (clave `contacto_correo`, hoy vacía). La
+            marca dice eso, y no una fecha que ya pasó. */}
         <li>
           {contacto.correo
             ? <a href={`mailto:${contacto.correo}`}>{contacto.correo}</a>
-            : <span class="pendiente">Correo institucional <Marca texto="Se define el 25 jul" /></span>}
+            : <span class="pendiente">Correo institucional <Marca texto="Falta publicarlo en la hoja" /></span>}
         </li>
         <li>{contacto.ciudad}</li>
       </ul>
@@ -54,11 +71,29 @@ const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
   </div>
 
   <div class="contenedor barra">
-    <p>© {anio} {sitio.nombreLargo}</p>
-    <p class="aliado">
-      {aliado.texto}:
-      <a href={aliado.url} rel="noopener noreferrer" target="_blank">{aliado.nombre}</a>
-    </p>
+    <p class="copyright">© {anio} {sitio.nombreLargo} · Todos los derechos reservados</p>
+  </div>
+
+  <div class="firma">
+    <div class="contenedor firma-fila">
+      <a class="credito" href={aliado.url} rel="noopener noreferrer" target="_blank">
+        <Image
+          src={logoRenovatio}
+          alt={aliado.nombre}
+          width={RENOVATIO_ANCHO * 2}
+          height={RENOVATIO_ALTO * 2}
+          densities={[1, 2]}
+          format="webp"
+          quality={90}
+          class="logo-renovatio"
+          style={`height:${RENOVATIO_ALTO}px;width:auto`}
+        />
+        <span class="credito-texto">
+          <span class="credito-rol">{aliado.texto}</span>
+          <span class="credito-nombre">Creado por {aliado.nombre}</span>
+        </span>
+      </a>
+    </div>
   </div>
 </footer>
 
@@ -69,7 +104,15 @@ const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
     overflow: hidden;
     background: var(--brand-deep);
     color: rgba(255, 255, 255, 0.82);
-    padding-top: var(--section-gap);
+    /* La diagonal del sitio, EN ESPEJO respecto a la del Foro: allí el corte
+       baja hacia la izquierda, aquí hacia la derecha. Mismo ángulo —los mismos
+       6,5vw— porque §11 admite una sola inclinación en todo el sitio; lo que
+       cambia es el sentido, y así la página cierra con la figura invertida con
+       la que se abrió. El padding compensa el corte para que el contenido no
+       quede debajo de la punta. */
+    clip-path: polygon(0 0, 100% 6.5vw, 100% 100%, 0 100%);
+    margin-top: -1px;
+    padding-top: calc(var(--section-gap) + 6.5vw);
   }
   .fondo { position: absolute; inset: 0; z-index: -1; }
 
@@ -93,7 +136,10 @@ const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
     font-weight: 600;
     letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
+    /* ⚠️ Estaba en .55 → 3,87:1 sobre el teal profundo: reprobaba, y encima en el
+       peor sitio posible (texto pequeño, en mayúsculas y con tracking abierto).
+       .74 lo lleva a 5,66:1 sin que deje de leerse como un rótulo secundario. */
+    color: rgba(255, 255, 255, 0.74);
     margin-bottom: var(--space-4);
   }
   .col ul { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -111,12 +157,70 @@ const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
     position: relative;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: var(--space-6);
     padding-block: var(--space-6);
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    /* La línea a .16 daba 1,52:1 y no se veía: es un separador, no un adorno */
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
     font-size: var(--text-small);
-    color: rgba(255, 255, 255, 0.6);
+    /* Estaba en .6 → 4,27:1, por debajo del umbral. .74 da 5,66:1 */
+    color: rgba(255, 255, 255, 0.74);
   }
-  .aliado a { color: #fff; text-decoration: none; font-weight: 500; }
+  .copyright { max-width: 44rem; }
+
+  /* Firma de autoría: bloque negro a sangre, el único del sitio. Le da al azul de
+     Renovatio el fondo sobre el que su marca sí se sostiene. */
+  .firma {
+    position: relative;
+    background: #000;
+  }
+  .firma-fila {
+    display: flex;
+    justify-content: center;
+    padding-block: var(--space-6);
+  }
+
+  .credito {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    text-decoration: none;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  .credito:hover { transform: translateY(-1px); }
+
+  .logo-renovatio { display: block; width: auto; flex-shrink: 0; }
+
+  .credito-texto { display: flex; flex-direction: column; gap: 2px; }
+  .credito-rol {
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .credito-nombre {
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: #fff;
+  }
+
+  /* Móvil: la diagonal se aplana. En pantalla estrecha 6,5vw siguen siendo
+     pocos píxeles, pero el padding que la compensa deja un hueco muerto que ahí
+     sí se nota. Y al imprimir, un recorte sin fondo solo corta contenido. */
+  @media (max-width: 47.5rem), print {
+    .pie {
+      clip-path: none;
+      margin-top: 0;
+      padding-top: var(--section-gap);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .barra { justify-content: flex-start; }
+    /* En pantallas estrechas el lockup horizontal + el texto no caben en una línea:
+       se apilan antes de provocar scroll lateral. */
+    .credito { flex-direction: column; gap: var(--space-3); text-align: center; }
+  }
 </style>

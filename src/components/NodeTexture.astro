@@ -7,8 +7,15 @@
 interface Props {
   variante?: 'clara' | 'oscura';
   opacidad?: number;
+  /**
+   * Red viva: los enlaces se trazan y los nodos laten (DESIGN.md §11).
+   * Solo en el hero — animar la textura en cada banda sería ruido, no atmósfera.
+   * Todo el movimiento es CSS puro sobre `opacity` y `stroke-dashoffset`: ni un
+   * byte de JavaScript, y `prefers-reduced-motion` lo apaga desde tokens.css.
+   */
+  animada?: boolean;
 }
-const { variante = 'clara', opacidad = 1 } = Astro.props;
+const { variante = 'clara', opacidad = 1, animada = false } = Astro.props;
 
 const trazo = variante === 'oscura' ? 'rgba(255,255,255,.28)' : 'var(--node-1)';
 const nodo  = variante === 'oscura' ? 'rgba(255,255,255,.45)' : 'var(--brand)';
@@ -27,23 +34,24 @@ const enlaces = [
 ---
 
 <svg
-  class="textura"
+  class:list={['textura', animada && 'textura--viva']}
   viewBox="0 0 100 90"
   preserveAspectRatio="xMidYMid slice"
   aria-hidden="true"
   focusable="false"
   style={`--o:${opacidad}`}
 >
-  {enlaces.map(([a, b]) => (
+  {enlaces.map(([a, b], i) => (
     <line
       x1={puntos[a][0]} y1={puntos[a][1]}
       x2={puntos[b][0]} y2={puntos[b][1]}
       stroke={trazo}
       stroke-width="0.18"
+      style={`--i:${i}`}
     />
   ))}
   {puntos.map(([x, y], i) => (
-    <circle cx={x} cy={y} r={i % 4 === 0 ? 0.85 : 0.5} fill={nodo} />
+    <circle cx={x} cy={y} r={i % 4 === 0 ? 0.85 : 0.5} fill={nodo} style={`--i:${i}`} />
   ))}
 </svg>
 
@@ -55,5 +63,38 @@ const enlaces = [
     height: 100%;
     opacity: var(--o);
     pointer-events: none;
+  }
+
+  /* --- Red viva -----------------------------------------------------------
+     Dos gestos y ninguno más: el enlace se traza una vez al cargar, y el nodo
+     late en bucle largo. Es una constelación, no un salvapantallas. */
+  .textura--viva line {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: trazar 1.4s var(--ease-out) forwards;
+    animation-delay: calc(var(--i) * 45ms);
+  }
+  .textura--viva circle {
+    opacity: 0;
+    animation:
+      surgir .5s var(--ease-out) forwards,
+      latir 6s ease-in-out infinite;
+    /* El nodo aparece cuando su enlace ya llegó, no antes */
+    animation-delay: calc(600ms + var(--i) * 55ms), calc(2s + var(--i) * 180ms);
+  }
+
+  @keyframes trazar { to { stroke-dashoffset: 0; } }
+  @keyframes surgir { to { opacity: 1; } }
+  @keyframes latir {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .35; }
+  }
+
+  /* Sin movimiento: la red se ve completa desde el primer fotograma.
+     El @media global de tokens.css lleva las duraciones a .01ms, pero eso
+     sin este bloque dejaría los nodos en su estado inicial (invisibles). */
+  @media (prefers-reduced-motion: reduce) {
+    .textura--viva line   { stroke-dashoffset: 0; animation: none; }
+    .textura--viva circle { opacity: 1; animation: none; }
   }
 </style>

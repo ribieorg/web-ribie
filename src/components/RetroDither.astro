@@ -1,0 +1,100 @@
+---
+/**
+ * Envoltorio de Canvas UI — Retro Dither.
+ *
+ * ⚠️ La trampa de este componente, y la razón por la que existe este archivo:
+ * la API `html-in-canvas` exige que el contenido viva DENTRO de un `<canvas>`.
+ * Pero el contenido hijo de un `<canvas>` es *fallback*: los navegadores que
+ * soportan canvas —todos— NO lo pintan. Montar esa estructura en el HTML dejaría
+ * el bloque VACÍO en Firefox, en Safari y en cualquier Chrome sin el flag
+ * `chrome://flags/#canvas-draw-element`.
+ *
+ * Por eso el marcado que se sirve es HTML normal, y los canvas se construyen
+ * desde JavaScript **solo si hay soporte**. Sin soporte no se ejecuta nada y el
+ * contenido se ve tal cual: mejora progresiva de verdad, no una promesa de que
+ * "degrada bien".
+ */
+interface Props {
+  /** Opciones de `RetroDitherOptions`; se serializan al cliente. */
+  opciones?: Record<string, unknown>;
+}
+const { opciones = {} } = Astro.props;
+---
+
+<div class="rd" data-retro-dither data-opciones={JSON.stringify(opciones)}>
+  <div class="rd-contenido"><slot /></div>
+</div>
+
+<style>
+  .rd { position: relative; display: block; }
+  .rd-contenido { display: block; }
+
+  /* Solo cuando el efecto está montado: el contenido real pasa a ser la textura
+     que lee el shader, y lo que se ve es el canvas de salida. */
+  .rd[data-activo] { isolation: isolate; }
+  .rd[data-activo] > .rd-fuente {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .rd[data-activo] > .rd-salida {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script>
+  import { createRetroDither, supportsHtmlInCanvas } from '../lib/canvasui/retro-dither';
+
+  // Una sola comprobación para toda la página: si no hay soporte, no se toca el DOM.
+  if (supportsHtmlInCanvas()) {
+    for (const raiz of document.querySelectorAll<HTMLElement>('[data-retro-dither]')) {
+      const contenido = raiz.querySelector<HTMLElement>('.rd-contenido');
+      if (!contenido) continue;
+
+      const { width, height } = raiz.getBoundingClientRect();
+
+      // El canvas que hospeda el HTML. `layoutsubtree` es lo que permite que su
+      // contenido se maquete de verdad en vez de tratarse como fallback.
+      const fuente = document.createElement('canvas');
+      fuente.className = 'rd-fuente';
+      fuente.setAttribute('layoutsubtree', '');
+      fuente.width = Math.max(1, Math.round(width));
+      fuente.height = Math.max(1, Math.round(height));
+
+      // El canvas donde dibuja WebGL.
+      const salida = document.createElement('canvas');
+      salida.className = 'rd-salida';
+      salida.setAttribute('aria-hidden', 'true');
+
+      // El contenido se MUEVE dentro del canvas fuente. A partir de aquí el DOM
+      // real sigue existiendo (accesible, seleccionable, enlazable): solo deja de
+      // pintarse por sí mismo.
+      raiz.appendChild(fuente);
+      fuente.appendChild(contenido);
+      raiz.appendChild(salida);
+      raiz.setAttribute('data-activo', '');
+
+      let opciones = {};
+      try {
+        opciones = JSON.parse(raiz.dataset.opciones || '{}');
+      } catch {
+        /* opciones mal formadas: se usan las del componente */
+      }
+
+      const instancia = createRetroDither({ source: fuente, content: contenido, output: salida }, opciones);
+
+      // Si WebGL2 falla (contexto perdido, GPU bloqueada), se deshace el montaje
+      // en vez de dejar un hueco negro donde había contenido.
+      if (!instancia) {
+        raiz.removeAttribute('data-activo');
+        raiz.insertBefore(contenido, fuente);
+        fuente.remove();
+        salida.remove();
+      }
+    }
+  }
+</script>

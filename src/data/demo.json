@@ -1,0 +1,91 @@
+{
+  "_LEEME": "CONTENIDO DE DEMOSTRACIÓN — NO ES INFORMACIÓN DE RIBIE. Se carga SOLO en desarrollo (pnpm dev) o con PUBLIC_DEMO=1, para poder ver la maqueta llena mientras el Drive se termina de cargar. El build de producción NO lo incluye: ver la constante MODO_DEMO en contenido.ts. Todo lo de aquí lo redactó Renovatio a partir de la maqueta de referencia; los nombres de instituciones, fechas y autorías son PLAUSIBLES PERO INVENTADOS y no deben publicarse jamás.",
+
+  "actualidad": [
+    {
+      "titulo": "Publicada la convocatoria del XV Foro de Investigadores",
+      "entradilla": "Ponencias, simposios temáticos y sesiones de doctorandos hasta el 30 de junio de 2026.",
+      "origen": "vía Secretaría RIBIE · 12 mar 2026",
+      "seccion": "en Nodo Colombia",
+      "etiquetas": "#foro #convocatoria"
+    },
+    {
+      "titulo": "Un estudio comparado de programas de informática educativa en seis países",
+      "entradilla": "Los nodos de Brasil, Chile, España, México, Perú y Uruguay publican metodología y datos abiertos.",
+      "origen": "vía Comité Científico · 4 feb 2026",
+      "seccion": "en Investigación",
+      "etiquetas": "#estudio comparado #datos abiertos"
+    },
+    {
+      "titulo": "Escuela doctoral itinerante: convocatoria de tutorías",
+      "entradilla": "Veinte plazas con tutoría cruzada entre nodos para tesis en curso sobre tecnología y aprendizaje.",
+      "origen": "vía Nodo España · 21 ene 2026",
+      "seccion": "en Formación",
+      "etiquetas": "#doctorado #movilidad"
+    },
+    {
+      "titulo": "La red asesora tres planes nacionales de tecnología educativa",
+      "entradilla": "Informes técnicos entregados a los ministerios de Colombia, Costa Rica y Paraguay.",
+      "origen": "vía Coordinación general · 9 dic 2025",
+      "seccion": "en Incidencia",
+      "etiquetas": "#políticas públicas"
+    }
+  ],
+
+  "proyectoDestacado": {
+    "titulo": "Mesa redonda: qué investiga hoy Iberoamérica en informática educativa"
+  },
+
+  "proyectos": [
+    {
+      "titulo": "Cómo el nodo de Chile lleva la evidencia al aula rural",
+      "entradilla": "Tres años de trabajo con escuelas multigrado: instrumentación, formación docente y seguimiento longitudinal.",
+      "origen": "vía Nodo Chile · 18 nov 2025",
+      "seccion": "en Investigación · Formación",
+      "etiquetas": "#aula rural #evidencia"
+    },
+    {
+      "titulo": "Nuevas coordinaciones de nodo para el bienio 2026–2028",
+      "entradilla": "Relevo en los nodos de Ecuador, Panamá y Portugal, elegidos en asamblea de la red.",
+      "origen": "vía Asamblea RIBIE · 2 oct 2025",
+      "seccion": "en Gobernanza",
+      "etiquetas": "#nodos #bienio 2026"
+    }
+  ],
+
+  "nodos": [
+    { "pais": "Argentina", "nombre": "Universidad Nacional de La Plata" },
+    { "pais": "Bolivia", "nombre": "Universidad Mayor de San Andrés" },
+    { "pais": "Brasil", "nombre": "Universidade Federal do Rio Grande do Sul" },
+    { "pais": "Chile", "nombre": "Universidad de Chile" },
+    { "pais": "Colombia", "nombre": "Universidad de Nariño" },
+    { "pais": "Costa Rica", "nombre": "Universidad de Costa Rica" },
+    { "pais": "Cuba", "nombre": "Universidad de La Habana" },
+    { "pais": "Ecuador", "nombre": "Escuela Politécnica Nacional" },
+    { "pais": "El Salvador", "nombre": "Universidad de El Salvador" },
+    { "pais": "España", "nombre": "Universidad de Salamanca" },
+    { "pais": "Guatemala", "nombre": "Universidad de San Carlos" },
+    { "pais": "México", "nombre": "UNAM" },
+    { "pais": "Panamá", "nombre": "Universidad de Panamá" },
+    { "pais": "Paraguay", "nombre": "Universidad Nacional de Asunción" },
+    { "pais": "Perú", "nombre": "Pontificia Universidad Católica del Perú" },
+    { "pais": "Portugal", "nombre": "Universidade de Lisboa" },
+    { "pais": "R. Dominicana", "nombre": "Universidad Autónoma de Santo Domingo" },
+    { "pais": "Uruguay", "nombre": "Universidad de la República" }
+  ],
+
+  "colaboradores": [
+    { "nombre": "CYTED · Subprograma VII" },
+    { "nombre": "Universidad de Nariño" },
+    { "nombre": "Organización de Estados Iberoamericanos" },
+    { "nombre": "Ministerios de Educación" },
+    { "nombre": "[ logotipo pendiente ]", "pendiente": true }
+  ],
+
+  "textos": {
+    "cifra_paises": "18",
+    "cifra_grupos": "14",
+    "cifra_instituciones": "40",
+    "contacto_correo": "contacto@ribie.org"
+  }
+}

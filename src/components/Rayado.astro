@@ -1,0 +1,111 @@
+---
+/**
+ * Hueco declarado de fotografía.
+ *
+ * RIBIE no ha entregado material gráfico propio. Este componente ocupa el lugar
+ * de la foto con un rayado plano inclinado en el ángulo de la marca y un pie que
+ * dice, con todas las letras, qué imagen falta y en qué tamaño. Cuando llegue la
+ * foto real basta con cambiar este componente por un `<Image>` en la misma caja:
+ * la maqueta no se entera.
+ *
+ * Por qué esto y no una foto de archivo: entre el 24 y el 28 de julio el sitio
+ * llevó cinco fotografías de Pexels marcadas como provisionales (D44). Un hueco
+ * honesto comunica mejor el estado real del sitio que una imagen prestada, no
+ * arrastra 400 KB y no puede confundirse con un registro de la red.
+ *
+ * La inclinación por defecto es la del token `--corte` (4,5°) — el ángulo único
+ * del sitio. `patternTransform` necesita un número, no una longitud CSS, y por
+ * eso se pasa suelto en vez de leerse de la variable.
+ */
+interface Props {
+  /** Identificador ÚNICO del patrón en el documento: dos iguales se pisan. */
+  id: string;
+  /** Caja del viewBox. No es el tamaño en pantalla: el SVG se recorta al hueco. */
+  ancho?: number;
+  alto?: number;
+  /** Inclinación de las rayas, en grados. Por defecto, la diagonal del sitio. */
+  inclinacion?: number;
+  fondo?: string;
+  raya?: string;
+  /** Lado de la celda del patrón y ancho de la raya dentro de ella. */
+  paso?: number;
+  anchoRaya?: number;
+  opacidad?: number;
+  /** Pie que declara la imagen que falta: "[ foto: … — 1200×1200 ]". */
+  pie?: string;
+  /** Alineación del pie cuando el hueco llega hasta el borde de la pantalla. */
+  pieAlMargen?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  ancho = 900,
+  alto = 660,
+  inclinacion = 4.5,
+  fondo = '#101010',
+  raya = '#1C1C1C',
+  paso = 16,
+  anchoRaya = 7,
+  opacidad,
+  pie,
+  pieAlMargen = false,
+  class: clase,
+} = Astro.props;
+---
+
+<svg
+  viewBox={`0 0 ${ancho} ${alto}`}
+  preserveAspectRatio="xMidYMid slice"
+  class:list={['rayado', clase]}
+  style={opacidad !== undefined ? `opacity:${opacidad}` : undefined}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <pattern
+      id={id}
+      width={paso}
+      height={paso}
+      patternTransform={`rotate(${inclinacion})`}
+      patternUnits="userSpaceOnUse"
+    >
+      <rect width={paso} height={paso} fill={fondo}></rect>
+      <rect width={anchoRaya} height={paso} fill={raya}></rect>
+    </pattern>
+  </defs>
+  <rect width={ancho} height={alto} fill={`url(#${id})`}></rect>
+</svg>
+
+{pie && <p class:list={['pie-hueco', pieAlMargen && 'pie-hueco--margen']}>{pie}</p>}
+
+<style>
+  .rayado {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Monoespaciada y pequeña: es una anotación de maqueta, no contenido del sitio.
+     Se lee como lo que es —una nota de producción— y no compite con el titular. */
+  .pie-hueco {
+    position: absolute;
+    left: var(--space-6);
+    bottom: var(--space-6);
+    max-width: 30ch;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+    /* Medido contra la raya CLARA del patrón, que es el peor caso: 4,55:1 sobre
+       #191919 y 5,03:1 sobre el fondo. El gris tiene que resolverse contra la
+       banda más clara del rayado, no contra su promedio, o el texto desaparece
+       justo encima de las rayas. */
+    color: #82827D;
+  }
+  .pie-hueco--margen {
+    left: var(--margen);
+    right: var(--margen);
+    max-width: none;
+  }
+</style>

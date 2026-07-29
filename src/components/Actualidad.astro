@@ -1,0 +1,207 @@
+---
+/**
+ * Actualidad de la red — mosaico a sangre de cuatro columnas.
+ *
+ * Va de borde a borde de la pantalla, sin contenedor: es la sección que rompe la
+ * retícula del resto del sitio, y ese contraste es lo que hace que funcione. Las
+ * celdas de los extremos recuperan el margen por dentro, para que su texto quede
+ * alineado con el de las secciones vecinas.
+ *
+ * ⚠️ RIBIE no ha entregado ni una noticia y no existe todavía una hoja `noticias`
+ * en el cuaderno del Drive. Mientras `actualidad.items` esté vacío, cada celda de
+ * texto **declara lo que va en ella y en qué formato**, en vez de mostrar un
+ * titular inventado. Es el mismo criterio de `Rayado.astro` aplicado al texto: un
+ * hueco declarado dice la verdad sobre el estado del sitio; un titular de relleno
+ * termina dándose por cierto (ver `300-Aprendizajes/ribie`).
+ */
+import Rayado from './Rayado.astro';
+import Marca from './Marca.astro';
+import { actualidad } from '../data/contenido';
+
+/**
+ * Se resuelve aquí y no en el marcado: cada celda de texto consume la siguiente
+ * noticia disponible, y si no hay ninguna se queda como hueco declarado. El
+ * contador no cabe dentro de un `.map()` de JSX sin ensuciarlo.
+ */
+let siguiente = 0;
+const celdas = actualidad.plantilla.map((celda) =>
+  celda.tipo === 'texto'
+    ? { ...celda, noticia: actualidad.items[siguiente++] }
+    : celda
+);
+---
+
+<section id="actualidad" class="actualidad" aria-labelledby="titulo-actualidad">
+  <div class="contenedor cabeza">
+    <div>
+      <p class="eyebrow">{actualidad.eyebrow}</p>
+      <h2 id="titulo-actualidad">
+        {actualidad.titulo} <span class="destacado">{actualidad.tituloDestacado}</span>
+      </h2>
+      {actualidad.provisional && <p class="marca-linea"><Marca texto="Sin noticias cargadas" /></p>}
+    </div>
+    {/* El archivo no existe todavía: se declara como pendiente en vez de enlazar
+        a un destino inventado (§8, "sin promesas fuera de alcance"). */}
+    <p class="archivo">Archivo de noticias <Marca texto="Pendiente" /></p>
+  </div>
+
+  <div class="mosaico reveal">
+    {celdas.map((celda, i) =>
+      celda.tipo === 'foto' ? (
+        <div class="celda celda--foto" style={`--filete:${celda.filete}`}>
+          <Rayado
+            id={`ribieActualidad${i}`}
+            ancho={420}
+            alto={430}
+            inclinacion={celda.inclinacion}
+            fondo="#111111"
+            raya="#1E1E1E"
+            pie={celda.pie}
+          />
+        </div>
+      ) : (
+        <article
+          class:list={[
+            'celda', 'celda--texto',
+            celda.sangra === 'izquierda' && 'celda--izquierda',
+            celda.sangra === 'derecha' && 'celda--derecha',
+            celda.acento && 'celda--acento',
+          ]}
+        >
+          {celda.noticia ? (
+            <>
+              <p class="titular">{celda.noticia.titulo}</p>
+              <p class="entradilla">{celda.noticia.entradilla}</p>
+              <p class="meta">
+                {celda.noticia.origen}<br />
+                {celda.noticia.seccion}<br />
+                {celda.noticia.etiquetas}
+              </p>
+            </>
+          ) : (
+            <>
+              <p class="rotulo">[ noticia ]</p>
+              <p class="campo campo--titular">Titular · hasta 90 caracteres</p>
+              <p class="campo">Entradilla · una o dos líneas</p>
+              <p class="campo campo--meta">
+                vía &lt;quién lo publica&gt; · &lt;fecha&gt;<br />
+                en &lt;sección&gt;<br />
+                #etiquetas
+              </p>
+            </>
+          )}
+        </article>
+      )
+    )}
+  </div>
+</section>
+
+<style>
+  /* Padding SOLO arriba: el mosaico tiene que llegar hasta el borde inferior de
+     la sección para que el de Proyectos arranque pegado a él. Con `padding-block`
+     quedaba una franja de fondo entre los dos mosaicos, y esa franja rompe la
+     lectura de bloque continuo que es todo el efecto de estas dos secciones. */
+  .actualidad { padding-top: var(--section-gap); background: var(--surface); }
+
+  .cabeza {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+  }
+  .marca-linea { margin-top: var(--space-4); }
+  .archivo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    font-weight: 600;
+    color: var(--brand);
+    white-space: nowrap;
+  }
+
+  /* Mosaico a sangre: cuatro columnas SIN hueco entre ellas. El gap rompería el
+     bloque continuo, que es justo el efecto de esta sección. */
+  .mosaico {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .celda { min-height: 26rem; }
+
+  .celda--texto {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-6);
+    background: var(--surface-alt);
+  }
+  /* Las celdas de los extremos recuperan el margen del sitio por dentro */
+  .celda--izquierda { padding-left: var(--margen); }
+  .celda--derecha   { padding-right: var(--margen); }
+
+  .celda--foto {
+    position: relative;
+    overflow: hidden;
+    background: #0E0E0E;
+    border-bottom: 4px solid var(--filete);
+  }
+
+  /* --- Hueco declarado ---------------------------------------------------
+     Monoespaciada y tenue: se lee como una nota de producción, no como
+     contenido del sitio. Nadie puede confundir esto con una noticia. */
+  .rotulo {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .campo {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--ink-faint);          /* 4,86:1 sobre el hueso */
+  }
+  .campo--titular { font-size: 0.875rem; color: var(--ink-soft); }
+  .campo--meta { margin-top: auto; font-size: 0.6875rem; }
+  .celda--acento .campo--titular { color: var(--brand); }
+
+  /* --- Noticia real ------------------------------------------------------
+     El titular va en la fuente de TEXTO y no en la de titulares: aquí compite
+     con otras siete celdas a la vez, y Oswald condensada a este tamaño en un
+     mosaico denso se vuelve ruido. El peso hace el trabajo que haría el tamaño. */
+  .titular {
+    font-family: var(--font-text);
+    font-weight: 700;
+    font-size: 1.375rem;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+  }
+  .entradilla {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .meta {
+    margin-top: auto;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+  }
+  /* Una sola celda de acento en todo el mosaico: si fueran dos, dejaría de serlo */
+  .celda--acento .titular,
+  .celda--acento .entradilla { color: var(--viv-azul); }
+
+  @media (max-width: 74rem) {
+    .mosaico { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 47.5rem) {
+    .mosaico { grid-template-columns: minmax(0, 1fr); }
+    .celda { min-height: 20rem; }
+    .celda--texto { padding-inline: var(--margen); }
+    .cabeza { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+  }
+</style>

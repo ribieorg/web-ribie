@@ -18,15 +18,63 @@
   /* ⚠️ ámbar sobre blanco = 2.49:1 → PROHIBIDO como color de texto        */
 
   /* --- Tinta y superficies --------------------------------------------- */
-  --ink:              oklch(21% 0.03 265);        /* #111827 — 16.9:1               */
-  --ink-soft:         oklch(45% 0.02 265);        /* #4B5563 —  7.5:1               */
-  --surface:          #ffffff;
-  --surface-alt:      #f6f8f9;                    /* frío, no gris neutro           */
+  --ink:              oklch(21% 0.03 265);        /* #111827 — 16.11:1 sobre hueso  */
+  --ink-soft:         oklch(45% 0.02 265);        /* #4B5563 —  6.86:1 sobre hueso  */
+  /* Hueso, no blanco puro: el blanco de pantalla contra el negro estructural da un
+     salto duro y lee a plantilla. Contrastes remedidos sobre él (28 jul).          */
+  --surface:          #F4F4F2;
+  --surface-alt:      #ffffff;
   --border:           oklch(49.5% 0.088 219.7 / .16);
 
-  /* --- Paleta del isotipo — DECORATIVA -----------------------------------
+  /* Neutros cálidos para los bloques oscuros — la escala que da el aire editorial.
+     ⚠️ `--ink-faint` sobre hueso da 4.86:1 (sirve para body); `#8A8A85` daría 3.15:1
+     y por eso NO está aquí como color de texto sobre claro.                        */
+  --ink-faint:        #6B6B66;                    /* 4.86:1 sobre hueso             */
+  --void-line:        #262626;                    /* separadores sobre negro        */
+  --void-text:        #B9B9B3;                    /* 10.65:1 sobre negro            */
+  --void-mute:        #8A8A85;                    /*  6.05:1 sobre negro            */
+
+  /* --- Negro estructural (DESIGN.md §11, 28 jul 2026) --------------------
+     Negro PURO, no gris oscuro: la referencia adoptada (Alan Turing Institute)
+     lo usa así, y sobre él se midieron los contrastes de §11.               */
+  --void:             #000000;
+  --void-soft:        rgba(255, 255, 255, .74);   /* texto secundario sobre negro   */
+
+  /* --- La diagonal: ÁNGULO ÚNICO de todo el sitio ------------------------
+     Se declara una vez y no se improvisa por sección. Dos inclinaciones
+     distintas leen a descuido, no a diseño.                                */
+  --corte:            4.5deg;
+
+  /* --- Margen lateral: la retícula va A SANGRE ---------------------------
+     El sitio NO tiene contenedor centrado con ancho máximo. Un `max-width`
+     centrado deja la misma columna en todas las bandas, y esa uniformidad es
+     precisamente la firma que DESIGN.md §11.3 prohíbe. En su lugar, un margen
+     proporcional: el contenido llega hasta cerca del borde y son los bloques de
+     texto los que limitan su medida en `ch` (§3), cada uno según lo que es.  */
+  --margen:           5vw;
+
+  /* --- Paleta VIVA de bloques (28 jul 2026) ------------------------------
+     Bloques de color plano saturado, al modo del Alan Turing Institute.
+     ⚠️ Solo `--viv-cian` sale del manual de RIBIE; el resto es EXTENSIÓN
+     (ver DESIGN.md §11). Contrastes medidos, no estimados.
+
+     REGLA DE TINTA — se deduce de la luminancia, no del gusto:
+       luminosos  (cian, turquesa, verde, amarillo, magenta) → TINTA OSCURA
+       profundos  (púrpura, azul)                            → TINTA BLANCA
+     Invertirla reprueba WCAG en ambos sentidos.                            */
+  --viv-cian:         #00AEEF;   /* 8.30:1 s/negro · tinta oscura  7.01:1 */
+  --viv-turquesa:     #2EE6D6;   /* 13.41:1        · tinta oscura 11.32:1 */
+  --viv-verde:        #00E87A;   /* 12.82:1        · tinta oscura 10.83:1 */
+  --viv-amarillo:     #FFE500;   /* 16.46:1        · tinta oscura 13.90:1 */
+  --viv-magenta:      #FF2D9B;   /*  6.10:1        · tinta oscura  5.15:1 */
+  --viv-purpura:      #7B2FF7;   /*  3.59:1        · tinta BLANCA  5.85:1 */
+  --viv-azul:         #2B2BF5;   /*  2.77:1        · tinta BLANCA  7.59:1 */
+
+  /* --- Paleta del isotipo — DECORATIVA sobre CLARO, texto sobre NEGRO -----
      Ninguno alcanza 4.5:1 sobre blanco (2.53–3.79). Prohibido como texto
-     sobre fondo claro. Excepción: --node-lime en títulos ≥24px (3.79 ✅).  */
+     sobre fondo claro. Excepción: --node-lime en títulos ≥24px (3.79 ✅).
+     🔓 Sobre --void la cosa se invierte: 5.5–8.3:1, sí sirven como texto
+     (§11). ⚠️ --brand NO: 3.53:1 sobre negro → solo bloque o texto ≥24px.  */
   --node-1:           oklch(66.5% 0.110 204.1);   /* #15A7B3 */
   --node-2:           oklch(70.8% 0.149 234.4);   /* #00AEEF */
   --node-3:           oklch(64.6% 0.108 183.8);   /* #20A395 */
@@ -40,7 +88,9 @@
   --font-display:     "Oswald", ui-sans-serif, system-ui, sans-serif;
   --font-text:        "Onest", ui-sans-serif, system-ui, sans-serif;
 
-  --text-hero:        clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
+  /* 46px → 86px. El tope NO sube más: el hero es de dos columnas y con 146px el
+     titular desbordaba la banda. El tamaño lo fija la maqueta, no el entusiasmo. */
+  --text-hero:        clamp(2.875rem, 1.5rem + 3.9vw, 5.375rem);
   --text-h2:          clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
   --text-h3:          clamp(1.375rem, 1.2rem + .8vw, 1.75rem);
   --text-lead:        clamp(1.125rem, 1.05rem + .4vw, 1.375rem);
@@ -73,6 +123,12 @@
   --dur-standard: 220ms;
   --dur-max:      320ms;
   --ease-out:     cubic-bezier(.22, .61, .36, 1);
+}
+
+/* En móvil el margen proporcional deja de servir: 5vw de 360px son 18px, y la
+   línea de texto se pega al borde. Pasa a una medida fija cómoda. */
+@media (max-width: 47.5rem) {
+  :root { --margen: 1.5rem; }
 }
 
 /* Solo transform y opacity. Nunca height, top ni box-shadow. */
