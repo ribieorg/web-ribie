@@ -1,6 +1,19 @@
 {
   "colaboradores": [],
-  "eventos": [],
+  "eventos": [
+    {
+      "id": "xv-foro-2026",
+      "titulo": "XV Foro de Investigadores en Informática Educativa",
+      "fechaInicio": "2026-10-05",
+      "fechaFin": "2026-10-07",
+      "lugar": "Universidad de Nariño · Pasto Colombia",
+      "modalidad": "Modalidad híbrida — presencial y virtual",
+      "descripcion": "El XV Foro se pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento, y cuáles son las implicaciones de ello para la educación, la empresa, la industria, la salud, la cultura y la sociedad contemporánea. La convocatoria se organiza en seis ejes: modelos cognitivos e inteligencia artificial; IA y aprendizaje humano; IA, conocimiento e investigación científica; IA, trabajo y producción; IA, cultura y sociedad; e IA, salud y bienestar humano.",
+      "enlace": "",
+      "imagen": "1hIfCTp5oM0GrXxsd2u9QbcMNU4eYCjEi.webp",
+      "destacado": true
+    }
+  ],
   "nodos": [
     {
       "nombre": "Universidad de Nariño",

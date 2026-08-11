@@ -10,26 +10,47 @@
  * Los datos de fecha, sede y modalidad están VERIFICADOS en los requerimientos
  * oficiales del 13 jul 2026; falta el día exacto y el enlace de inscripción.
  */
+import { Image } from 'astro:assets';
 import NodeTexture from './NodeTexture.astro';
 import Rayado from './Rayado.astro';
 import Marca from './Marca.astro';
 import { foro } from '../data/contenido';
+
+// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
+  { eager: true }
+);
+const fondo = foro.imagen
+  ? Object.entries(archivos).find(([ruta]) => ruta.endsWith('/' + foro.imagen))?.[1].default
+  : undefined;
 ---
 
-<section id="foro" class="banda">
+<section id="foro" class:list={['banda', fondo && 'banda--con-foto']}>
   <div class="fondo">
-    <Rayado
-      id="ribieForoRayas"
-      ancho={1440}
-      alto={660}
-      paso={14}
-      anchoRaya={6}
-      fondo="#0B0B0B"
-      raya="#1A1A1A"
-      opacidad={0.45}
-      pie="[ foto de fondo: sesión plenaria del foro / campus U. de Nariño — 2400 × 1200 ]"
-      pieAlMargen
-    />
+    {fondo ? (
+      <>
+        <Image class="foto" src={fondo} alt="" widths={[1440, 2400]} sizes="100vw" format="webp" quality={80} loading="lazy" />
+        {/* Velo uniforme, no degradado: aquí el texto ocupa la banda entera —titular a
+            la izquierda, ficha de datos a la derecha—, así que no hay una zona segura
+            donde concentrar el oscurecido. Al 0.80, sobre una foto blanca el fondo
+            queda en #333 y el titular blanco encima da 11:1. */}
+        <span class="velo" aria-hidden="true"></span>
+      </>
+    ) : (
+      <Rayado
+        id="ribieForoRayas"
+        ancho={1440}
+        alto={660}
+        paso={14}
+        anchoRaya={6}
+        fondo="#0B0B0B"
+        raya="#1A1A1A"
+        opacidad={0.45}
+        pie="[ foto de fondo: sesión plenaria del foro / campus U. de Nariño — 2400 × 1200 ]"
+        pieAlMargen
+      />
+    )}
     <NodeTexture variante="oscura" opacidad={0.4} />
   </div>
 
@@ -88,7 +109,20 @@ import { foro } from '../data/contenido';
     clip-path: polygon(0 6.5vw, 100% 0, 100% 100%, 0 100%);
     margin-top: -1px;
   }
-  .fondo { position: absolute; inset: 0; z-index: -1; }
+  .fondo { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+  .foto {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .velo { position: absolute; inset: 0; background: rgb(0 0 0 / 0.80); }
+
+  /* Con fotografía detrás, el gris tenue de los rótulos de la ficha cae a 3,67:1 y
+     reprueba: `--void-mute` está calculado contra el negro liso del rayado, no contra
+     una imagen aclarada por el velo. Medido sobre la foto real, este gris da 6,2:1.
+     Es la misma lección de siempre —al cambiar el fondo hay que remedir el par—, y
+     aquí el fondo lo cambia el cliente subiendo una foto, sin tocar el diseño. */
+  .banda--con-foto .dato dt { color: #C9C9C6; }
   /* Bajo la punta de la diagonal, un pie anclado abajo quedaría a media altura
      de la sección; se sube a justo debajo del corte. */
   .fondo :global(.pie-hueco) { bottom: auto; top: calc(6.5vw + var(--space-8)); }

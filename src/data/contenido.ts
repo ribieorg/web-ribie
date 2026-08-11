@@ -350,10 +350,34 @@ export const proyectos = {
  *  si la hoja `eventos` trae uno marcado como destacado, ese manda. */
 const destacado = ext.eventos?.find((e) => e.destacado) ?? ext.eventos?.[0];
 
+/**
+ * La hoja guarda las fechas en ISO —`2026-10-05`— porque es como Sheets las ordena
+ * y como se leen sin ambigüedad. El sitio no puede mostrarlas así: hay que componer
+ * el rango en lenguaje natural. Si las dos caen en el mismo mes, el mes se dice una
+ * sola vez ("5 al 7 de octubre de 2026").
+ */
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function rangoDeFechas(inicio?: string, fin?: string): string | null {
+  const parte = (v?: string) => v?.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const i = parte(inicio);
+  if (!i) return inicio?.trim() || null;          // texto libre: se respeta tal cual
+  const [, ai, mi, di] = i;
+  const largo = (d: string, m: string, a: string) => `${Number(d)} de ${MESES_LARGOS[Number(m) - 1]} de ${a}`;
+
+  const f = parte(fin);
+  if (!f) return largo(di, mi, ai);
+  const [, af, mf, df] = f;
+  if (ai === af && mi === mf) return `${Number(di)} al ${Number(df)} de ${MESES_LARGOS[Number(mi) - 1]} de ${ai}`;
+  if (ai === af) return `${Number(di)} de ${MESES_LARGOS[Number(mi) - 1]} al ${largo(df, mf, af)}`;
+  return `${largo(di, mi, ai)} al ${largo(df, mf, af)}`;
+}
+
 export const foro = {
   eyebrow: 'Evento destacado',
   nombre: destacado?.titulo ?? 'XV Foro de Investigadores de Informática Educativa',
-  fecha: destacado?.fechaInicio ?? 'Primera semana de octubre de 2026',
+  fecha: rangoDeFechas(destacado?.fechaInicio, destacado?.fechaFin) ?? 'Primera semana de octubre de 2026',
   fechaProvisional: forzarMarcas || !destacado, // sin hoja, faltan los días exactos
   lugar: destacado?.lugar ?? 'Universidad de Nariño · Pasto, Colombia',
   modalidad: destacado?.modalidad ?? 'Modalidad híbrida — presencial y virtual',
@@ -361,6 +385,8 @@ export const foro = {
     'El encuentro de la comunidad académica iberoamericana en informática educativa: un espacio para compartir conocimientos, impulsar colaboraciones y construir soluciones que transformen la educación.',
   descripcionProvisional: forzarMarcas || !destacado,
   cta: { texto: 'Información e inscripción', url: destacado?.enlace ?? '' },
+  /** Fondo de la banda. Si la hoja `eventos` trae imagen, sustituye al hueco declarado. */
+  imagen: destacado?.imagen ?? '',
 };
 
 type Nodo = { nombre: string; pais: string; sitio?: string; logo?: string };
