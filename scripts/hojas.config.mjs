@@ -23,6 +23,13 @@ export const HOJAS = {
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQy0P9-Phay3ZXUeNUeK77fomOhEgDEqeVQZT3iZOVZP6rkakG-7zEM4vVNgyPo6esKBalElusuHlI0/pub?gid=656455943&single=true&output=csv',
   redes:
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5bY1dV86VLuvsOclT-OXtLSlev-OwFy-Vii6OBMrm7_fIqyf6tfVBOgmuxi-7f5I-Ropqt1Is6J-h/pub?gid=1383537062&single=true&output=csv',
+
+  // ⚠️ Pestañas que hay que CREAR en el cuaderno y publicar como CSV. Son las que
+  // alimentan Actualidad y Proyectos —las dos únicas secciones cuyas fotos vivían
+  // como huecos escritos en el código y no como celdas—. Mientras la URL esté
+  // vacía, ambas secciones siguen declarando su hueco: no tener hoja no rompe nada.
+  noticias: '',
+  proyectos: '',
 };
 
 /** Columnas obligatorias por hoja: si falta alguna, el sync avisa y no publica esa hoja. */
@@ -32,4 +39,9 @@ export const ESQUEMA = {
   nodos: ['nombre_oficial', 'pais', 'sitio_web', 'logo', 'orden'],
   colaboradores: ['nombre', 'cargo', 'institucion', 'grupo', 'foto', 'orden'],
   redes: ['red', 'url', 'activo'],
+  // `seccion`, `etiquetas`, `pie_imagen` y `orden` quedan fuera a propósito: son
+  // opcionales, y exigirlas haría que borrar una columna accesoria tumbase la hoja
+  // entera. Aquí solo van las que el diseño consume sí o sí.
+  noticias: ['titulo', 'entradilla', 'origen', 'fecha', 'imagen', 'estado'],
+  proyectos: ['titulo', 'entradilla', 'origen', 'fecha', 'imagen', 'destacado', 'estado'],
 };

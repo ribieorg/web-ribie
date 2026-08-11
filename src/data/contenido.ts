@@ -33,6 +33,14 @@ type Externo = {
   nodos?: { nombre: string; pais: string; sitio: string; logo: string }[];
   colaboradores?: { nombre: string; cargo: string; institucion: string; grupo: string; foto: string }[];
   redes?: { nombre: string; url: string }[];
+  noticias?: Entrada[];
+  proyectos?: (Entrada & { destacado: boolean })[];
+};
+
+/** Lo que comparten una noticia y un proyecto: texto, procedencia y una foto. */
+type Entrada = {
+  titulo: string; entradilla: string; origen: string; seccion: string;
+  etiquetas: string; imagen: string; pieImagen: string;
 };
 const ext = externo as Externo;
 
@@ -279,10 +287,17 @@ export const actualidad = {
   titulo: 'Actualidad',
   tituloDestacado: 'de la red',
   enlaceArchivo: 'Ver todo el archivo →',
-  provisional: true,
-  items: (D?.actualidad ?? []) as {
-    titulo: string; entradilla: string; origen: string; seccion: string; etiquetas: string;
-  }[],
+  provisional: !(ext.noticias?.length),
+  /** La hoja manda; la demostración solo rellena mientras no exista. */
+  items: (ext.noticias ?? D?.actualidad ?? []) as Entrada[],
+  /**
+   * Las fotos reales de la hoja se van sirviendo, en orden, a las celdas de foto
+   * de la plantilla. Cada celda que no alcance foto conserva su hueco declarado:
+   * así la sección se llena de forma progresiva, sin quedar a medias ni exigir
+   * que RIBIE cargue las cuatro de golpe.
+   */
+  fotos: (ext.noticias ?? []).filter((n) => n.imagen)
+    .map((n) => ({ archivo: n.imagen, pie: n.pieImagen })),
   /** Ocho celdas, en el orden en que se leen. Texto y foto se alternan sin simetría. */
   plantilla: [
     { tipo: 'texto', sangra: 'izquierda' },
@@ -302,14 +317,17 @@ export const actualidad = {
  * Mismo criterio que `actualidad`: sin material propio, se declara el hueco.
  */
 export const proyectos = {
-  provisional: true,
-  items: (D?.proyectos ?? []) as {
-    titulo: string; entradilla: string; origen: string; seccion: string; etiquetas: string;
-  }[],
+  provisional: !(ext.proyectos?.length),
+  /** La fila marcada `destacado` va al bloque apaisado; el resto, a las columnas. */
+  items: ((ext.proyectos?.filter((p) => !p.destacado) ?? D?.proyectos) ?? []) as Entrada[],
+  fotos: (ext.proyectos?.filter((p) => !p.destacado && p.imagen) ?? [])
+    .map((p) => ({ archivo: p.imagen, pie: p.pieImagen })),
   destacado: {
     pie: '[ vídeo o foto apaisada: mesa redonda de coordinadores de nodo — 2400 × 1400 ]',
     formato: 'Titular de hasta 80 caracteres sobre la imagen',
-    titulo: D?.proyectoDestacado?.titulo ?? '',
+    titulo: ext.proyectos?.find((p) => p.destacado)?.titulo ?? D?.proyectoDestacado?.titulo ?? '',
+    imagen: ext.proyectos?.find((p) => p.destacado)?.imagen ?? '',
+    pieImagen: ext.proyectos?.find((p) => p.destacado)?.pieImagen ?? '',
   },
   columnas: [
     { pie: '[ foto: investigador con prototipo de aula — 1200 × 1200 ]', inclinacion: -4.5, filete: 'var(--viv-cian)' },

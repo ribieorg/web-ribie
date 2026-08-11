@@ -104,6 +104,23 @@ async function traerImagen(url, etiqueta) {
 /* --------------------------------------------------------------- helpers --- */
 
 const esSi = (v) => ['sí', 'si', 'yes', 'true', 'x', '1'].includes(String(v).toLowerCase().trim());
+
+/**
+ * La hoja guarda la fecha en ISO (`2026-03-12`), que es como Sheets la ordena; el
+ * sitio la muestra en corto (`12 mar 2026`). Quien llena la celda no tiene que
+ * saber nada de esto, y una fecha mal escrita se publica tal cual en vez de romper.
+ */
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function fechaCorta(v) {
+  const t = String(v ?? '').trim();
+  const m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${Number(m[3])} ${MESES[Number(m[2]) - 1]} ${m[1]}` : t;
+}
+
+/** «foro, convocatoria» → «#foro #convocatoria». La almohadilla la pone el sitio. */
+const etiquetar = (v) =>
+  String(v ?? '').split(',').map((t) => t.trim()).filter(Boolean)
+    .map((t) => `#${t.replace(/^#/, '')}`).join(' ');
 const publicado = (fila) => !('estado' in fila) || ['publicado', 'publicada', ''].includes(fila.estado.toLowerCase());
 const porOrden = (a, b) => (parseInt(a.orden || '999', 10) - parseInt(b.orden || '999', 10));
 
@@ -199,6 +216,40 @@ if (resultado.redes) {
   salida.redes = resultado.redes.filter((f) => esSi(f.activo) && f.url).map((f) => ({
     nombre: f.red, url: f.url,
   }));
+}
+
+/**
+ * Actualidad y Proyectos comparten forma —titular, entradilla, procedencia y una
+ * imagen—, así que comparten mapeo. Los prefijos «vía» y «en» los pone el sitio y
+ * no la hoja: quien escribe pone «Secretaría RIBIE», no «vía Secretaría RIBIE».
+ *
+ * `pie_imagen` no es decorativo: es donde se declara DE QUÉ EVENTO Y AÑO es la
+ * fotografía. Sin eso, una foto de un foro anterior ilustrando una noticia de hoy
+ * se lee como registro del evento actual.
+ */
+const aEntrada = async (f, etiqueta) => ({
+  titulo: f.titulo,
+  entradilla: f.entradilla,
+  origen: f.origen ? `vía ${f.origen}${f.fecha ? ` · ${fechaCorta(f.fecha)}` : ''}` : fechaCorta(f.fecha),
+  seccion: f.seccion ? `en ${f.seccion}` : '',
+  etiquetas: etiquetar(f.etiquetas),
+  imagen: await traerImagen(f.imagen, `${etiqueta} ${f.titulo}`),
+  pieImagen: f.pie_imagen || '',
+});
+
+if (resultado.noticias) {
+  salida.noticias = await Promise.all(
+    resultado.noticias.filter(publicado).sort(porOrden).map((f) => aEntrada(f, 'noticia'))
+  );
+}
+
+if (resultado.proyectos) {
+  salida.proyectos = await Promise.all(
+    resultado.proyectos.filter(publicado).sort(porOrden).map(async (f) => ({
+      ...(await aEntrada(f, 'proyecto')),
+      destacado: esSi(f.destacado),
+    }))
+  );
 }
 
 /* ------------------------------------------------------ escribir y cerrar -- */

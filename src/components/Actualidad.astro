@@ -14,21 +14,33 @@
  * hueco declarado dice la verdad sobre el estado del sitio; un titular de relleno
  * termina dándose por cierto (ver `300-Aprendizajes/ribie`).
  */
+import { Image } from 'astro:assets';
 import Rayado from './Rayado.astro';
 import Marca from './Marca.astro';
 import { actualidad } from '../data/contenido';
 
+// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
+  { eager: true }
+);
+const porNombre = new Map(
+  Object.entries(archivos).map(([ruta, mod]) => [ruta.split('/').pop()!, mod.default])
+);
+
 /**
  * Se resuelve aquí y no en el marcado: cada celda de texto consume la siguiente
- * noticia disponible, y si no hay ninguna se queda como hueco declarado. El
- * contador no cabe dentro de un `.map()` de JSX sin ensuciarlo.
+ * noticia disponible y cada celda de foto la siguiente fotografía, y si no hay
+ * ninguna se quedan como hueco declarado. Los contadores no caben dentro de un
+ * `.map()` de JSX sin ensuciarlo.
  */
 let siguiente = 0;
-const celdas = actualidad.plantilla.map((celda) =>
-  celda.tipo === 'texto'
-    ? { ...celda, noticia: actualidad.items[siguiente++] }
-    : celda
-);
+let siguienteFoto = 0;
+const celdas = actualidad.plantilla.map((celda) => {
+  if (celda.tipo === 'texto') return { ...celda, noticia: actualidad.items[siguiente++] };
+  const foto = actualidad.fotos[siguienteFoto++];
+  return { ...celda, foto, imagen: foto ? porNombre.get(foto.archivo) : undefined };
+});
 ---
 
 <section id="actualidad" class="actualidad" aria-labelledby="titulo-actualidad">
@@ -49,15 +61,22 @@ const celdas = actualidad.plantilla.map((celda) =>
     {celdas.map((celda, i) =>
       celda.tipo === 'foto' ? (
         <div class="celda celda--foto" style={`--filete:${celda.filete}`}>
-          <Rayado
-            id={`ribieActualidad${i}`}
-            ancho={420}
-            alto={430}
-            inclinacion={celda.inclinacion}
-            fondo="#111111"
-            raya="#1E1E1E"
-            pie={celda.pie}
-          />
+          {celda.imagen ? (
+            <figure class="foto">
+              <Image src={celda.imagen} alt={celda.foto?.pie ?? ''} widths={[420, 840]} sizes="(max-width: 60rem) 50vw, 25vw" format="webp" quality={82} />
+              {celda.foto?.pie && <figcaption>{celda.foto.pie}</figcaption>}
+            </figure>
+          ) : (
+            <Rayado
+              id={`ribieActualidad${i}`}
+              ancho={420}
+              alto={430}
+              inclinacion={celda.inclinacion}
+              fondo="#111111"
+              raya="#1E1E1E"
+              pie={celda.pie}
+            />
+          )}
         </div>
       ) : (
         <article
@@ -147,6 +166,37 @@ const celdas = actualidad.plantilla.map((celda) =>
     overflow: hidden;
     background: #0E0E0E;
     border-bottom: 4px solid var(--filete);
+  }
+
+  /* --- Fotografía real ---------------------------------------------------
+     Ocupa la celda entera con `cover`: las fotos que entrega RIBIE son 4:3 y la
+     celda es casi cuadrada, así que recortar es inevitable — se recorta por CSS
+     y no pidiéndole a nadie que reencuadre doce archivos. */
+  .foto { position: relative; height: 100%; }
+  .foto :global(img) {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* El pie dice de qué evento y año es la fotografía. Va sobre un velo oscuro
+     porque debajo puede haber cualquier cosa: sin él, el contraste depende de
+     la imagen que toque, que es exactamente lo que no se puede medir. */
+  .foto figcaption {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: var(--space-3) var(--space-4);
+    /* Medido, no elegido a ojo: con el degradado anterior —0.82 abajo cayendo a
+       cero— el texto quedaba en la franja floja y sobre una foto casi blanca daba
+       4,33:1, por debajo del 4,5 exigido. Manteniendo 0.72 en todo el alto del
+       pie, el peor caso posible (blanco puro debajo) da 7,1:1. */
+    background: linear-gradient(to top,
+      rgb(0 0 0 / 0.88) 0%,
+      rgb(0 0 0 / 0.72) 60%,
+      rgb(0 0 0 / 0) 100%);
+    color: #F2F2F0;
+    font-size: 0.75rem;
+    line-height: 1.35;
   }
 
   /* --- Hueco declarado ---------------------------------------------------

@@ -10,24 +10,49 @@
  * ⚠️ Mismo criterio que `Actualidad.astro`: sin material de RIBIE, los huecos se
  * declaran. Ni un titular de relleno.
  */
+import { Image } from 'astro:assets';
 import Rayado from './Rayado.astro';
 import Marca from './Marca.astro';
 import { proyectos } from '../data/contenido';
+
+// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
+  { eager: true }
+);
+const porNombre = new Map(
+  Object.entries(archivos).map(([ruta, mod]) => [ruta.split('/').pop()!, mod.default])
+);
+
+const imagenDestacado = proyectos.destacado.imagen ? porNombre.get(proyectos.destacado.imagen) : undefined;
+/** Cada columna consume su foto; la que no alcance conserva el hueco declarado. */
+const columnas = proyectos.columnas.map((columna, i) => {
+  const foto = proyectos.fotos[i];
+  return { ...columna, foto, imagen: foto ? porNombre.get(foto.archivo) : undefined };
+});
 ---
 
 <section id="proyectos" class="proyectos" aria-label="Proyectos y gobernanza de la red">
   <div class="mosaico reveal">
     <article class="destacado">
-      <Rayado
-        id="ribieProyectoDestacado"
-        ancho={860}
-        alto={760}
-        paso={18}
-        anchoRaya={8}
-        fondo="#101010"
-        raya="#1C1C1C"
-      />
-      <p class="destacado__pie">{proyectos.destacado.pie}</p>
+      {imagenDestacado ? (
+        <Image class="destacado__imagen" src={imagenDestacado} alt={proyectos.destacado.pieImagen} widths={[860, 1720]} sizes="(max-width: 60rem) 100vw, 50vw" format="webp" quality={82} />
+      ) : (
+        <Rayado
+          id="ribieProyectoDestacado"
+          ancho={860}
+          alto={760}
+          paso={18}
+          anchoRaya={8}
+          fondo="#101010"
+          raya="#1C1C1C"
+        />
+      )}
+      {!imagenDestacado && <p class="destacado__pie">{proyectos.destacado.pie}</p>}
+      {/* Velo bajo el titular. Sobre el rayado (#101010) el blanco funcionaba; sobre
+          una fotografía el contraste depende de lo que toque salir en esa esquina, y
+          eso no se puede medir de antemano — el velo lo fija. */}
+      {imagenDestacado && <span class="destacado__velo" aria-hidden="true"></span>}
       {proyectos.destacado.titulo ? (
         <h3 class="destacado__titulo">{proyectos.destacado.titulo}</h3>
       ) : (
@@ -38,9 +63,15 @@ import { proyectos } from '../data/contenido';
       )}
     </article>
 
-    {proyectos.columnas.map((columna, i) => (
+    {columnas.map((columna, i) => (
       <article class="columna">
         <div class="columna__media" style={`--filete:${columna.filete}`}>
+          {columna.imagen ? (
+            <figure class="foto">
+              <Image src={columna.imagen} alt={columna.foto?.pie ?? ''} widths={[420, 840]} sizes="(max-width: 60rem) 100vw, 25vw" format="webp" quality={82} />
+              {columna.foto?.pie && <figcaption>{columna.foto.pie}</figcaption>}
+            </figure>
+          ) : (
           <Rayado
             id={`ribieProyectoColumna${i}`}
             ancho={420}
@@ -50,6 +81,7 @@ import { proyectos } from '../data/contenido';
             raya="#1E1E1E"
             pie={columna.pie}
           />
+          )}
           {/* Muesca triangular que muerde el borde inferior de la imagen: el único
               gesto ornamental del sitio, y viene de la referencia. */}
           <span class="muesca" aria-hidden="true"></span>
@@ -134,6 +166,51 @@ import { proyectos } from '../data/contenido';
     overflow: hidden;
     background: #0E0E0E;
     border-bottom: 4px solid var(--filete);
+  }
+
+  /* --- Fotografía real ---------------------------------------------------
+     `cover` sobre la celda entera, igual que en Actualidad: las fotos entregadas
+     son 4:3 y estos bloques no lo son. El pie va sobre un velo porque debajo
+     puede haber cualquier imagen y su contraste no se puede medir de antemano. */
+  .destacado__imagen,
+  .foto :global(img) {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .destacado__imagen { position: absolute; inset: 0; }
+  .destacado__velo {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 60%;
+    /* Los tramos no son estéticos, son el cálculo del peor caso: sobre una foto
+       BLANCA, 0.78 de velo deja el fondo en #383838 y el titular blanco encima da
+       9,6:1. Si el degradado decayera antes, un titular de tres líneas subiría
+       hasta la zona translúcida y ahí el contraste lo decidiría la fotografía. */
+    background: linear-gradient(to top,
+      rgb(0 0 0 / 0.90) 0%,
+      rgb(0 0 0 / 0.78) 30%,
+      rgb(0 0 0 / 0.35) 68%,
+      rgb(0 0 0 / 0) 100%);
+    pointer-events: none;
+  }
+  .foto { position: relative; height: 100%; }
+  .foto figcaption {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: var(--space-3) var(--space-4);
+    /* Mismo cálculo que en `Actualidad.astro`: 0.72 sostenido en todo el alto del
+       pie deja 7,1:1 aunque debajo haya blanco puro. El degradado que decaía a
+       cero daba 4,33:1 y reprobaba. */
+    background: linear-gradient(to top,
+      rgb(0 0 0 / 0.88) 0%,
+      rgb(0 0 0 / 0.72) 60%,
+      rgb(0 0 0 / 0) 100%);
+    color: #F2F2F0;
+    font-size: 0.75rem;
+    line-height: 1.35;
   }
   .columna:last-child .columna__texto { padding-right: var(--margen); }
 
