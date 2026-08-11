@@ -35,8 +35,13 @@ jobs:
             echo "Sin cambios en el contenido."
             exit 0
           fi
-          git config user.name  "Contenido RIBIE"
-          git config user.email "administracion.ribie@gmail.com"
+          # La cuenta de servicios NO se nombra aquí: este repo es público y ese
+          # buzón titulariza Cloudflare, GitHub, Resend y el Drive de la red.
+          # Publicarlo es regalar el usuario de todas esas cuentas para phishing o
+          # intentos de recuperación. Se firma con el bot de Actions, que además es
+          # lo que corresponde: el commit no lo hace una persona.
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/data/contenido.json
           git commit -m "Contenido actualizado desde las hojas"
           git push

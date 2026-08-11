@@ -84,10 +84,6 @@ En GitHub: **Settings → Pages → Source: GitHub Actions**.
 ⚠️ En Cloudflare los registros del sitio van en **DNS only (gris)**. En naranja se rompe el
 certificado HTTPS de GitHub Pages.
 
-## Pendiente
+## Estado del contenido
 
-- Contenido real del grupo de la UdeNar (textos, fotografías, logos de instituciones, retratos)
-- Enlace de inscripción al XV Foro y días exactos del evento
-- Cifras de la red verificadas por RIBIE
-- Dirección `@ribie.org` de contacto público
-- Visto bueno de RIBIE a la sustitución tipográfica (`Haettenschweiler` → Oswald)
+Qué falta cargar y cómo se carga, celda por celda: **`docs/CARGA-DE-HOJAS.md`**.
