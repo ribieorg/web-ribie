@@ -177,9 +177,18 @@ if (configuradas > 0 && leidas === 0) {
 const salida = {};
 
 if (resultado.textos) {
-  salida.textos = Object.fromEntries(
-    resultado.textos.filter((f) => f.clave && f.valor).map((f) => [f.clave, f.valor])
+  // Las claves terminadas en `_imagen` no son texto: son un enlace de Drive, y se
+  // tratan como cualquier otra imagen —se descargan al repositorio para que Astro
+  // las optimice—. Así el hero puede llevar fotografía sin inventar otra hoja para
+  // un único dato. Si la descarga falla, la clave queda vacía y el sitio vuelve a su
+  // hueco declarado en vez de romperse.
+  const pares = await Promise.all(
+    resultado.textos.filter((f) => f.clave && f.valor).map(async (f) => [
+      f.clave,
+      f.clave.endsWith('_imagen') ? await traerImagen(f.valor, `imagen «${f.clave}»`) : f.valor,
+    ])
   );
+  salida.textos = Object.fromEntries(pares.filter(([, v]) => v));
 }
 
 if (resultado.eventos) {

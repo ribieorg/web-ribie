@@ -9,24 +9,43 @@
  *
  * Nada centrado: el titular se ancla al margen izquierdo del contenedor.
  */
+import { Image } from 'astro:assets';
 import NodeTexture from './NodeTexture.astro';
 import Rayado from './Rayado.astro';
 import Marca from './Marca.astro';
 import { hero, foro, organizaciones } from '../data/contenido';
+
+// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
+  { eager: true }
+);
+const fondoHero = hero.imagen
+  ? Object.entries(archivos).find(([ruta]) => ruta.endsWith('/' + hero.imagen))?.[1].default
+  : undefined;
 ---
 
 <section class="hero">
   <!-- Flanco de fotografía: hueco declarado hasta que RIBIE entregue material -->
   <div class="lienzo">
-    <Rayado
-      id="ribieHeroRayas"
-      ancho={900}
-      alto={660}
-      fondo="#0D0D0D"
-      raya="#191919"
-      pie="[ foto: sesión de trabajo de la red — 2400 × 1400 ]"
-      pieAlMargen
-    />
+    {fondoHero ? (
+      <>
+        {/* `eager` y sin lazy: es lo primero que se ve, y cargarla tarde produce el
+            salto que `astro:assets` evita reservando su tamaño. */}
+        <Image class="foto" src={fondoHero} alt={hero.pieImagen} widths={[900, 1800]} sizes="(max-width: 60rem) 100vw, 62vw" format="webp" quality={80} loading="eager" />
+        <span class="velo" aria-hidden="true"></span>
+      </>
+    ) : (
+      <Rayado
+        id="ribieHeroRayas"
+        ancho={900}
+        alto={660}
+        fondo="#0D0D0D"
+        raya="#191919"
+        pie="[ foto: sesión de trabajo de la red — 2400 × 1400 ]"
+        pieAlMargen
+      />
+    )}
     <NodeTexture variante="oscura" opacidad={0.4} animada />
   </div>
 
@@ -93,6 +112,15 @@ import { hero, foro, organizaciones } from '../data/contenido';
     background: #0B0B0B;
     z-index: -2;
   }
+  /* Fotografía del hero: mismo tratamiento que la banda del Foro. El velo es
+     uniforme porque el titular ocupa casi todo el flanco, y va algo más alto (0.82)
+     porque encima cae el texto más grande del sitio. */
+  .lienzo .foto {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .lienzo .velo { position: absolute; inset: 0; background: rgb(0 0 0 / 0.82); }
 
   /* Capa 2 — el plano de azul eléctrico. La diagonal ES el gesto del hero. */
   .plano {

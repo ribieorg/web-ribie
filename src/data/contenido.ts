@@ -131,6 +131,9 @@ export const hero = {
     'Una red académica que desde 1990 reúne a investigadores, docentes e instituciones de Iberoamérica en torno a la informática aplicada a la educación.'),
   provisional: !propio('hero_entrada'),
   cta: { texto: 'Conoce el XV Foro', ancla: '#foro' },
+  /** Fondo del hero. Clave `hero_imagen` de la hoja `textos`: un enlace de Drive. */
+  imagen: ext.textos?.hero_imagen ?? '',
+  pieImagen: ext.textos?.hero_imagen_pie ?? '',
 };
 
 export const quienesSomos = {
