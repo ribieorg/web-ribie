@@ -120,7 +120,22 @@ const fondoHero = hero.imagen
     width: 100%; height: 100%;
     object-fit: cover;
   }
-  .lienzo .velo { position: absolute; inset: 0; background: rgb(0 0 0 / 0.82); }
+  /* Mismo criterio que en la banda del Foro, pero el reparto aquí es vertical: el
+     texto arranca por debajo del primer tercio, así que la franja de arriba puede
+     quedar casi limpia y es donde se ve la fotografía. Bajo el titular el alfa
+     efectivo llega a 0.91. */
+  .lienzo .velo {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom,
+        rgb(0 0 0 / 0.18) 0%,
+        rgb(0 0 0 / 0.34) 9%,
+        rgb(0 0 0 / 0.86) 14%,
+        rgb(0 0 0 / 0.86) 86%,
+        rgb(0 0 0 / 0.40) 96%,
+        rgb(0 0 0 / 0.28) 100%),
+      rgb(0 0 0 / 0.10);
+  }
 
   /* Capa 2 — el plano de azul eléctrico. La diagonal ES el gesto del hero. */
   .plano {

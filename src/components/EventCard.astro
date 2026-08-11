@@ -115,7 +115,39 @@ const fondo = foro.imagen
     width: 100%; height: 100%;
     object-fit: cover;
   }
-  .velo { position: absolute; inset: 0; background: rgb(0 0 0 / 0.80); }
+  /* El velo no es plano: un 80 % uniforme garantiza el contraste pero deja la
+     fotografía en un gris muerto —está ahí y no se ve—. Se oscurece donde cae el
+     texto (el titular a la izquierda, la ficha de datos a la derecha) y se abre en
+     la franja central, que es la única sin nada encima. La capa base impide que esa
+     franja quede lavada.
+
+     Compuesto: en los flancos el alfa efectivo es 0.91 —sobre blanco puro deja el
+     fondo en #161616— y en el centro 0.50, que es donde la foto respira. */
+  .velo {
+    position: absolute; inset: 0;
+    /* Las paradas salen de medir dónde hay texto, no de tantear: el primer rótulo
+       empieza al 27 % de la altura y el último elemento acaba al 84 %. Fuera de esa
+       banda no hay nada encima y la fotografía puede verse casi limpia; dentro, el
+       velo se sostiene al 0.86 (0.87 con la base), que sobre blanco puro deja el
+       fondo en #202020.
+
+       El primer intento fue repartirlo en horizontal —oscuro en los flancos, abierto
+       en el centro— y no servía: el texto llega al 54 % del ancho y la ficha arranca
+       al 59 %, así que no hay hueco lateral. Ahí la descripción caía a 2,39:1. */
+    background:
+      linear-gradient(to bottom,
+        rgb(0 0 0 / 0.20) 0%,
+        rgb(0 0 0 / 0.34) 18%,
+        rgb(0 0 0 / 0.86) 27%,
+        rgb(0 0 0 / 0.86) 84%,
+        rgb(0 0 0 / 0.42) 93%,
+        rgb(0 0 0 / 0.30) 100%),
+      rgb(0 0 0 / 0.10);
+  }
+  /* En una columna no hay flancos: el texto se apila sobre toda la imagen. */
+  @media (max-width: 60rem) {
+    .velo { background: rgb(0 0 0 / 0.82); }
+  }
 
   /* Con fotografía detrás, el gris tenue de los rótulos de la ficha cae a 3,67:1 y
      reprueba: `--void-mute` está calculado contra el negro liso del rayado, no contra
