@@ -14,13 +14,15 @@
     "tagline": "Conectamos conocimiento, transformamos educación",
     "hero_titulo": "Conectamos conocimiento,",
     "hero_destacado": "transformamos educación",
-    "hero_entrada": "Una red académica que desde 1990 reúne a investigadores, docentes e instituciones de Iberoamérica en torno a la informática aplicada a la educación.",
-    "quienes_p1": "RIBIE reúne a instituciones y grupos que desarrollan o aplican tecnologías de la información a la solución de problemas educativos, y a equipos dedicados a la investigación, el desarrollo y la innovación de tecnologías en la educación y la cultura.",
-    "quienes_p2": "La red propicia la comunicación y la colaboración entre sus miembros alrededor de la gestión de proyectos, la formulación de políticas y el desarrollo de estrategias para el mejoramiento de la educación desde su perspectiva científica y tecnológica.",
-    "historia_p1": "RIBIE nació en 1990 en el marco del subprograma VII de Electrónica e Informática Aplicadas del CYTED, el Programa Iberoamericano de Cooperación en Ciencia y Tecnología para el Desarrollo, creado en 1984 por acuerdo de diecinueve países de América Latina, España y Portugal.",
-    "historia_p2": "Desde entonces ha impulsado actividades científicas, cursos, talleres y proyectos de investigación y desarrollo que involucran a grupos de toda la región iberoamericana.",
+    "hero_entrada": "Creada en 1990 como área estratégica del programa CYTED, RIBIE reúne los esfuerzos de 21 países iberoamericanos para articular conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación.",
+    "quienes_p1": "El reto de RIBIE es articular, producir y movilizar conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación (TIC), tanto análogas como digitales, para transformar los sistemas educativos en la región iberoamericana con criterios de equidad, calidad y pertinencia cultural, y en busca de una soberanía tecnológica.",
+    "quienes_p2": "A través de sus grupos de trabajo, RIBIE busca generar proyectos de cooperación multilateral para la innovación tecnológica en informática educativa que atiendan las necesidades de cada país participante, utilizando esta área como instrumento estratégico para el desarrollo educativo y social.",
+    "historia_p1": "La Red Iberoamericana de Informática Educativa nació en 1990 como una idea y un área estratégica del programa CYTED — Ciencia y Tecnología para el Desarrollo, integrado por organismos gubernamentales de los países de América Latina y la Península Ibérica. Bajo el Subprograma de Electrónica e Informática Aplicada, reúne los esfuerzos de 21 países integrantes para potenciar la identificación y el intercambio entre grupos de investigación y desarrollo en informática aplicada a la educación.",
+    "historia_p2": "En Colombia, RIBIE ha organizado quince congresos internacionales, quince foros de investigadores y quince convocatorias al Premio de Informática Educativa, que entre 1992 y 2018 se convocó junto al Ministerio de Educación Nacional en tres categorías: experiencias educativas, recursos educativos digitales e investigación.",
     "cifra_anios": "36",
+    "cifra_paises": "21",
+    "contacto_correo": "contacto@ribie.org",
     "contacto_ciudad": "Bogotá, Colombia",
-    "mostrar_marcas": "si"
+    "mostrar_marcas": "sí"
   }
 }
