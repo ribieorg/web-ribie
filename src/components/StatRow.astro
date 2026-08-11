@@ -15,7 +15,7 @@ import { cifras } from '../data/contenido';
 const TONOS = ['var(--surface)', 'var(--viv-cian)', 'var(--viv-verde)', 'var(--viv-amarillo)'];
 ---
 
-<ul class="cifras reveal">
+<ul class="cifras reveal" style={`--columnas:${cifras.items.length}`}>
   {cifras.items.map((item, i) => (
     <li
       class:list={['cifra', !item.hayDato && 'cifra--pendiente']}
@@ -31,7 +31,10 @@ const TONOS = ['var(--surface)', 'var(--viv-cian)', 'var(--viv-verde)', 'var(--v
 <style>
   .cifras {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* Tantas columnas como cifras haya. Fijarlas en cuatro dejaba media fila vacía
+       en cuanto una cifra no se publica por falta de dato, y ese hueco se lee como
+       algo que se rompió. */
+    grid-template-columns: repeat(var(--columnas, 4), minmax(0, 1fr));
     gap: var(--space-12) 5vw;
     border-top: 1px solid var(--void-line);
     padding-top: var(--space-12);

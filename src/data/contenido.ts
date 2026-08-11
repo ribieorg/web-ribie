@@ -200,6 +200,17 @@ const cifra = (clave: string, etiqueta: string, base = '—') => {
   return { valor, etiqueta, verificado: propio(clave), hayDato: valor !== base };
 };
 
+/**
+ * Una cifra sin dato NO se pinta.
+ *
+ * Antes se mostraba en gris con la nota "por confirmar", que es lo correcto mientras
+ * el sitio se declara en preparación. Pero al apagar las marcas esa nota desaparece y
+ * la casilla queda muda: un rótulo —"grupos de investigación"— colgando de un guion,
+ * que se lee como un fallo del sitio y no como un dato que la red no ha dado.
+ *
+ * Se publica lo que hay. Si RIBIE aporta el número, basta llenar la celda de la hoja
+ * y la casilla vuelve sola, sin tocar código.
+ */
 export const cifras = {
   provisional: !propio('cifra_paises'),
   items: [
@@ -207,7 +218,7 @@ export const cifras = {
     cifra('cifra_paises', 'países miembros'),
     cifra('cifra_grupos', 'grupos de investigación'),
     cifra('cifra_instituciones', 'instituciones asociadas'),
-  ],
+  ].filter((c) => c.hayDato),
 };
 
 /**
