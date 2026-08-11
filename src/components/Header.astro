@@ -116,6 +116,18 @@ import { navegacion } from '../data/contenido';
     .nav { display: none; }
     .menu-boton { display: flex; }
   }
+
+  /* Por encima del breakpoint el panel móvil NO EXISTE. Sin esta regla su
+     visibilidad dependía solo del atributo `hidden`, que únicamente cambia al
+     pulsar el botón: abrirlo en móvil y ensanchar la ventana —o girar el
+     teléfono a horizontal— dejaba los DOS menús a la vez, y sin salida, porque
+     el botón que lo cierra ya se había ocultado. La garantía va en CSS y no en
+     JS: un estado no puede quedarse colgado esperando a que alguien lo corrija.
+     Se declara solo `display: none`; declarar `display: block` en móvil anularía
+     el `hidden`, que es quien manda ahí. */
+  @media (min-width: 60.0625rem) {
+    .menu-movil { display: none; }
+  }
 </style>
 
 <script>
@@ -135,5 +147,16 @@ import { navegacion } from '../data/contenido';
       boton?.setAttribute('aria-expanded', 'false');
       if (menu) menu.hidden = true;
     });
+  });
+
+  // Cruzar el breakpoint hacia escritorio cierra el menú. El CSS ya lo oculta,
+  // pero el estado tiene que decir la verdad: si no, `aria-expanded` se queda en
+  // "true" sobre un panel que nadie ve y el lector de pantalla anuncia un menú
+  // abierto que no existe.
+  const anchoMovil = window.matchMedia('(max-width: 60rem)');
+  anchoMovil.addEventListener('change', (evento) => {
+    if (evento.matches) return;
+    boton?.setAttribute('aria-expanded', 'false');
+    if (menu) menu.hidden = true;
   });
 </script>
