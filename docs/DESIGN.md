@@ -233,6 +233,14 @@ estático** y publicado en **GitHub Pages** mediante la acción oficial. Decisi�
 
 ## 11. Revisión del 28 jul 2026 — dirección `institucional filoso`
 
+> ⚠️ **Superado por SDD-ADDENDUM D51 (12 ago 2026) — ver §14.** La dirección pasa a **`institucional con
+> evidencia`**: se retiran el corte diagonal, el negro como estructura y **los seis colores ajenos al
+> manual** que esta sección introdujo. Motivo: comparados los heros el 12 ago, esta dirección trasladó la
+> **firma de marca del Alan Turing Institute** —incluido su azul corporativo— y no su método. Lo que sigue
+> se conserva íntegro porque su diagnóstico del esqueleto sigue siendo válido y porque **la tipografía y
+> la marca no cambian**. 🟡 **D51 está pendiente de validación por RIBIE: mientras no vuelva aprobada,
+> esta sección y las §12–§13 siguen siendo el sistema en vigor.**
+
 Decidida con `design-protocol` tras el diagnóstico del cliente: *"le falta dinamismo, se siente generado
 por IA"*. **Supera §1** en atmósfera y estructura. **No toca** marca, paleta base ni tipografía.
 
@@ -440,6 +448,11 @@ bloques oscuros sin alterar el sistema.
 
 ## 12. Implementación de la maqueta de referencia (28 jul 2026, tarde)
 
+> ⚠️ **Superado por SDD-ADDENDUM D51 (12 ago 2026) — ver §14**, en lo que ejecuta de la dirección de §11:
+> la diagonal, el negro estructural y los bloques de color con la paleta ajena. **Sobrevive lo que no era
+> de esa dirección sino de oficio**: la retícula a sangre sin contenedor centrado, los huecos declarados,
+> el cero JS de terceros y las correcciones de contraste.
+
 _Corresponde a la decisión **D48** del `00_SDD-ADDENDUM`. Avance técnico:
 `docs/avances/2026-07-28b-maqueta-de-referencia.md`._
 
@@ -555,6 +568,13 @@ Todos calculados, no estimados. Cuatro pares no llegaban al umbral y se corrigie
 
 ## 13. Las dos secciones que faltaban y el modo demostración (29 jul 2026)
 
+> ⚠️ **Superado en parte por SDD-ADDENDUM D52 (12 ago 2026) — ver §14.** **Actualidad y Proyectos se
+> retiran del sitio** hasta que exista contenido real: llevan desde el 29 jul como huecos declarados
+> ocupando casi un tercio del recorrido, y la regla de **§8.5** —*si no hay contenido real, la sección no
+> existe*— también las alcanza. Vuelven en cuanto el grupo cargue una fila. **Lo demás de esta sección
+> sigue vigente**: los huecos declarados como recurso, el país sobre la institución en el muro de nodos y
+> el modo demostración que no puede publicarse.
+
 _Corresponde a la decisión **D49** del `00_SDD-ADDENDUM`. Avance técnico:
 `docs/avances/2026-07-29-secciones-a-sangre-y-modo-demo.md`._
 
@@ -642,6 +662,90 @@ El diagnóstico completo de las hojas está en **`docs/CARGA-DE-HOJAS.md`**. En 
 vacías en `textos`, el XV Foro en `borrador` (y **ya trae las fechas exactas, 5–7 oct 2026**, que el
 sitio no muestra por eso), una fila vacía en `colaboradores` y cinco redes sin URL. **El sitio no está
 incompleto: las hojas lo están**, y hace lo correcto al no publicar lo que no existe.
+
+---
+
+## 14. Dirección `institucional con evidencia` (12 ago 2026) — 🟡 PROPUESTA
+
+> 🟡 **Esta sección todavía NO rige.** Corresponde a las decisiones **D51, D52, D53 y D54** del
+> `00_SDD-ADDENDUM`, que están **pendientes de validación por RIBIE** (brief en
+> `02_portal_web/BRIEF - Rediseno del sitio (12 ago 2026).md`). Hasta que la Dirección responda, el
+> sistema en vigor son **§11–§13**. Avance técnico:
+> `docs/avances/2026-08-12-rediseno-institucional-con-evidencia.md`.
+
+### El diagnóstico
+
+Comparados el 12 de agosto el hero de `ribie.org` y el de `turing.ac.uk`: **el mismo azul eléctrico, la
+misma diagonal, el mismo negro a la izquierda, las mismas tarjetas de color con flecha a la derecha.**
+§11 adoptó el Alan Turing Institute como referencia y trasladó **su firma de marca**, no su método —
+incluido `#2B2BF5`, que es el color corporativo del Turing. De ahí que el cliente no se reconozca: el
+sitio se parece a otra institución.
+
+Y hay una diferencia que hace que en el Turing funcione y aquí no: **sus tarjetas llevan producción real
+fechada** —artículos, resultados, convocatorias—; las de RIBIE llevaban enlaces a anclas de la misma
+página. Se copió la estructura sin el contenido que la justifica.
+
+### El hallazgo que lo resuelve
+
+Medido, no estimado:
+
+| Uso | Resultado |
+|---|---|
+| Los 8 secundarios del manual **como texto sobre blanco** | 2,53–3,79:1 ❌ |
+| Los 8 secundarios **como bloque, con tinta `#111827` encima** | **4,68–7,01:1** ✅ |
+
+§2 los declaró decorativos y §11 dedujo de ahí que hacía falta una paleta nueva. **La deducción era
+falsa:** fallaban en un uso, no en todos. La paleta viva de siete colores —seis ajenos al manual— **nunca
+fue necesaria**.
+
+### Los cinco principios
+
+1. **La evidencia manda sobre el efecto.** Cada bloque lleva un dato, una fecha, una institución o una
+   fotografía real. Si no lleva ninguna de las cuatro, sobra.
+2. **El color de la casa es el de RIBIE.** Vuelve `#096D84`; los ocho secundarios solo como bloque con
+   tinta oscura; el ámbar sigue siendo el único color de acción.
+3. **La historia es un activo**: 1990, CYTED, el Premio con el Ministerio entre 1992 y 2018, quince
+   congresos y quince foros — como recorrido, no como párrafo.
+4. **La fotografía real sustituye al recurso gráfico**, siempre rotulada con evento y año.
+5. **Serio no es apagado.** No se vuelve al azul institucional con escudo: cambia de dónde saca la fuerza.
+
+### Referencias (revisadas en vivo el 12 ago 2026)
+
+| Sitio | Qué se toma |
+|---|---|
+| **CYTED** (`cyted.org`) | El programa que creó RIBIE. Cifras verificables al frente, áreas, biblioteca. Se toma la **arquitectura de información**, no la ejecución |
+| **CLACSO** (`clacso.org`) | Portada como sala de novedades; menú por función académica |
+| **RedCLARA** (`redclara.net`) | Fotografía real de investigación como entrada |
+| **IAS Princeton** (`ias.edu`) | Autoridad construida solo con tipografía y contenido fechado |
+
+**Anti-referencia principal, y es la propia §11:** `turing.ac.uk`. Se conservan además las de §11 —el
+mockup original del cliente y la universidad tradicional— y `fundacionceibal.edu.uy`.
+
+### Sistema de estados del dato (D52)
+
+Tres estados, consistentes en todo el sitio: **confirmado** (normal) · **por confirmar** (con marca
+visible junto al dato) · **sin dato** (la casilla no se rellena ni se inventa). Aplica a las cifras, a
+los años de las fotografías, a los nodos vacantes y a **las fechas del XV Foro**.
+
+### Movimiento (D53)
+
+`animation-timeline: view()` y `scroll()`, `position: sticky` para los recorridos, trazado de SVG y View
+Transitions entre páginas. **Cero librerías**: nada de GSAP, Lenis, Locomotive ni WebGL, y ningún scroll
+suave secuestrado. Si el navegador no soporta las animaciones ligadas al scroll, el contenido se ve
+**completo y estático, nunca invisible**; `prefers-reduced-motion` anula todo.
+
+### 🔴 Defectos medidos en la maqueta de referencia del paquete
+
+Auditados sobre el DOM el 12 ago. **Hay que corregirlos antes de implementar**:
+
+| Elemento | Medido | Mínimo | Causa |
+|---|---|---|---|
+| Títulos de tres bloques de color | 2,35 · 2,53 · 2,68:1 | 3:1 | Tinta `#065163` en vez de `#111827` |
+| `--focus-ring` ámbar sobre fondo claro | **2,49:1** | 3:1 | Afecta a toda la navegación por teclado |
+| `--turquesa-claro #0E8CA8` | 3,94:1 | 4,5:1 | No sirve como texto normal |
+| `--state-info #0BAAD1` | 2,73:1 | 4,5:1 | Solo como bloque con tinta oscura |
+
+Es el mismo patrón del 29 de julio: **el color se eligió mirando, no calculando.**
 
 ---
 
