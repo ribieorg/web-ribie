@@ -89,11 +89,9 @@ const ALTURAS = ['', 'alto', 'bajo', ''];
     padding: 0 var(--margen);
     margin-bottom: var(--space-3);
   }
-  /* Se enseña exactamente en los dos casos en que hay que deslizar a mano. */
+  /* Solo en los dos casos en que de verdad hay que deslizar a mano. En móvil
+     NO: ahí el recorrido también avanza con el scroll de la página. */
   @supports not (animation-timeline: view()) {
-    .indicacion { display: block; }
-  }
-  @media (max-width: 47.5rem) {
     .indicacion { display: block; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -175,7 +173,11 @@ const ALTURAS = ['', 'alto', 'bajo', ''];
       .fija {
         position: sticky;
         top: 0;
-        height: 100vh;
+        /* `svh` y no `vh`: en móvil la barra del navegador aparece y desaparece
+           al desplazarse, y con `100vh` el bloque fijo mide más que la ventana
+           visible — el último renglón del hito queda siempre cortado. `svh` es
+           la ventana pequeña, la que se puede garantizar. */
+        height: 100svh;
         display: flex;
         align-items: center;
       }
@@ -206,19 +208,31 @@ const ALTURAS = ['', 'alto', 'bajo', ''];
     .fija { overflow-x: auto; padding-bottom: var(--space-6); }
   }
 
+  /**
+   * En móvil el recorrido es EL MISMO: se baja con el dedo y la historia avanza
+   * en horizontal, con el bloque fijo en pantalla.
+   *
+   * Antes esta media query lo desactivaba y dejaba en su lugar una tira con
+   * barra de desplazamiento propia. Era peor por dos razones: obliga a un gesto
+   * lateral que nadie hace en una página que se lee hacia abajo, y rompe la
+   * única idea de la sección —que el tiempo avanza mientras uno avanza—. Lo que
+   * cambia en móvil es el tamaño de las piezas, no el mecanismo.
+   */
   @media (max-width: 47.5rem) {
-    .recorrido { height: auto; }
-    .fija {
-      position: static;
-      height: auto;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: var(--space-6);
-    }
-    .pista { animation-name: none; align-items: flex-start; }
-    .hito { width: 78vw; }
+    .hito { width: 82vw; }
     .periodo { font-size: 3.25rem; }
-    .hito.alto, .hito.bajo { align-self: flex-start; margin: 0; }
+    .hito p { font-size: var(--text-small); }
+    /* El escalonado vertical sobra donde solo cabe un hito por pantalla, y con
+       la ventana estrecha se comía el alto que necesita la fotografía. */
+    .hito.alto, .hito.bajo { align-self: center; margin: 0; }
+    /* Fotografía más plana: con 3/2 el hito completo no entra en una ventana de
+       móvil y el pie quedaba fuera del bloque fijo. */
+    .foto :global(.duo) { aspect-ratio: 2 / 1; }
+  }
+
+  /* Ventanas bajas (móvil apaisado, portátiles pequeños): mismo criterio. */
+  @media (max-height: 40rem) {
+    .foto { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
