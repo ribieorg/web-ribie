@@ -27,17 +27,10 @@ const fondo = foro.imagen
 ---
 
 <section id="foro" class:list={['banda', fondo && 'banda--con-foto']}>
-  <div class="fondo">
-    {fondo ? (
-      <>
-        <Image class="foto" src={fondo} alt="" widths={[1440, 2400]} sizes="100vw" format="webp" quality={80} loading="lazy" />
-        {/* Velo uniforme, no degradado: aquí el texto ocupa la banda entera —titular a
-            la izquierda, ficha de datos a la derecha—, así que no hay una zona segura
-            donde concentrar el oscurecido. Al 0.80, sobre una foto blanca el fondo
-            queda en #333 y el titular blanco encima da 11:1. */}
-        <span class="velo" aria-hidden="true"></span>
-      </>
-    ) : (
+  {/* Sin fotografía el fondo es el hueco declarado; con ella, la imagen deja de ser
+      fondo y pasa a ser un bloque de la retícula (§14). */}
+  {!fondo && (
+    <div class="fondo">
       <Rayado
         id="ribieForoRayas"
         ancho={1440}
@@ -50,11 +43,23 @@ const fondo = foro.imagen
         pie="[ foto de fondo: sesión plenaria del foro / campus U. de Nariño — 2400 × 1200 ]"
         pieAlMargen
       />
-    )}
-    <NodeTexture variante="oscura" opacidad={0.4} />
-  </div>
+      <NodeTexture variante="oscura" opacidad={0.4} />
+    </div>
+  )}
 
   <div class="contenedor cuerpo">
+    {fondo && (
+      <figure class="marco">
+        {/* `alt` vacío mientras la hoja `eventos` no tenga columna de pie: es
+            preferible una imagen declarada decorativa a inventarle una descripción
+            que afirme de qué acto es. */}
+        <Image src={fondo} alt="" widths={[720, 1440]} sizes="(max-width: 60rem) 100vw, 42vw" format="webp" quality={82} loading="lazy" />
+      </figure>
+    )}
+
+    {/* `display: contents` mientras no hay foto: así `principal` y `ficha` siguen
+        siendo hijos directos del grid y la composición de siempre no se toca. */}
+    <div class="texto">
     <div class="principal reveal">
       <p class="eyebrow eyebrow--claro">{foro.eyebrow}</p>
       <h2>{foro.nombre}</h2>
@@ -92,6 +97,7 @@ const fondo = foro.imagen
         )}
       </div>
     </div>
+    </div>
   </div>
 </section>
 
@@ -110,51 +116,7 @@ const fondo = foro.imagen
     margin-top: -1px;
   }
   .fondo { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
-  .foto {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-  }
-  /* El velo no es plano: un 80 % uniforme garantiza el contraste pero deja la
-     fotografía en un gris muerto —está ahí y no se ve—. Se oscurece donde cae el
-     texto (el titular a la izquierda, la ficha de datos a la derecha) y se abre en
-     la franja central, que es la única sin nada encima. La capa base impide que esa
-     franja quede lavada.
 
-     Compuesto: en los flancos el alfa efectivo es 0.91 —sobre blanco puro deja el
-     fondo en #161616— y en el centro 0.50, que es donde la foto respira. */
-  .velo {
-    position: absolute; inset: 0;
-    /* Las paradas salen de medir dónde hay texto, no de tantear: el primer rótulo
-       empieza al 27 % de la altura y el último elemento acaba al 84 %. Fuera de esa
-       banda no hay nada encima y la fotografía puede verse casi limpia; dentro, el
-       velo se sostiene al 0.86 (0.87 con la base), que sobre blanco puro deja el
-       fondo en #202020.
-
-       El primer intento fue repartirlo en horizontal —oscuro en los flancos, abierto
-       en el centro— y no servía: el texto llega al 54 % del ancho y la ficha arranca
-       al 59 %, así que no hay hueco lateral. Ahí la descripción caía a 2,39:1. */
-    background:
-      linear-gradient(to bottom,
-        rgb(0 0 0 / 0.20) 0%,
-        rgb(0 0 0 / 0.34) 18%,
-        rgb(0 0 0 / 0.86) 27%,
-        rgb(0 0 0 / 0.86) 84%,
-        rgb(0 0 0 / 0.42) 93%,
-        rgb(0 0 0 / 0.30) 100%),
-      rgb(0 0 0 / 0.10);
-  }
-  /* En una columna no hay flancos: el texto se apila sobre toda la imagen. */
-  @media (max-width: 60rem) {
-    .velo { background: rgb(0 0 0 / 0.82); }
-  }
-
-  /* Con fotografía detrás, el gris tenue de los rótulos de la ficha cae a 3,67:1 y
-     reprueba: `--void-mute` está calculado contra el negro liso del rayado, no contra
-     una imagen aclarada por el velo. Medido sobre la foto real, este gris da 6,2:1.
-     Es la misma lección de siempre —al cambiar el fondo hay que remedir el par—, y
-     aquí el fondo lo cambia el cliente subiendo una foto, sin tocar el diseño. */
-  .banda--con-foto .dato dt { color: #C9C9C6; }
   /* Bajo la punta de la diagonal, un pie anclado abajo quedaría a media altura
      de la sección; se sube a justo debajo del corte. */
   .fondo :global(.pie-hueco) { bottom: auto; top: calc(6.5vw + var(--space-8)); }
@@ -165,6 +127,35 @@ const fondo = foro.imagen
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     gap: clamp(var(--space-8), 6vw, var(--space-24));
     align-items: end;
+  }
+  .texto { display: contents; }
+
+  /* --- Con fotografía: la imagen es un bloque, no un fondo (§14) --------------
+     Cinco doceavos para la foto y siete para el texto: desigual a propósito, que
+     el 50/50 es la firma de layout que §11.2 prohíbe. La foto va a sangre por la
+     izquierda —de ahí que el cuerpo pierda su margen de ese lado— y el texto lo
+     recupera por dentro.
+
+     Al no haber nada encima de la imagen, desaparecen el velo, la malla y la
+     lotería de contraste: el texto vive sobre negro sólido, con los pares que ya
+     estaban medidos desde antes de que existieran fotos. */
+  .banda--con-foto .cuerpo {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: stretch;
+    padding-left: 0;
+    gap: clamp(var(--space-8), 4vw, var(--space-16));
+  }
+  .banda--con-foto .texto {
+    display: grid;
+    align-content: end;
+    gap: clamp(var(--space-8), 4vw, var(--space-12));
+  }
+  .marco { position: relative; margin: 0; min-height: 22rem; }
+  .marco :global(img) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .eyebrow--claro { color: var(--viv-verde); font-weight: 700; }
@@ -214,6 +205,11 @@ const fondo = foro.imagen
 
   @media (max-width: 60rem) {
     .cuerpo { grid-template-columns: 1fr; gap: var(--space-12); align-items: start; }
+    /* Apilado, la foto encabeza la sección a sangre y el texto recupera su margen.
+       `.texto` vuelve a `contents` para que titular y ficha se apilen como siempre. */
+    .banda--con-foto .cuerpo { grid-template-columns: 1fr; padding-left: var(--margen); }
+    .banda--con-foto .texto { display: contents; }
+    .marco { margin-inline: calc(var(--margen) * -1); min-height: 16rem; }
   }
   /* Móvil: la diagonal se aplana — en pantalla estrecha se come el alto útil */
   @media (max-width: 47.5rem) {

@@ -46,7 +46,8 @@ const fondoHero = hero.imagen
         pieAlMargen
       />
     )}
-    <NodeTexture variante="oscura" opacidad={0.4} animada />
+    {/* Misma regla que en la banda del Foro: la malla no se superpone a una fotografía. */}
+    {!fondoHero && <NodeTexture variante="oscura" opacidad={0.4} animada />}
   </div>
 
   <!-- El plano de color que entra en diagonal -->
@@ -115,6 +116,13 @@ const fondoHero = hero.imagen
   /* Fotografía del hero: mismo tratamiento que la banda del Foro. El velo es
      uniforme porque el titular ocupa casi todo el flanco, y va algo más alto (0.82)
      porque encima cae el texto más grande del sitio. */
+  /* El plano azul entra en diagonal barriendo del 34 % (abajo) al 64 % (arriba) del
+     hero, y el lienzo llega al 62 %: con fotografía, esa diagonal la cruzaba de lado
+     a lado. Con foto, el lienzo se detiene en el 34 % —el punto más a la izquierda
+     del corte—, de modo que el ángulo ocurre entero sobre color y la imagen conserva
+     su borde recto. Sin foto no aplica: el rayado sí puede cortarse, es una textura
+     y no un registro de la red. */
+  .hero:has(.lienzo .foto) .lienzo { inset: 0 66% 0 0; }
   .lienzo .foto {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
