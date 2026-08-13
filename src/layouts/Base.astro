@@ -1,4 +1,14 @@
 ---
+/**
+ * Layout base.
+ *
+ * ⚠️ Este archivo ya no lleva JavaScript. El reveal se hacía con un
+ * `IntersectionObserver` y ahora lo resuelve `animation-timeline: view()` en
+ * `global.css`: mismo efecto, cero bytes de script y sin trabajo en el hilo
+ * principal (D53). El sitio vuelve a ser **HTML y CSS**, que es lo que se
+ * prometió en §10.
+ */
+
 // Fuentes auto-hospedadas: nada de CDN de Google. Es un sitio institucional
 // público y no hay razón para filtrar la IP de cada visitante a un tercero.
 //
@@ -20,14 +30,14 @@ interface Props {
 }
 const {
   titulo = `${sitio.nombre} — ${sitio.nombreLargo}`,
-  descripcion = 'Red académica que reúne a investigadores, docentes e instituciones de Iberoamérica en torno a la informática aplicada a la educación.',
+  descripcion = 'Red académica que desde 1990 reúne a investigadores, docentes e instituciones de Iberoamérica en torno a la informática aplicada a la educación.',
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="es" class="no-js">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -42,36 +52,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="es_ES" />
     <meta name="twitter:card" content="summary_large_image" />
-
-    <script is:inline>
-      // Marca de JS disponible: sin esto, el contenido con reveal se ve igual
-      document.documentElement.classList.remove('no-js');
-    </script>
   </head>
   <body>
+    <div class="progreso" aria-hidden="true"></div>
     <a class="saltar" href="#contenido">Saltar al contenido</a>
     <slot />
-
-    <script>
-      // Reveal: un solo patrón, una sola vez por elemento. Solo opacity y transform.
-      const objetivos = document.querySelectorAll('.reveal');
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-        const observador = new IntersectionObserver(
-          (entradas) => {
-            entradas.forEach((entrada) => {
-              if (entrada.isIntersecting) {
-                entrada.target.classList.add('visible');
-                observador.unobserve(entrada.target);
-              }
-            });
-          },
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
-        );
-        objetivos.forEach((el) => observador.observe(el));
-      } else {
-        objetivos.forEach((el) => el.classList.add('visible'));
-      }
-    </script>
 
     <style>
       .saltar {
@@ -83,8 +68,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         background: var(--surface);
         color: var(--brand);
         font-weight: 600;
-        box-shadow: var(--lift);
-        border-radius: 0 0 var(--radius-md) 0;
+        text-decoration: none;
+        border: 1px solid var(--brand);
       }
       .saltar:focus { left: 0; }
     </style>

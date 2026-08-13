@@ -1,162 +1,107 @@
 ---
-import Logo from './Logo.astro';
-import { navegacion } from '../data/contenido';
+/**
+ * Cabecera — franja de preparación, barra institucional, logotipo y navegación.
+ *
+ * La barra de turquesa profundo dice qué es RIBIE antes de que el visitante tenga
+ * que deducirlo del logotipo. Es convención de sitio institucional, y aquí además
+ * carga el argumento de la dirección: la primera línea del sitio ya es evidencia
+ * —«Programa CYTED», «21 países · desde 1990»—.
+ *
+ * En móvil la navegación se sustituye por un enlace al índice del pie, no por un
+ * panel desplegable: seis anclas no justifican un componente con estado, y ese
+ * panel costaba el único JavaScript propio que quedaba en la cabecera.
+ */
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-ribie.png';
+import { navegacion, barra, sitio, franja, MOSTRAR_FRANJA } from '../data/contenido';
 ---
 
-<header class="cabecera" id="inicio">
-  <div class="contenedor fila">
-    <a href="#inicio" class="marca" aria-label="RIBIE — inicio">
-      <Logo alto={54} prioridad />
-    </a>
+{MOSTRAR_FRANJA && <p class="preparacion">{franja}</p>}
 
-    <nav class="nav" aria-label="Principal">
-      <ul>
-        {navegacion.map((item) => (
-          <li><a href={item.ancla}>{item.texto}</a></li>
-        ))}
-      </ul>
-    </nav>
-
-    <button class="menu-boton" aria-expanded="false" aria-controls="menu-movil">
-      <span class="barras" aria-hidden="true"></span>
-      <span class="sr">Menú</span>
-    </button>
+<div class="barra">
+  <div>
+    <span>{barra.izquierda}</span>
+    <span>{barra.derecha}</span>
   </div>
+</div>
 
-  <div class="menu-movil" id="menu-movil" hidden>
-    <ul>
-      {navegacion.map((item) => (
-        <li><a href={item.ancla}>{item.texto}</a></li>
-      ))}
-    </ul>
+<header class="cabecera">
+  <div>
+    <a class="marca" href="/" aria-label={`${sitio.nombre} — inicio`}>
+      <Image src={logo} alt={sitio.nombre} height={44} densities={[1, 2]} loading="eager" />
+    </a>
+    <nav aria-label="Principal">
+      {navegacion.map((n) => <a href={n.ancla}>{n.texto}</a>)}
+    </nav>
+    <a class="indice" href="#pie">Índice</a>
   </div>
 </header>
 
 <style>
+  .preparacion {
+    background: var(--accent-tint);
+    border-bottom: 1px solid var(--border-hairline);
+    font-size: .78125rem;
+    color: var(--ink-700);
+    text-align: center;
+    padding: var(--space-2) var(--margen);
+    margin: 0;
+  }
+
+  .barra { background: var(--brand-deep); color: #fff; font-size: .8125rem; }
+  .barra > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--margen);
+  }
+
   .cabecera {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--surface) 88%, transparent);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
+    background: rgb(255 255 255 / .97);
+    border-bottom: 1px solid var(--border-hairline);
   }
-  .fila {
+  .cabecera > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-6);
-    min-height: 5rem;
+    gap: var(--space-8);
+    padding: var(--space-3) var(--margen);
   }
-  .marca { text-decoration: none; flex-shrink: 0; }
+  .marca { display: flex; line-height: 0; }
+  .marca :global(img) { height: 44px; width: auto; }
 
-  .nav ul { display: flex; gap: var(--space-6); }
-  .nav a {
+  nav { display: flex; gap: clamp(.875rem, 2.2vw, 2rem); }
+  nav a {
     font-size: var(--text-small);
     font-weight: 500;
-    color: var(--ink-soft);
+    color: var(--ink-700);
     text-decoration: none;
-    padding-block: var(--space-2);
-    transition: color var(--dur-micro) var(--ease-out);
+    padding-bottom: 3px;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: border-color var(--dur-standard) var(--ease-out),
+                color var(--dur-standard) var(--ease-out);
   }
-  .nav a:hover { color: var(--brand); }
+  nav a:hover { color: var(--brand-deep); border-bottom-color: var(--brand); }
 
-  .menu-boton {
+  .indice {
     display: none;
-    width: 44px; height: 44px;
-    align-items: center;
-    justify-content: center;
-  }
-  .barras, .barras::before, .barras::after {
-    display: block;
-    width: 20px; height: 2px;
-    background: var(--ink);
-    border-radius: 2px;
-    transition: transform var(--dur-micro) var(--ease-out),
-                opacity var(--dur-micro) var(--ease-out);
-  }
-  .barras { position: relative; }
-  .barras::before, .barras::after { content: ''; position: absolute; left: 0; }
-  .barras::before { transform: translateY(-6px); }
-  .barras::after  { transform: translateY(6px); }
-
-  [aria-expanded='true'] .barras { background: transparent; }
-  [aria-expanded='true'] .barras::before { transform: rotate(45deg); }
-  [aria-expanded='true'] .barras::after  { transform: rotate(-45deg); }
-
-  .menu-movil {
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    box-shadow: var(--lift);
-  }
-  /* Al mismo margen que el resto del sitio: el ancho fijo de 72rem centrado que
-     había aquí desalineaba el menú respecto a la marca que tiene justo encima. */
-  .menu-movil ul {
-    display: flex;
-    flex-direction: column;
-    padding-inline: var(--margen);
-    padding-block: var(--space-2);
-  }
-  .menu-movil a {
-    display: block;
-    padding: var(--space-3) 0;
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: .875rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--brand-deep);
+    border: 1px solid var(--border-strong);
+    padding: var(--space-2) var(--space-3);
     text-decoration: none;
-    border-bottom: 1px solid var(--border);
-  }
-  .menu-movil li:last-child a { border-bottom: 0; }
-
-  .sr {
-    position: absolute; width: 1px; height: 1px;
-    padding: 0; margin: -1px; overflow: hidden;
-    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
 
-  @media (max-width: 60rem) {
-    .nav { display: none; }
-    .menu-boton { display: flex; }
-  }
-
-  /* Por encima del breakpoint el panel móvil NO EXISTE. Sin esta regla su
-     visibilidad dependía solo del atributo `hidden`, que únicamente cambia al
-     pulsar el botón: abrirlo en móvil y ensanchar la ventana —o girar el
-     teléfono a horizontal— dejaba los DOS menús a la vez, y sin salida, porque
-     el botón que lo cierra ya se había ocultado. La garantía va en CSS y no en
-     JS: un estado no puede quedarse colgado esperando a que alguien lo corrija.
-     Se declara solo `display: none`; declarar `display: block` en móvil anularía
-     el `hidden`, que es quien manda ahí. */
-  @media (min-width: 60.0625rem) {
-    .menu-movil { display: none; }
+  @media (max-width: 47.5rem) {
+    .barra > div { flex-direction: column; gap: 2px; }
+    nav { display: none; }
+    .indice { display: inline-block; }
   }
 </style>
-
-<script>
-  // Único JavaScript de interfaz del sitio, junto al reveal. Sin dependencias.
-  const boton = document.querySelector<HTMLButtonElement>('.menu-boton');
-  const menu = document.getElementById('menu-movil');
-
-  boton?.addEventListener('click', () => {
-    const abierto = boton.getAttribute('aria-expanded') === 'true';
-    boton.setAttribute('aria-expanded', String(!abierto));
-    if (menu) menu.hidden = abierto;
-  });
-
-  // Al elegir una sección, el menú se cierra solo
-  menu?.querySelectorAll('a').forEach((enlace) => {
-    enlace.addEventListener('click', () => {
-      boton?.setAttribute('aria-expanded', 'false');
-      if (menu) menu.hidden = true;
-    });
-  });
-
-  // Cruzar el breakpoint hacia escritorio cierra el menú. El CSS ya lo oculta,
-  // pero el estado tiene que decir la verdad: si no, `aria-expanded` se queda en
-  // "true" sobre un panel que nadie ve y el lector de pantalla anuncia un menú
-  // abierto que no existe.
-  const anchoMovil = window.matchMedia('(max-width: 60rem)');
-  anchoMovil.addEventListener('change', (evento) => {
-    if (evento.matches) return;
-    boton?.setAttribute('aria-expanded', 'false');
-    if (menu) menu.hidden = true;
-  });
-</script>

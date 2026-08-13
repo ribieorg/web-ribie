@@ -1,0 +1,26 @@
+clave,valor,que_es
+tagline,"Conectamos conocimiento, transformamos educación",REDACTADO POR RENOVATIO — pendiente de validación por RIBIE
+hero_titulo,"Conectamos conocimiento,",Primera línea del titular de portada
+hero_destacado,transformamos educación,Segunda línea del titular — se pinta en turquesa
+hero_entrada,"Creada en 1990 como área estratégica del programa CYTED, RIBIE reúne los esfuerzos de 21 países iberoamericanos para articular conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación.",Párrafo de entrada del hero
+boton_primario,Conocer la red,Texto del botón ámbar del hero
+boton_secundario,XV Foro 2026,Texto del botón de contorno del hero
+quienes_titulo,"Una comunidad de investigación, no un catálogo de tecnología",Titular de Quiénes somos
+quienes_p1,"El reto de RIBIE es articular, producir y movilizar conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación (TIC), tanto análogas como digitales, para transformar los sistemas educativos en la región iberoamericana con criterios de equidad, calidad y pertinencia cultural, y en busca de una soberanía tecnológica.",LITERAL de «Resumen_Qué es Ribie» (RIBIE)
+quienes_p2,"A través de sus grupos de trabajo, RIBIE busca generar proyectos de cooperación multilateral para la innovación tecnológica en informática educativa que atiendan las necesidades de cada país participante, utilizando esta área como instrumento estratégico para el desarrollo educativo y social.",LITERAL de «Texto amplio_Qué es Ribie» (RIBIE)
+frente_1_titulo,Investigación,
+frente_1_texto,Proyectos conjuntos entre grupos de la red y publicación arbitrada.,
+frente_2_titulo,Formación,
+frente_2_texto,"Encuentros, tutorías y movilidad entre instituciones asociadas.",
+frente_3_titulo,Divulgación,
+frente_3_texto,"Memorias, publicaciones y foros abiertos a la comunidad académica.",
+historia_titulo,"Treinta y seis años, recorridos en cuatro hitos",Titular de la línea de tiempo
+lineas_titulo,Construimos juntos el futuro de la educación,Titular de Líneas de trabajo
+memoria_titulo,"Quince foros de encuentro, leídos como archivo",Titular del archivo fotográfico
+nodos_titulo,"Una red de 21 países, nodo a nodo",Titular de Nodos
+nodos_intro,Cada nodo nacional tiene una institución sede. Hoy hay un nodo confirmado; los veinte restantes están en proceso de confirmación.,Texto junto al mapa — actualizar cuando cambie el número de confirmados
+contacto_correo,contacto@ribie.org,Funciona en Cloudflare Email Routing
+contacto_ciudad,"Bogotá, Colombia",CONFIRMAR con RIBIE cuál sede se publica
+credito_texto,Aliado tecnológico — Creado por Renovatio Software,"Obligación contractual, visible pero discreto"
+credito_url,https://renovatiosoftware.com,
+mostrar_franja_preparacion,sí,"CONTROL: mientras diga sí, el sitio muestra la franja «sitio en preparación». Poner no cuando RIBIE valide textos, cifras y años"

@@ -1,0 +1,78 @@
+---
+/**
+ * Fotografía en duotono turquesa.
+ *
+ * El archivo de la red son fotografías de foros de años distintos, con cámaras,
+ * luces y encuadres distintos. Puestas juntas sin tratamiento, el mosaico parece
+ * una carpeta compartida. El duotono —escala de grises multiplicada sobre el
+ * turquesa de la casa— las unifica sin retocarlas ni ocultar lo que muestran, y
+ * de paso es la única forma honesta de que fotos de calidad desigual convivan.
+ *
+ * Se resuelve con `filter` + `mix-blend-mode`: cero JavaScript, y la imagen
+ * original sigue siendo la que sirve Astro, optimizada y con su tamaño reservado
+ * (sin salto de maquetación al cargar).
+ *
+ * Al pasar el cursor, la fotografía vuelve a su color: el tratamiento es una capa
+ * de presentación, no una alteración del registro.
+ */
+import { Image } from 'astro:assets';
+import { foto } from '../lib/imagenes';
+
+interface Props {
+  /** Nombre de archivo tal como lo escribe la hoja. */
+  imagen?: string;
+  alt: string;
+  /** Proporción del recorte, en formato CSS: `16/9`, `4/3`, `1/1`… */
+  proporcion?: string;
+  anchos?: number[];
+  sizes?: string;
+  /** La primera imagen de la página no se carga en diferido. */
+  prioritaria?: boolean;
+  /** Devuelve el color al pasar el cursor. */
+  revela?: boolean;
+  clase?: string;
+}
+const {
+  imagen, alt, proporcion = '3/2', anchos = [640, 1024, 1600],
+  sizes = '(max-width: 47.5rem) 100vw, 50vw',
+  prioritaria = false, revela = false, clase,
+} = Astro.props;
+
+const fuente = foto(imagen);
+---
+
+{fuente && (
+  <div class:list={['duo', clase, { revela }]} style={`aspect-ratio:${proporcion}`}>
+    <Image
+      src={fuente}
+      alt={alt}
+      widths={anchos}
+      sizes={sizes}
+      format="webp"
+      quality={80}
+      loading={prioritaria ? 'eager' : 'lazy'}
+      decoding={prioritaria ? 'sync' : 'async'}
+    />
+  </div>
+)}
+
+<style>
+  .duo {
+    background: var(--brand-light);
+    overflow: hidden;
+    position: relative;
+  }
+  .duo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.08) brightness(1.05);
+    mix-blend-mode: multiply;
+    transition: filter var(--dur-max) var(--ease-out);
+  }
+  .revela:hover :global(img) {
+    filter: grayscale(0) contrast(1.02);
+    mix-blend-mode: normal;
+  }
+</style>

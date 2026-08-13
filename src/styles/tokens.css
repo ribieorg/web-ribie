@@ -1,124 +1,111 @@
 /* ==========================================================================
    RIBIE — tokens de diseño
-   Generados desde docs/DESIGN.md (24 jul 2026). Fuente única de verdad de
-   color, tipografía, espacio, radios y motion. No escribir valores sueltos
-   fuera de este archivo.
+   Dirección `institucional con evidencia` (DESIGN.md §14, D51). Fuente única
+   de verdad de color, tipografía, espacio, radios y motion. No escribir
+   valores sueltos fuera de este archivo.
+
+   ⚠️ Lo que cambió respecto de §11 (`institucional filoso`), y por qué:
+   la paleta viva de siete colores —seis ajenos al manual de marca, incluido
+   el azul `#2B2BF5` que es el corporativo del Alan Turing Institute— SE
+   RETIRA. Los ocho secundarios del manual fallaban **como texto sobre
+   blanco** (2,53–3,79:1) y de ahí se dedujo que no servían para bloques de
+   color. La deducción era falsa: medidos **como bloque con tinta #111827
+   encima** dan 4,68–7,01:1. La paleta inventada nunca fue necesaria.
    ========================================================================== */
 
 :root {
-  /* --- Marca ------------------------------------------------------------ */
-  --brand:            oklch(49.5% 0.088 219.7);   /* #096D84 — 5.95:1 sobre blanco  */
-  --brand-deep:       oklch(40.3% 0.071 220.1);   /* #065163 — 8.88:1 sobre blanco  */
-  --brand-tint:       oklch(49.5% 0.088 219.7 / .08);
-  --brand-ring:       oklch(49.5% 0.088 219.7 / .12);
+  /* --- Marca — el turquesa vuelve a ser el color de la casa -------------- */
+  --brand:            #096D84;   /* 5,95:1 sobre blanco → sirve como texto   */
+  --brand-deep:       #065163;   /* 8,88:1 sobre blanco · fondo de las bandas */
+  --brand-light:      #0E8CA8;   /* fondo del duotono. 3,94:1: NO es texto   */
+  --brand-tint:       #E6F1F4;   /* superficie suave                          */
+  --brand-border:     #BFD9E0;
+  /* Turquesa claro sobre el fondo profundo: el único claro que se lee ahí.  */
+  --brand-on-deep:    #8FD3E2;   /* 7,26:1 sobre --brand-deep                */
 
-  /* --- Acento funcional (NO es color de marca; solo acciones) ----------- */
-  --accent:           oklch(72.8% 0.156 65.9);    /* #E8901A                        */
-  --accent-ink:       oklch(21% 0.03 265);        /* texto sobre ámbar → 7.59:1     */
-  /* ⚠️ ámbar sobre blanco = 2.49:1 → PROHIBIDO como color de texto        */
+  /* --- Acento funcional (NO es color de marca; solo acciones) ------------
+     El ámbar es lo único que no sale del manual, y se conserva porque el
+     manual no trae ningún color de acción: la paleta entera es análoga
+     (cian→verde) y ninguno de sus tonos dice «esto se pulsa».               */
+  --accent:           #E8901A;
+  --accent-hover:     #C4770F;
+  --accent-ink:       #111827;   /* tinta sobre ámbar → 7,59:1               */
+  --accent-tint:      #FDF1E1;
+  /* ⚠️ ámbar sobre blanco = 2,49:1 → PROHIBIDO como color de texto.         */
 
-  /* --- Tinta y superficies --------------------------------------------- */
-  --ink:              oklch(21% 0.03 265);        /* #111827 — 16.11:1 sobre hueso  */
-  --ink-soft:         oklch(45% 0.02 265);        /* #4B5563 —  6.86:1 sobre hueso  */
-  /* Hueso, no blanco puro: el blanco de pantalla contra el negro estructural da un
-     salto duro y lee a plantilla. Contrastes remedidos sobre él (28 jul).          */
-  --surface:          #F4F4F2;
-  --surface-alt:      #ffffff;
-  --border:           oklch(49.5% 0.088 219.7 / .16);
+  /* --- Los ocho secundarios del manual -----------------------------------
+     USO ÚNICO: bloque de color con tinta --ink encima. Medidos así dan
+     4,68–7,01:1. Como texto sobre blanco reprueban y no se usan nunca.      */
+  --sec-cian:         #00AEEF;   /* tinta oscura → 7,01:1 */
+  --sec-cian-medio:   #0BAAD1;   /*                6,29:1 */
+  --sec-aguamarina:   #15A7B3;   /*                5,88:1 */
+  --sec-verdemar:     #20A395;   /*                5,53:1 */
+  --sec-verde-agua:   #2A9F78;   /*                5,10:1 */
+  --sec-verde:        #359B5A;   /*                4,79:1 */
+  --sec-verde-hoja:   #3F983C;   /*                4,68:1 */
+  --sec-verde-oliva:  #4A941E;   /*                4,71:1 */
 
-  /* Neutros cálidos para los bloques oscuros — la escala que da el aire editorial.
-     ⚠️ `--ink-faint` sobre hueso da 4.86:1 (sirve para body); `#8A8A85` daría 3.15:1
-     y por eso NO está aquí como color de texto sobre claro.                        */
-  --ink-faint:        #6B6B66;                    /* 4.86:1 sobre hueso             */
-  --void-line:        #262626;                    /* separadores sobre negro        */
-  --void-text:        #B9B9B3;                    /* 10.65:1 sobre negro            */
-  --void-mute:        #8A8A85;                    /*  6.05:1 sobre negro            */
+  /* --- Tinta y superficies ----------------------------------------------- */
+  --ink:              #111827;   /* 16,1:1 sobre blanco */
+  --ink-700:          #374151;
+  --ink-500:          #6B7280;   /* 4,83:1 sobre blanco — mínimo para texto   */
+  --ink-300:          #D1D5DB;
+  --ink-200:          #E5E7EB;
+  --ink-100:          #F3F4F6;
+  --ink-050:          #F9FAFB;
+  --surface:          #FFFFFF;
+  --surface-muted:    var(--ink-050);
+  --border-hairline:  var(--ink-200);
+  --border-strong:    var(--ink-300);
 
-  /* --- Negro estructural (DESIGN.md §11, 28 jul 2026) --------------------
-     Negro PURO, no gris oscuro: la referencia adoptada (Alan Turing Institute)
-     lo usa así, y sobre él se midieron los contrastes de §11.               */
-  --void:             #000000;
-  --void-soft:        rgba(255, 255, 255, .74);   /* texto secundario sobre negro   */
-
-  /* --- La diagonal: ÁNGULO ÚNICO de todo el sitio ------------------------
-     Se declara una vez y no se improvisa por sección. Dos inclinaciones
-     distintas leen a descuido, no a diseño.                                */
-  --corte:            4.5deg;
+  /* --- Foco --------------------------------------------------------------
+     🔴 Corrige un defecto medido del paquete de diseño: el ámbar como anillo
+     global da **2,49:1 sobre fondo claro**, por debajo del mínimo de 3:1, y
+     afecta a todo el que navegue por teclado. El anillo usa el turquesa en
+     claro (5,95:1) y el ámbar solo sobre las bandas oscuras (3,57:1).       */
+  --focus-ring:       var(--brand);
+  --focus-ring-dark:  var(--accent);
 
   /* --- Margen lateral: la retícula va A SANGRE ---------------------------
-     El sitio NO tiene contenedor centrado con ancho máximo. Un `max-width`
+     El sitio NO tiene contenedor centrado con ancho máximo: un `max-width`
      centrado deja la misma columna en todas las bandas, y esa uniformidad es
-     precisamente la firma que DESIGN.md §11.3 prohíbe. En su lugar, un margen
-     proporcional: el contenido llega hasta cerca del borde y son los bloques de
-     texto los que limitan su medida en `ch` (§3), cada uno según lo que es.  */
+     la firma que DESIGN.md §11.3 prohíbe. Son los bloques de texto los que
+     limitan su medida en `ch`, cada uno según lo que es.                    */
   --margen:           5vw;
 
-  /* --- Paleta VIVA de bloques (28 jul 2026) ------------------------------
-     Bloques de color plano saturado, al modo del Alan Turing Institute.
-     ⚠️ Solo `--viv-cian` sale del manual de RIBIE; el resto es EXTENSIÓN
-     (ver DESIGN.md §11). Contrastes medidos, no estimados.
-
-     REGLA DE TINTA — se deduce de la luminancia, no del gusto:
-       luminosos  (cian, turquesa, verde, amarillo, magenta) → TINTA OSCURA
-       profundos  (púrpura, azul)                            → TINTA BLANCA
-     Invertirla reprueba WCAG en ambos sentidos.                            */
-  --viv-cian:         #00AEEF;   /* 8.30:1 s/negro · tinta oscura  7.01:1 */
-  --viv-turquesa:     #2EE6D6;   /* 13.41:1        · tinta oscura 11.32:1 */
-  --viv-verde:        #00E87A;   /* 12.82:1        · tinta oscura 10.83:1 */
-  --viv-amarillo:     #FFE500;   /* 16.46:1        · tinta oscura 13.90:1 */
-  --viv-magenta:      #FF2D9B;   /*  6.10:1        · tinta oscura  5.15:1 */
-  --viv-purpura:      #7B2FF7;   /*  3.59:1        · tinta BLANCA  5.85:1 */
-  --viv-azul:         #2B2BF5;   /*  2.77:1        · tinta BLANCA  7.59:1 */
-
-  /* --- Paleta del isotipo — DECORATIVA sobre CLARO, texto sobre NEGRO -----
-     Ninguno alcanza 4.5:1 sobre blanco (2.53–3.79). Prohibido como texto
-     sobre fondo claro. Excepción: --node-lime en títulos ≥24px (3.79 ✅).
-     🔓 Sobre --void la cosa se invierte: 5.5–8.3:1, sí sirven como texto
-     (§11). ⚠️ --brand NO: 3.53:1 sobre negro → solo bloque o texto ≥24px.  */
-  --node-1:           oklch(66.5% 0.110 204.1);   /* #15A7B3 */
-  --node-2:           oklch(70.8% 0.149 234.4);   /* #00AEEF */
-  --node-3:           oklch(64.6% 0.108 183.8);   /* #20A395 */
-  --node-4:           oklch(68.5% 0.125 222.2);   /* #0BAAD1 */
-  --node-5:           oklch(62.9% 0.118 165.8);   /* #2A9F78 */
-  --node-lime:        oklch(59.6% 0.165 136.8);   /* #4A941E */
-  --node-6:           oklch(61.4% 0.136 152.0);   /* #359B5A */
-  --node-7:           oklch(60.5% 0.155 142.8);   /* #3F983C */
-
-  /* --- Tipografía ------------------------------------------------------- */
+  /* --- Tipografía --------------------------------------------------------
+     Oswald sustituye a Haettenschweiler, que es propietaria de Microsoft y
+     no tiene versión web (D28). ⚠️ Pendiente el visto bueno de RIBIE.       */
   --font-display:     "Oswald", ui-sans-serif, system-ui, sans-serif;
   --font-text:        "Onest", ui-sans-serif, system-ui, sans-serif;
 
-  /* 46px → 86px. El tope NO sube más: el hero es de dos columnas y con 146px el
-     titular desbordaba la banda. El tamaño lo fija la maqueta, no el entusiasmo. */
-  --text-hero:        clamp(2.875rem, 1.5rem + 3.9vw, 5.375rem);
-  --text-h2:          clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --text-hero:        clamp(2.75rem, 1.5rem + 3.4vw, 4.75rem);
+  --text-h2:          clamp(1.875rem, 1.4rem + 2vw, 2.625rem);
   --text-h3:          clamp(1.375rem, 1.2rem + .8vw, 1.75rem);
-  --text-lead:        clamp(1.125rem, 1.05rem + .4vw, 1.375rem);
-  --text-body:        1.0625rem;                  /* 17px — nunca bajar de 16px    */
+  --text-decada:      clamp(4rem, 2rem + 6vw, 6.5rem);
+  --text-lead:        clamp(1.125rem, 1.05rem + .4vw, 1.3125rem);
+  --text-body:        1.0625rem;                  /* 17px — nunca bajar de 16px */
   --text-small:       .9375rem;
-  --text-eyebrow:     .8125rem;
+  --text-eyebrow:     .75rem;
 
-  --leading-hero:     .95;
-  --leading-heading:  1.05;
-  --leading-body:     1.7;
-  --tracking-display: -.02em;
-  --tracking-eyebrow: .12em;
+  --leading-display:  1.08;
+  --leading-body:     1.62;
+  --tracking-display: .01em;
+  --tracking-eyebrow: .16em;
 
   /* --- Espacio (grid 4pt) ------------------------------------------------ */
   --space-1: .25rem;  --space-2: .5rem;   --space-3: .75rem;  --space-4: 1rem;
   --space-6: 1.5rem;  --space-8: 2rem;    --space-12: 3rem;   --space-16: 4rem;
   --space-24: 6rem;   --space-32: 8rem;
-  --section-gap:      clamp(4rem, 8vw, 8rem);
-  --measure:          68ch;                       /* 65–75 caracteres              */
+  --section-gap:      clamp(5rem, 12vh, 8.75rem);
+  --measure:          62ch;
 
-  /* --- Radios ------------------------------------------------------------ */
-  --radius-sm: 6px;  --radius-md: 10px;  --radius-lg: 16px;  --radius-full: 9999px;
+  /* --- Radios ------------------------------------------------------------
+     Casi cuadrado. El radio grande es la firma del producto de consumo; una
+     red académica con 36 años no la necesita.                               */
+  --radius-sm: 2px;  --radius-md: 4px;
 
-  /* --- Profundidad: whisper borders, no cardocalypse -------------------- */
-  --ring:  0 0 0 1px var(--brand-ring);
-  --lift:  0 1px 2px oklch(21% 0.03 265 / .04), 0 8px 24px oklch(21% 0.03 265 / .06);
-
-  /* --- Motion ------------------------------------------------------------ */
+  /* --- Motion — CSS nativo, cero librerías (D53) -------------------------- */
   --dur-micro:    120ms;
   --dur-standard: 220ms;
   --dur-max:      320ms;
@@ -134,9 +121,8 @@
 /* Solo transform y opacity. Nunca height, top ni box-shadow. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    animation: none !important;
+    transition: none !important;
     scroll-behavior: auto !important;
   }
 }

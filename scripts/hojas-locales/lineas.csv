@@ -1,0 +1,7 @@
+orden,numero,titulo,descripcion,color_manual,ancho,estado,que_es
+1,01,Innovación tecnológica,Integrar tecnologías emergentes para transformar los procesos de enseñanza y aprendizaje.,#00AEEF,5,publicado,color_manual: uno de los 8 secundarios del manual. ancho: columnas de 12 (3–5)
+2,02,Colaboración regional,Fortalecer redes de cooperación entre investigadores e instituciones iberoamericanas.,#15A7B3,4,publicado,
+3,03,Formación continua,Promover el desarrollo de competencias digitales en docentes y estudiantes.,#20A395,3,publicado,
+4,04,Impacto social,Generar soluciones educativas inclusivas que respondan a los desafíos de la región.,#2A9F78,3,publicado,
+5,05,Investigación aplicada,Impulsar proyectos que trasladen los hallazgos científicos a la práctica pedagógica.,#359B5A,4,publicado,
+6,06,Divulgación académica,"Difundir experiencias, memorias y publicaciones de la comunidad de la red.",#4A941E,5,publicado,

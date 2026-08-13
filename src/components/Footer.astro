@@ -1,97 +1,70 @@
 ---
+/**
+ * Pie — marca, índice, contacto y firma del Aliado Tecnológico.
+ *
+ * El crédito de Renovatio Software cumple el Anexo C del convenio (D47): logotipo
+ * + crédito enlazado. **Se conserva el logotipo aunque la maqueta del paquete de
+ * diseño solo traiga texto**: D51 cambia la estética del sitio, no la
+ * contraprestación pactada, y reducir la firma a una línea de texto sería
+ * recortar lo único que Renovatio recibe de visible en el sitio.
+ *
+ * ⚠️ La forma concreta de esa visibilidad sigue **sin constancia escrita** de la
+ * red —el convenio firmado dice «(a definir con RIBIE)»—; implementarla no
+ * equivale a acordarla.
+ *
+ * Las redes sociales solo aparecen si la hoja trae URL y `activo: sí`: un enlace
+ * de red que no lleva a ninguna parte es peor que no tenerlo.
+ */
 import { Image } from 'astro:assets';
-import Logo from './Logo.astro';
-import Marca from './Marca.astro';
-import NodeTexture from './NodeTexture.astro';
+import logoBlanco from '../assets/logo-ribie-blanco.png';
 import logoRenovatio from '../assets/logo-renovatio-horizontal-oscuro.png';
-import { sitio, navegacion, contacto, redes, aliado } from '../data/contenido';
+import { navegacion, contacto, redes, aliado, pie, sitio } from '../data/contenido';
 
-const anio = 2026; // fijo: el build debe ser reproducible (sin new Date())
-
-// La firma de autoría es un bloque propio a sangre con **fondo negro**: el azul #0000FF
-// del isotipo de Renovatio es invisible sobre el teal del pie (1.01:1) y sobre negro se
-// sostiene sin recolorearse.
-//
-// La fuente es el lockup horizontal del membrete (`01_INSTITUCIONAL/marca/logo_membrete.png`),
-// que está hecho para papel blanco: se le derivó la variante para fondo oscuro
-// —`logo-renovatio-horizontal-oscuro.png`— con dos cambios y ninguno más: se retiró el
-// recuadro gris que el recorte arrastraba tras el isotipo, y la palabra "Renovatio",
-// en #333, pasó a blanco (sobre negro daba 1.7:1). "Software" conserva su gris (5.9:1).
-const RENOVATIO_ALTO = 46;
+/** El lockup es de 1010×319; la altura manda y el ancho se deriva para no deformarlo. */
+const RENOVATIO_ALTO = 34;
 const RENOVATIO_ANCHO = Math.round((RENOVATIO_ALTO * 1010) / 319);
+
+/** «Aliado tecnológico — Creado por Renovatio Software» → el rótulo, sin el nombre,
+ *  que va aparte como enlace. Si la hoja trae otro texto, se respeta entero. */
+const rotulo = aliado.texto.replace(/\s*[—-]\s*Creado por\s+Renovatio Software\s*$/i, '');
+const conRotulo = rotulo !== aliado.texto;
 ---
 
-<footer id="contacto" class="pie">
-  <div class="fondo" aria-hidden="true">
-    <NodeTexture variante="oscura" opacidad={0.3} />
-  </div>
-
-  <div class="contenedor rejilla">
-    <div class="col col--marca">
-      <Logo variante="blanco" alto={60} />
-      <p class="tagline">
-        {sitio.tagline}
-        {sitio.taglineProvisional && <Marca texto="Frase por confirmar" />}
-      </p>
+<footer class="pie" id="pie">
+  <div class="g">
+    <div class="marca">
+      <Image src={logoBlanco} alt={sitio.nombre} height={50} densities={[1, 2]} loading="lazy" />
+      <p>{pie.descripcion}</p>
     </div>
 
-    <nav class="col" aria-label="Secciones">
-      <h2 class="titulo-col">Secciones</h2>
+    <nav class="columna" aria-label="Índice del sitio">
+      <p class="titulo">Navegación</p>
       <ul>
-        {navegacion.map((item) => (
-          <li><a href={item.ancla}>{item.texto}</a></li>
-        ))}
+        {navegacion.map((n) => <li><a href={n.ancla}>{n.texto}</a></li>)}
       </ul>
     </nav>
 
-    <div class="col">
-      <h2 class="titulo-col">Contacto</h2>
+    <div class="columna">
+      <p class="titulo">Contacto</p>
       <ul>
-        {/* La dirección YA existe en Email Routing desde el 27 jul; lo que falta es
-            publicarla en la hoja `textos` (clave `contacto_correo`, hoy vacía). La
-            marca dice eso, y no una fecha que ya pasó. */}
-        <li>
-          {contacto.correo
-            ? <a href={`mailto:${contacto.correo}`}>{contacto.correo}</a>
-            : <span class="pendiente">Correo institucional <Marca texto="Falta publicarlo en la hoja" /></span>}
-        </li>
-        <li>{contacto.ciudad}</li>
+        {contacto.correo && <li><a href={`mailto:${contacto.correo}`}>{contacto.correo}</a></li>}
+        {contacto.ciudad && <li class="apagado">{contacto.ciudad}</li>}
+        {redes.map((r) => <li><a href={r.url}>{r.nombre}</a></li>)}
       </ul>
-
-      {redes.items.length > 0 ? (
-        <ul class="redes">
-          {redes.items.map((r) => (
-            <li><a href={r.url} rel="noopener noreferrer" target="_blank">{r.nombre}</a></li>
-          ))}
-        </ul>
-      ) : (
-        <p class="pendiente">Redes sociales <Marca texto="Enlaces pendientes" /></p>
-      )}
     </div>
-  </div>
 
-  <div class="contenedor barra">
-    <p class="copyright">© {anio} {sitio.nombreLargo} · Todos los derechos reservados</p>
-  </div>
-
-  <div class="firma">
-    <div class="contenedor firma-fila">
-      <a class="credito" href={aliado.url} rel="noopener noreferrer" target="_blank">
+    <div class="cierre">
+      <span>{pie.derechos}</span>
+      <a class="firma" href={aliado.url}>
+        <span>{conRotulo ? rotulo : aliado.texto}</span>
         <Image
           src={logoRenovatio}
-          alt={aliado.nombre}
-          width={RENOVATIO_ANCHO * 2}
-          height={RENOVATIO_ALTO * 2}
+          alt="Renovatio Software"
+          width={RENOVATIO_ANCHO}
+          height={RENOVATIO_ALTO}
           densities={[1, 2]}
-          format="webp"
-          quality={90}
-          class="logo-renovatio"
-          style={`height:${RENOVATIO_ALTO}px;width:auto`}
+          loading="lazy"
         />
-        <span class="credito-texto">
-          <span class="credito-rol">{aliado.texto}</span>
-          <span class="credito-nombre">Creado por {aliado.nombre}</span>
-        </span>
       </a>
     </div>
   </div>
@@ -99,128 +72,85 @@ const RENOVATIO_ANCHO = Math.round((RENOVATIO_ALTO * 1010) / 319);
 
 <style>
   .pie {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
     background: var(--brand-deep);
-    color: rgba(255, 255, 255, 0.82);
-    /* La diagonal del sitio, EN ESPEJO respecto a la del Foro: allí el corte
-       baja hacia la izquierda, aquí hacia la derecha. Mismo ángulo —los mismos
-       6,5vw— porque §11 admite una sola inclinación en todo el sitio; lo que
-       cambia es el sentido, y así la página cierra con la figura invertida con
-       la que se abrió. El padding compensa el corte para que el contenido no
-       quede debajo de la punta. */
-    clip-path: polygon(0 0, 100% 6.5vw, 100% 100%, 0 100%);
-    margin-top: -1px;
-    padding-top: calc(var(--section-gap) + 6.5vw);
-  }
-  .fondo { position: absolute; inset: 0; z-index: -1; }
-
-  .rejilla {
+    color: #fff;
+    margin-top: var(--section-gap);
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(16rem, 2fr) repeat(2, minmax(11rem, 1fr));
-    gap: var(--space-12);
-    padding-bottom: var(--space-12);
   }
-  @media (max-width: 52rem) {
-    .rejilla { grid-template-columns: 1fr; gap: var(--space-8); }
+  .pie::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.5'%3E%3Cpath d='M20 30L80 10M80 10L140 40M20 30L60 90M60 90L140 40M60 90L30 140M60 90L110 130M140 40L110 130'/%3E%3C/g%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='20' cy='30' r='2.5'/%3E%3Ccircle cx='80' cy='10' r='2'/%3E%3Ccircle cx='140' cy='40' r='2.5'/%3E%3Ccircle cx='60' cy='90' r='3'/%3E%3Ccircle cx='30' cy='140' r='2'/%3E%3Ccircle cx='110' cy='130' r='2.5'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 340px;
+    opacity: .04;
+    pointer-events: none;
+  }
+  .pie .g {
+    position: relative;
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-6);
+    row-gap: var(--space-8);
   }
 
-  .col--marca { max-width: 26rem; }
-  .tagline { margin-top: var(--space-4); font-size: var(--text-small); }
-
-  .titulo-col {
-    font-family: var(--font-text);
-    font-size: var(--text-eyebrow);
-    font-weight: 600;
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase;
-    /* ⚠️ Estaba en .55 → 3,87:1 sobre el teal profundo: reprobaba, y encima en el
-       peor sitio posible (texto pequeño, en mayúsculas y con tracking abierto).
-       .74 lo lleva a 5,66:1 sin que deje de leerse como un rótulo secundario. */
-    color: rgba(255, 255, 255, 0.74);
-    margin-bottom: var(--space-4);
-  }
-  .col ul { display: flex; flex-direction: column; gap: var(--space-2); }
-  .col a {
+  .marca { grid-column: 1 / 6; }
+  .marca :global(img) { height: 50px; width: auto; }
+  .marca p {
     font-size: var(--text-small);
-    text-decoration: none;
-    transition: color var(--dur-micro) var(--ease-out);
+    line-height: 1.6;
+    color: rgb(255 255 255 / .8);       /* 10,9:1 sobre el fondo */
+    max-width: 34ch;
+    margin: var(--space-4) 0 0;
   }
-  .col a:hover { color: #fff; }
 
-  .redes { margin-top: var(--space-6); }
-  .pendiente { font-size: var(--text-small); display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .columna { grid-column: span 3; }
+  .titulo {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: .04em;
+    margin: 0 0 var(--space-3);
+  }
+  .columna ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: .90625rem;
+  }
+  .apagado { color: rgb(255 255 255 / .8); }
 
-  .barra {
-    position: relative;
+  .pie a { color: rgb(255 255 255 / .84); text-decoration: none; }
+  .pie a:hover { color: #fff; text-decoration: underline; }
+  .pie a:focus-visible { outline-color: var(--focus-ring-dark); }
+
+  .cierre {
+    grid-column: 1 / 13;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-5, 1.25rem);
     flex-wrap: wrap;
-    gap: var(--space-6);
-    padding-block: var(--space-6);
-    /* La línea a .16 daba 1,52:1 y no se veía: es un separador, no un adorno */
-    border-top: 1px solid rgba(255, 255, 255, 0.28);
-    font-size: var(--text-small);
-    /* Estaba en .6 → 4,27:1, por debajo del umbral. .74 da 5,66:1 */
-    color: rgba(255, 255, 255, 0.74);
+    border-top: 1px solid rgb(255 255 255 / .18);
+    padding: var(--space-4) 0 var(--space-5, 1.25rem);
+    font-size: .8125rem;
+    color: rgb(255 255 255 / .72);      /* 8,6:1 sobre el fondo */
   }
-  .copyright { max-width: 44rem; }
-
-  /* Firma de autoría: bloque negro a sangre, el único del sitio. Le da al azul de
-     Renovatio el fondo sobre el que su marca sí se sostiene. */
+  /* La firma va como una unidad: rótulo y logotipo se subrayan juntos o no se
+     subraya ninguno. Un logotipo con subrayado debajo se lee a descuido. */
   .firma {
-    position: relative;
-    background: #000;
-  }
-  .firma-fila {
-    display: flex;
-    justify-content: center;
-    padding-block: var(--space-6);
-  }
-
-  .credito {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-6);
-    text-decoration: none;
-    transition: transform var(--dur-micro) var(--ease-out);
+    gap: var(--space-3);
   }
-  .credito:hover { transform: translateY(-1px); }
+  .firma:hover { text-decoration: none; }
+  .firma:hover span { text-decoration: underline; }
+  .firma :global(img) { height: 34px; width: auto; display: block; }
 
-  .logo-renovatio { display: block; width: auto; flex-shrink: 0; }
-
-  .credito-texto { display: flex; flex-direction: column; gap: 2px; }
-  .credito-rol {
-    font-size: var(--text-eyebrow);
-    font-weight: 600;
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.62);
-  }
-  .credito-nombre {
-    font-size: var(--text-small);
-    font-weight: 500;
-    color: #fff;
-  }
-
-  /* Móvil: la diagonal se aplana. En pantalla estrecha 6,5vw siguen siendo
-     pocos píxeles, pero el padding que la compensa deja un hueco muerto que ahí
-     sí se nota. Y al imprimir, un recorte sin fondo solo corta contenido. */
-  @media (max-width: 47.5rem), print {
-    .pie {
-      clip-path: none;
-      margin-top: 0;
-      padding-top: var(--section-gap);
-    }
-  }
-
-  @media (max-width: 52rem) {
-    .barra { justify-content: flex-start; }
-    /* En pantallas estrechas el lockup horizontal + el texto no caben en una línea:
-       se apilan antes de provocar scroll lateral. */
-    .credito { flex-direction: column; gap: var(--space-3); text-align: center; }
+  @media (max-width: 47.5rem) {
+    .marca, .columna { grid-column: 1 / 13; }
+    .cierre { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
   }
 </style>

@@ -1,0 +1,71 @@
+---
+/**
+ * Quiénes somos — dos párrafos institucionales y tres frentes de trabajo.
+ *
+ * Los párrafos son LITERALES de los documentos que entregó RIBIE, no una
+ * reescritura nuestra: es la sección donde la red dice qué es, y ahí la voz debe
+ * ser la suya.
+ *
+ * Los frentes van en columna lateral con filete superior, no en el clásico grid
+ * 3×2 de tarjetas con icono: esa retícula simétrica es la firma de layout más
+ * reconocible del contenido generado (§11.3).
+ */
+import Encabezado from './Encabezado.astro';
+import { quienesSomos as qs } from '../data/contenido';
+---
+
+<section class="g sec" id="red">
+  <Encabezado eyebrow={qs.eyebrow} titulo={qs.titulo} />
+
+  <div class="cuerpo reveal">
+    {qs.parrafos.map((p) => <p>{p}</p>)}
+  </div>
+
+  {qs.frentes.length > 0 && (
+    <div class="frentes reveal">
+      {qs.frentes.map((f) => (
+        <div class="frente">
+          <h3>{f.titulo}</h3>
+          <p>{f.texto}</p>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+<style>
+  .cuerpo { grid-column: 2 / 8; margin-top: var(--space-8); }
+  .cuerpo p {
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure);
+    text-wrap: pretty;
+  }
+
+  .frentes { grid-column: 9 / 13; margin-top: var(--space-8); }
+  .frente {
+    border-top: 3px solid var(--brand);
+    padding: var(--space-3) 0 var(--space-6);
+  }
+  /* Solo el primero lleva el filete de marca: repetirlo tres veces convierte un
+     acento en un patrón, y el bloque deja de tener jerarquía. */
+  .frente ~ .frente { border-top: 1px solid var(--border-strong); }
+  .frente h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.3125rem;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--ink);
+  }
+  .frente p {
+    font-size: var(--text-small);
+    line-height: 1.55;
+    color: var(--ink-700);
+    margin: var(--space-2) 0 0;
+  }
+
+  @media (max-width: 47.5rem) {
+    .cuerpo, .frentes { grid-column: 1 / 13; }
+    .frentes { margin-top: var(--space-4); }
+  }
+</style>

@@ -1,0 +1,7 @@
+orden,imagen,descripcion,anio,anio_confirmado,tamano,estado,que_es
+1,foro-fotografia-de-grupo.webp,Fotografía de grupo de los asistentes,,no,grande,publicado,"imagen: nombre de archivo en la carpeta imagenes de Drive, o enlace compartido. tamano: grande | medio | pequena"
+2,acto-mesa-principal.webp,"Mesa principal, acto de apertura",,no,medio,publicado,
+3,delegados-sesion-de-trabajo.webp,Delegados en sesión de trabajo,,no,pequena,publicado,
+4,ponencia-mesa-con-microfono.webp,Mesa de coordinadores nacionales,,no,pequena,publicado,
+5,panel-mesa-de-ponentes.webp,Panel de ponentes,,no,pequena,publicado,
+6,publico-asistentes-primer-plano.webp,Público asistente a una plenaria,,no,pequena,publicado,

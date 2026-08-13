@@ -1,0 +1,228 @@
+---
+/**
+ * Historia — recorrido horizontal ligado al scroll.
+ *
+ * La técnica, y por qué es esta y no una librería (D53): un contenedor alto con
+ * `view-timeline`, un interior `sticky` que se queda fijo mientras ese contenedor
+ * pasa, y la pista de hitos desplazándose con `animation-timeline`. Cero
+ * JavaScript, cero scroll secuestrado: la rueda del ratón, la barra espaciadora y
+ * el teclado siguen haciendo exactamente lo que el usuario espera.
+ *
+ * ⚠️ La animación se mide contra el CONTENEDOR (`--tl`), nunca contra la pista:
+ * dentro de un `sticky`, la visibilidad de la pista no cambia nunca y la
+ * animación no avanzaría.
+ *
+ * Degradación, en dos pisos y ninguno invisible:
+ *   - Sin `animation-timeline` → tira con scroll horizontal propio.
+ *   - `prefers-reduced-motion`  → lo mismo, y sin ninguna transición.
+ */
+import Duo from './Duo.astro';
+import Chip from './Chip.astro';
+import Encabezado from './Encabezado.astro';
+import { historia } from '../data/contenido';
+
+/** El escalonado vertical rompe la fila perfecta. Es irregular a propósito:
+ *  tres alturas alternas leen como una cinta de tiempo, no como una tabla. */
+const ALTURAS = ['', 'alto', 'bajo', ''];
+---
+
+{historia.hitos.length > 0 && (
+  <section class="sec" id="historia">
+    <div class="g">
+      <Encabezado eyebrow={historia.eyebrow} titulo={historia.titulo} desdeElMargen />
+    </div>
+
+    <div class="recorrido">
+      {/* Solo aparece cuando la tira se recorre a mano —móvil y navegadores sin
+          `animation-timeline`—. En escritorio con soporte, el recorrido avanza
+          con el scroll de la página y la indicación sobraría. */}
+      <p class="indicacion" aria-hidden="true">Desliza para recorrer la historia →</p>
+      <div class="fija" tabindex="0" role="group" aria-label="Recorrido histórico, desplazable en horizontal">
+        <ol class="pista">
+          {historia.hitos.map((h, i) => (
+            <li class:list={['hito', ALTURAS[i % ALTURAS.length]]}>
+              <span class="periodo">{h.periodo}</span>
+              <p>{h.texto}</p>
+              {h.imagen && (
+                <figure class="foto">
+                  <Duo imagen={h.imagen} alt={h.pieImagen || h.periodo} proporcion="3/2" anchos={[520, 1040]} sizes="34vw" />
+                  <figcaption>
+                    {h.pieImagen}
+                    {h.anioImagen && <> · {h.anioImagen}</>}
+                    <Chip activo={h.anioPorConfirmar} texto="año por confirmar" />
+                  </figcaption>
+                </figure>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .recorrido { margin-top: var(--space-12); }
+
+  /**
+   * La tira desplazable, cuando toca desplazarla a mano.
+   *
+   * Un carrusel sin nada que indique que se desplaza se lee como contenido
+   * cortado, no como recorrido: la barra de scroll es de superposición y no se
+   * ve hasta que ya te moviste, y la rueda del ratón —que es vertical— no lo
+   * mueve. De ahí las tres piezas: la indicación de texto, la barra siempre
+   * visible y el anclaje por hito, que hace que el gesto pare donde debe.
+   */
+  .fija {
+    overflow: hidden;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;    /* no arrastra el historial del navegador */
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) var(--ink-100);
+  }
+  .hito { scroll-snap-align: center; }
+
+  .indicacion {
+    display: none;
+    font-size: var(--text-small);
+    color: var(--ink-500);
+    padding: 0 var(--margen);
+    margin-bottom: var(--space-3);
+  }
+  /* Se enseña exactamente en los dos casos en que hay que deslizar a mano. */
+  @supports not (animation-timeline: view()) {
+    .indicacion { display: block; }
+  }
+  @media (max-width: 47.5rem) {
+    .indicacion { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .indicacion { display: block; }
+  }
+
+  .pista {
+    display: flex;
+    align-items: center;
+    gap: clamp(3rem, 6vw, 6.875rem);
+    padding: 0 var(--margen);
+    width: max-content;
+    list-style: none;
+    margin: 0;
+  }
+
+  .hito {
+    width: clamp(21rem, 34vw, 32.5rem);
+    flex: none;
+    border-top: 1px solid var(--border-strong);
+    position: relative;
+    padding-top: var(--space-6);
+  }
+  /* El cuadradito de turquesa sobre el filete: la marca del punto en la línea. */
+  .hito::before {
+    content: "";
+    position: absolute;
+    top: -5px; left: 0;
+    width: 9px; height: 9px;
+    background: var(--brand);
+  }
+
+  .periodo {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-decada);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+    color: var(--brand-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .hito p {
+    font-size: var(--text-body);
+    line-height: 1.6;
+    color: var(--ink-700);
+    margin: var(--space-4) 0 0;
+    max-width: 44ch;
+  }
+
+  .foto { margin: var(--space-6) 0 0; }
+  .foto figcaption {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    font-size: .75rem;
+    color: var(--ink-500);
+    margin-top: var(--space-2);
+  }
+
+  .hito.alto { align-self: flex-start; margin-top: 4vh; }
+  .hito.bajo { align-self: flex-end; margin-bottom: 4vh; }
+
+  /* En pantallas bajas el hito no cabe entero: la foto se aplana y el número baja. */
+  @media (max-height: 51.25rem) {
+    .periodo { font-size: clamp(3.25rem, 5vw, 5.25rem); }
+    .hito.alto { margin-top: 2vh; }
+    .hito.bajo { margin-bottom: 2vh; }
+  }
+
+  /* --- Movimiento ligado al scroll, con CSS nativo (D53) ------------------- */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .recorrido {
+        height: 230vh;
+        view-timeline: --tl block;
+      }
+      .fija {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+      }
+      /* ⚠️ LONGHANDS OBLIGATORIOS, no el atajo `animation:`.
+         Con `animation: correr linear both` + `animation-timeline: --tl`, el
+         minificador de CSS fusiona ambas en el atajo y **descarta el nombre de
+         la línea de tiempo y el de la animación**: en el build quedaba una
+         única declaración `animation-range: contain`, y el recorrido no se
+         movía. En desarrollo funcionaba, porque ahí el CSS no se minifica.
+         Escrito propiedad por propiedad, no hay atajo que fusionar. */
+      .pista {
+        animation-name: correr;
+        animation-duration: auto;          /* la marca el scroll, no el reloj */
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --tl;
+        animation-range: contain 0% contain 100%;
+      }
+    }
+  }
+  @keyframes correr {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-100% + 90vw)); }
+  }
+
+  /* Sin soporte: tira desplazable. El contenido se ve COMPLETO, nunca invisible. */
+  @supports not (animation-timeline: view()) {
+    .fija { overflow-x: auto; padding-bottom: var(--space-6); }
+  }
+
+  @media (max-width: 47.5rem) {
+    .recorrido { height: auto; }
+    .fija {
+      position: static;
+      height: auto;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: var(--space-6);
+    }
+    .pista { animation-name: none; align-items: flex-start; }
+    .hito { width: 78vw; }
+    .periodo { font-size: 3.25rem; }
+    .hito.alto, .hito.bajo { align-self: flex-start; margin: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recorrido { height: auto; }
+    .fija { position: static; height: auto; overflow-x: auto; }
+  }
+</style>

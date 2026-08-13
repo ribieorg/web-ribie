@@ -1,0 +1,136 @@
+---
+/**
+ * XV Foro — banda destacada sobre turquesa profundo.
+ *
+ * El dato más delicado del sitio vive aquí. Las fechas (5 al 7 de octubre de
+ * 2026) están cargadas en la hoja, pero mientras `fechas_confirmadas` diga que
+ * no, salen con el chip: que un dato esté escrito no significa que la red lo haya
+ * validado, y con fechas de congreso la gente compra pasajes.
+ *
+ * La ficha es un `<dl>` y no tres líneas de texto: fechas, sede y modalidad son
+ * pares término/definición, y así un lector de pantalla los anuncia como tales.
+ *
+ * ⚠️ Esta banda es informativa y enlaza a lo que opera la red (D40). Renovatio no
+ * construye inscripción, envío de ponencias ni certificados.
+ */
+import Duo from './Duo.astro';
+import Chip from './Chip.astro';
+import { foro } from '../data/contenido';
+---
+
+{foro && (
+  <section class="foro" id="foro">
+    <div class="g">
+      <div class="texto reveal">
+        <span class="eyebrow">{foro.eyebrow}</span>
+        <h2>{foro.nombre}</h2>
+        <p class="resumen">{foro.descripcion}</p>
+
+        <dl class="ficha">
+          {foro.fecha && (
+            <>
+              <dt>Fechas</dt>
+              <dd>{foro.fecha} <Chip activo={foro.fechasPorConfirmar} oscuro /></dd>
+            </>
+          )}
+          {foro.lugar && (<><dt>Sede</dt><dd>{foro.lugar}</dd></>)}
+          {foro.modalidad && (<><dt>Modalidad</dt><dd>{foro.modalidad}</dd></>)}
+        </dl>
+
+        {foro.cta && (
+          <a class="boton boton--accion" href={foro.cta.url}>{foro.cta.texto}</a>
+        )}
+      </div>
+
+      <div class="retrato reveal">
+        <Duo imagen={foro.imagen} alt={foro.pieImagen} proporcion="4/3" sizes="(max-width: 47.5rem) 100vw, 50vw" />
+        {foro.pieImagen && <p class="pie">{foro.pieImagen} <Chip activo oscuro texto="año por confirmar" /></p>}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .foro {
+    background: var(--brand-deep);
+    color: #fff;
+    margin-top: var(--section-gap);
+    position: relative;
+  }
+  /* Malla de nodos al 5 % de opacidad: la red dibujada como lo que es, un grafo.
+     Va en el fondo y nunca sobre una fotografía. */
+  .foro::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.5'%3E%3Cpath d='M20 30L80 10M80 10L140 40M20 30L60 90M60 90L140 40M60 90L30 140M60 90L110 130M140 40L110 130'/%3E%3C/g%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='20' cy='30' r='2.5'/%3E%3Ccircle cx='80' cy='10' r='2'/%3E%3Ccircle cx='140' cy='40' r='2.5'/%3E%3Ccircle cx='60' cy='90' r='3'/%3E%3Ccircle cx='30' cy='140' r='2'/%3E%3Ccircle cx='110' cy='130' r='2.5'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 340px;
+    opacity: .05;
+    pointer-events: none;
+  }
+  .foro .g {
+    position: relative;
+    padding-top: clamp(4rem, 9vh, 6.875rem);
+    padding-bottom: clamp(4rem, 9vh, 6.875rem);
+    row-gap: var(--space-8);
+  }
+
+  .texto { grid-column: 1 / 7; }
+  .eyebrow {
+    display: block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand-on-deep);        /* 7,26:1 sobre el fondo */
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.875rem, 2.8vw, 2.75rem);
+    line-height: var(--leading-display);
+    color: #fff;
+    margin: var(--space-3) 0 0;
+    text-wrap: balance;
+  }
+  .resumen {
+    color: rgb(255 255 255 / .88);      /* 14,7:1 sobre el fondo */
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 48ch;
+    margin: var(--space-5, 1.25rem) 0 var(--space-6);
+  }
+
+  .ficha {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-6);
+    margin: 0 0 var(--space-8);
+    font-size: 1rem;
+  }
+  .ficha dt {
+    font-size: .71875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--brand-on-deep);
+    padding-top: 4px;
+  }
+  .ficha dd { margin: 0; color: rgb(255 255 255 / .94); }
+
+  .retrato {
+    grid-column: 7 / 13;
+    margin-right: calc(var(--margen) * -1);
+  }
+  .pie {
+    font-size: .78125rem;
+    color: rgb(255 255 255 / .72);      /* 8,6:1 sobre el fondo */
+    margin: var(--space-3) var(--margen) 0 0;
+  }
+
+  @media (max-width: 47.5rem) {
+    .texto, .retrato { grid-column: 1 / 13; }
+    .retrato { margin-left: calc(var(--margen) * -1); }
+    .pie { margin-right: var(--margen); }
+  }
+</style>

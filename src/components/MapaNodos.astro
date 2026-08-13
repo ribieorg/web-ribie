@@ -1,0 +1,209 @@
+---
+/**
+ * Nodos — mapa de la red y lista de países.
+ *
+ * El mapa es **SVG inline con geometría real**, no una librería de mapas ni una
+ * imagen: pesa lo que pesa el marcado, se pinta con los tokens del sitio y no
+ * pide un solo byte a un tercero en tiempo de ejecución.
+ *
+ * ♿ La lista de la derecha NO es un complemento del mapa: es la misma
+ * información en texto, y es la ruta principal en móvil y con lector de
+ * pantalla. No se elimina aunque el mapa se vea bien.
+ *
+ * El resaltado al pasar el cursor se resuelve con reglas CSS generadas por país
+ * (`#pais-x:hover ~ .fichas #f-x`). Es hover, es decorativo y no oculta ningún
+ * dato que no esté ya en la lista: quien no tenga puntero no se pierde nada.
+ */
+import Encabezado from './Encabezado.astro';
+import { nodos } from '../data/contenido';
+import { PAISES, MARCADOR_NODO, VIEWBOX } from '../data/mapa-paises';
+
+/** «Panamá» y «Panama» son el mismo país: la hoja la llena una persona.
+ *  El rango ̀-ͯ son las marcas diacríticas que suelta `NFD`. */
+const clave = (s: string) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+const porPais = new Map(nodos.paises.map((p) => [clave(p.pais), p]));
+
+/**
+ * Los 21 países del mapa mandan sobre la hoja: la red tiene 21 nodos aunque solo
+ * uno haya confirmado su institución sede, y un mapa que solo pintara lo
+ * confirmado diría que RIBIE es un país.
+ */
+const paises = PAISES.map((geo) => {
+  const dato = porPais.get(clave(geo.nombre));
+  const instituciones = dato?.instituciones ?? [];
+  return {
+    ...geo,
+    confirmado: dato?.confirmado ?? false,
+    instituciones,
+    /** Con una sede se nombra; con varias se cuentan y la lista queda en la columna. */
+    resumen: instituciones.length === 0
+      ? 'Institución sede por confirmar'
+      : instituciones.length === 1
+        ? instituciones[0].nombre
+        : `${instituciones.length} instituciones sede`,
+  };
+});
+
+const confirmados = paises.filter((p) => p.confirmado).length;
+
+/**
+ * CSS de las fichas del mapa, generado y **calificado con `#mapa-red`**.
+ *
+ * Va aquí y no en el bloque `<style>` de abajo por una razón concreta: la regla
+ * que apaga la ficha en reposo durante el hover se escribió como
+ * `.mapa:has(:global(.pais:hover))` y **el compilador la descartó sin avisar**
+ * —no aparecía en el CSS servido—, con lo que al pasar el cursor se pintaban la
+ * ficha de reposo y la del país encima, una sobre otra. Escribiéndolo aquí, el
+ * selector llega al navegador tal cual se lee.
+ */
+const cssFichas = [
+  `#mapa-red .ficha{opacity:0;transition:opacity var(--dur-micro) var(--ease-out);pointer-events:none}`,
+  `#mapa-red .ficha.reposo{opacity:1}`,
+  // Cualquier país bajo el cursor apaga la ficha de reposo. Sin esto, dos textos
+  // ocupando el mismo sitio.
+  `#mapa-red:has(.pais:hover) .ficha.reposo{opacity:0}`,
+  ...paises.map((p) => `#mapa-red #pais-${p.id}:hover ~ .fichas #f-${p.id}{opacity:1}`),
+].join('');
+
+/**
+ * La LISTA va alfabética; el MAPA conserva su orden de dibujo.
+ *
+ * No es lo mismo: en el SVG el orden decide qué país queda encima de cuál en las
+ * fronteras compartidas, y alterarlo cambia el mapa. En la lista, el orden de
+ * dibujo sería arbitrario para quien la lee.
+ */
+const listado = [...paises].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+---
+
+<section class="g sec" id="nodos">
+  <Encabezado eyebrow={nodos.eyebrow} titulo={nodos.titulo} />
+
+  <div class="lienzo reveal">
+    <svg id="mapa-red" class="mapa" viewBox={VIEWBOX} role="img"
+         aria-label={`Mapa de los ${paises.length} países de la red; ${confirmados} con institución sede confirmada`}>
+      {paises.map((p) => (
+        <g class:list={['pais', { conf: p.confirmado }]} id={`pais-${p.id}`}>
+          <path d={p.d}><title>{p.nombre} · {p.resumen}</title></path>
+        </g>
+      ))}
+
+      {confirmados > 0 && (
+        <circle class="marca" cx={MARCADOR_NODO.x} cy={MARCADOR_NODO.y} r={MARCADOR_NODO.r} />
+      )}
+
+      <g class="fichas">
+        {/* Ficha en reposo: el nodo confirmado. Se apaga en cuanto el cursor entra
+            en cualquier país, con `:has()`. */}
+        {paises.filter((p) => p.confirmado).slice(0, 1).map((p) => (
+          <g class="ficha reposo" id="f-def">
+            <text class="fp" x="24" y="696">{p.nombre}</text>
+            <text class="fi" x="24" y="726">{p.resumen} · nodo confirmado</text>
+          </g>
+        ))}
+        {paises.map((p) => (
+          <g class="ficha" id={`f-${p.id}`}>
+            <text class="fp" x="24" y="696">{p.nombre}</text>
+            <text class="fi" x="24" y="726">{p.confirmado ? `${p.resumen} · nodo confirmado` : p.resumen}</text>
+          </g>
+        ))}
+      </g>
+    </svg>
+  </div>
+
+  <div class="listado reveal">
+    {nodos.intro && <p class="intro">{nodos.intro}</p>}
+    <ol>
+      {listado.map((p) => (
+        <li class:list={{ conf: p.confirmado }}>
+          <b>{p.nombre}</b>
+          {p.instituciones.length > 0
+            ? p.instituciones.map((i) => (
+                <span class="sede">
+                  {i.sitio ? <a href={i.sitio}>{i.nombre}</a> : i.nombre}
+                </span>
+              ))
+            /* Aquí el pendiente va como texto y no como chip: son veinte de
+               veintiuna filas, y veinte chips seguidos dejan de señalar nada y
+               doblan el alto de la lista. El chip se reserva para el dato
+               suelto —una fecha, un año, una cifra— donde sí destaca. */
+            : <span class="pendiente">por confirmar</span>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style is:inline set:html={cssFichas}></style>
+
+<style>
+  .lienzo { grid-column: 1 / 8; margin-top: var(--space-12); }
+  .mapa { width: 100%; height: auto; display: block; }
+
+  .mapa :global(.pais path) {
+    fill: var(--ink-100);
+    stroke: #fff;
+    stroke-width: 1;
+    transition: fill var(--dur-standard) var(--ease-out);
+  }
+  .mapa :global(.pais:hover path) { fill: var(--brand-border); }
+  .mapa :global(.pais.conf path) { fill: var(--brand); }
+  .mapa :global(.pais.conf:hover path) { fill: var(--brand-deep); }
+
+  .mapa :global(.marca) {
+    fill: var(--accent);
+    stroke: #fff;
+    stroke-width: 2;
+    pointer-events: none;
+  }
+
+  /* La visibilidad de las fichas se declara arriba, en `cssFichas`. */
+  .mapa :global(.fp) {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 44px;
+    fill: var(--brand-deep);
+  }
+  .mapa :global(.fi) {
+    font-family: var(--font-text);
+    font-size: 24px;
+    fill: var(--ink-500);
+  }
+
+  .listado { grid-column: 8 / 13; margin-top: var(--space-12); }
+  .intro {
+    font-size: var(--text-small);
+    color: var(--ink-700);
+    max-width: 38ch;
+    margin: 0;
+  }
+  .listado ol {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    column-count: 2;
+    column-gap: var(--space-8);
+    font-size: .90625rem;
+  }
+  .listado li {
+    break-inside: avoid;
+    border-bottom: 1px solid var(--border-hairline);
+    padding: var(--space-2) 0;
+    color: var(--ink-700);
+  }
+  .listado li b { display: block; font-weight: 600; color: var(--ink); }
+  .listado li.conf b { color: var(--brand-deep); }
+  .sede { display: block; font-size: .8125rem; }
+  .pendiente { font-size: .78125rem; color: var(--ink-500); }
+
+  @media (max-width: 47.5rem) {
+    .lienzo, .listado { grid-column: 1 / 13; }
+    .listado { margin-top: var(--space-8); }
+    .listado ol { column-count: 1; }
+    /* El texto del SVG se escala con el viewBox: en móvil hay que subirlo o
+       queda ilegible. */
+    .mapa :global(.fp) { font-size: 72px; }
+    .mapa :global(.fi) { font-size: 38px; }
+  }
+</style>

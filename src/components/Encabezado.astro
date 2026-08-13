@@ -1,0 +1,60 @@
+---
+/**
+ * Encabezado de sección — rótulo + titular con filete superior.
+ *
+ * El filete de 3px sobre el titular es lo que le da a cada sección un arranque
+ * declarado, en vez del centrado con aire que lee a plantilla. Ocupa columnas
+ * 2–9 de doce: no empieza en el margen y no llega al borde, así el bloque de
+ * texto se sitúa dentro de la retícula en lugar de flotar centrado.
+ */
+interface Props {
+  eyebrow: string;
+  titulo: string;
+  /** Arranca en la columna 1 en vez de la 2 (secciones a sangre completa). */
+  desdeElMargen?: boolean;
+  claro?: boolean;
+}
+const { eyebrow, titulo, desdeElMargen = false, claro = false } = Astro.props;
+---
+
+<div class:list={['encabezado', { desde1: desdeElMargen, claro }]}>
+  <span class="eyebrow">{eyebrow}</span>
+  <h2>{titulo}</h2>
+</div>
+
+<style>
+  .encabezado { grid-column: 2 / 9; }
+  .encabezado.desde1 { grid-column: 1 / 9; }
+
+  .eyebrow {
+    display: block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand);
+    margin-bottom: var(--space-3);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-h2);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--ink);
+    margin: 0;
+    border-top: 3px solid var(--brand);
+    padding-top: var(--space-4);
+    text-wrap: balance;
+  }
+
+  /* Sobre las bandas de turquesa profundo. El rótulo pasa al turquesa claro
+     (7,26:1 sobre el fondo) porque --brand sobre --brand-deep da 1,49:1. */
+  .claro .eyebrow { color: var(--brand-on-deep); }
+  .claro h2 { color: #fff; border-top-color: var(--brand-on-deep); }
+
+  @media (max-width: 47.5rem) {
+    .encabezado, .encabezado.desde1 { grid-column: 1 / 13; }
+  }
+</style>

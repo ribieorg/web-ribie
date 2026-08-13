@@ -1,0 +1,60 @@
+---
+/**
+ * Contacto — una dirección de correo, en grande, y la ciudad.
+ *
+ * Sin formulario, y es una decisión: un formulario exige un servicio que reciba
+ * los envíos, una política de datos y alguien que atienda la bandeja. El correo
+ * `contacto@ribie.org` existe y funciona desde el 27 de julio en Cloudflare Email
+ * Routing; enlazarlo es la vía más corta entre quien escribe y quien responde.
+ *
+ * ⚠️ Toda dirección que se publique debe existir antes en Email Routing, o el
+ * correo entrante rebota: enviar y recibir son sistemas independientes.
+ */
+import { contacto } from '../data/contenido';
+---
+
+{contacto.correo && (
+  <section class="g sec" id="contacto">
+    <div class="bloque reveal">
+      <span class="eyebrow">{contacto.eyebrow}</span>
+      <h2>{contacto.titulo}</h2>
+      <p class="correo"><a href={`mailto:${contacto.correo}`}>{contacto.correo}</a></p>
+      {contacto.ciudad && <p class="ciudad">{contacto.ciudad}</p>}
+    </div>
+  </section>
+)}
+
+<style>
+  .bloque { grid-column: 2 / 8; }
+  .eyebrow {
+    display: block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand);
+    margin-bottom: var(--space-3);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-h2);
+    line-height: var(--leading-display);
+    color: var(--ink);
+    margin: 0;
+    border-top: 3px solid var(--brand);
+    padding-top: var(--space-4);
+  }
+  .correo {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.625rem, 2.4vw, 2.375rem);
+    margin: var(--space-6) 0 0;
+  }
+  .correo a { color: var(--brand); text-decoration-thickness: 2px; }
+  .ciudad { color: var(--ink-500); margin: var(--space-2) 0 0; }
+
+  @media (max-width: 47.5rem) {
+    .bloque { grid-column: 1 / 13; }
+  }
+</style>

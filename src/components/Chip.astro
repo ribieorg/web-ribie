@@ -1,0 +1,44 @@
+---
+/**
+ * Chip «por confirmar» — el tercer estado del dato (D52).
+ *
+ * Existe porque «no hay dato» y «hay un dato que nadie validó» no son lo mismo y
+ * no pueden verse igual. Va JUNTO al dato, nunca en el encabezado de la sección:
+ * una advertencia de sección no dice cuál de los cinco números es el dudoso.
+ *
+ * Contorno punteado y no relleno de color: es una nota editorial sobre el dato,
+ * no una alerta del sistema. Y el punteado no compite con el ámbar, que en este
+ * sitio significa exclusivamente «esto se pulsa».
+ */
+interface Props {
+  /** Si es `false`, no se renderiza nada: el dato está confirmado. */
+  activo?: boolean;
+  texto?: string;
+  /** Sobre las bandas de turquesa profundo, el contorno claro. */
+  oscuro?: boolean;
+}
+const { activo = true, texto = 'por confirmar', oscuro = false } = Astro.props;
+---
+
+{activo && <span class:list={['chip', { oscuro }]}>{texto}</span>}
+
+<style>
+  .chip {
+    display: inline-block;
+    font-size: .6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-500);              /* 4,83:1 sobre blanco */
+    border: 1px dotted var(--ink-300);
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  /* Sobre --brand-deep: 8,3:1. El borde no lleva texto, puede ser más tenue. */
+  .chip.oscuro {
+    color: rgb(255 255 255 / .78);
+    border-color: rgb(255 255 255 / .4);
+  }
+</style>

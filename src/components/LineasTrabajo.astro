@@ -1,0 +1,97 @@
+---
+/**
+ * Líneas de trabajo — bloques de color plano de anchos desiguales.
+ *
+ * Aquí es donde la paleta del manual hace su trabajo: los ocho secundarios como
+ * BLOQUE con tinta `--ink` encima dan 4,68–7,01:1. Fallaban como texto sobre
+ * blanco (2,53–3,79:1) y de esa medición se dedujo, mal, que no servían para
+ * nada; por esa deducción el sitio terminó pintado con seis colores ajenos a la
+ * marca. Un veredicto de contraste vale para el par que se midió, no para el
+ * color.
+ *
+ * La tinta es SIEMPRE `--ink` y nunca blanca: estos ocho tonos son claros, y
+ * blanco encima de cualquiera de ellos reprueba. No hay excepción que valga la
+ * pena, así que no se ofrece la opción.
+ *
+ * `ancho` viene de la hoja en columnas de doce y la suma por fila da 12 (5+4+3).
+ * Que sea dato y no CSS es lo que permite a RIBIE reordenar sus líneas sin
+ * pedirnos un despliegue.
+ */
+import Encabezado from './Encabezado.astro';
+import Chip from './Chip.astro';
+import { lineas } from '../data/contenido';
+---
+
+{lineas.items.length > 0 && (
+  <section class="g sec" id="lineas">
+    <Encabezado eyebrow={lineas.eyebrow} titulo={lineas.titulo} />
+
+    <ol class="rejilla reveal">
+      {lineas.items.map((l) => (
+        <li
+          class="bloque"
+          style={`background:${l.color || 'var(--brand-tint)'};grid-column:span ${l.ancho}`}
+        >
+          <span class="numero">{l.numero}</span>
+          <h3>{l.titulo}</h3>
+          <p>{l.descripcion} <Chip activo={l.porConfirmar} /></p>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}
+
+<style>
+  .rejilla {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    /* 3px y no un gap generoso: los bloques son un mosaico continuo, no seis
+       tarjetas sueltas. El hilo blanco entre ellos es lo único que los separa. */
+    gap: 3px;
+    margin: var(--space-12) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bloque {
+    color: var(--ink);                  /* la única tinta admitida sobre estos ocho */
+    padding: var(--space-8) var(--space-8) var(--space-8);
+    display: flex;
+    flex-direction: column;
+    min-height: 15.625rem;
+    transition: filter var(--dur-standard) var(--ease-out);
+  }
+  /* Oscurecer un 6 % sube el contraste de la tinta, nunca lo baja: el estado
+     hover es el que nadie revisa y así no puede reprobar. */
+  .bloque:hover { filter: brightness(.94); }
+
+  .numero {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 3.25rem;
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+    opacity: .42;
+  }
+  .bloque h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    line-height: 1.08;
+    margin: auto 0 var(--space-2);
+    padding-top: var(--space-6);
+    max-width: 14ch;
+  }
+  .bloque p {
+    font-size: .96875rem;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  @media (max-width: 47.5rem) {
+    .rejilla { grid-template-columns: 1fr; }
+    .bloque { grid-column: 1 / -1 !important; min-height: 0; }
+  }
+</style>

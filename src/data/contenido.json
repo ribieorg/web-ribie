@@ -6,12 +6,13 @@
       "titulo": "XV Foro de Investigadores en Informática Educativa",
       "fechaInicio": "2026-10-05",
       "fechaFin": "2026-10-07",
-      "lugar": "Universidad de Nariño · Pasto Colombia",
-      "modalidad": "Modalidad híbrida — presencial y virtual",
-      "descripcion": "El XV Foro se pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento, y cuáles son las implicaciones de ello para la educación, la empresa, la industria, la salud, la cultura y la sociedad contemporánea. La convocatoria se organiza en seis ejes: modelos cognitivos e inteligencia artificial; IA y aprendizaje humano; IA, conocimiento e investigación científica; IA, trabajo y producción; IA, cultura y sociedad; e IA, salud y bienestar humano.",
+      "lugar": "Universidad de Nariño · Pasto, Colombia",
+      "modalidad": "Híbrida — presencial y virtual",
+      "descripcion": "El XV Foro se pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento.",
       "enlace": "",
-      "imagen": "1hIfCTp5oM0GrXxsd2u9QbcMNU4eYCjEi.webp",
-      "destacado": true
+      "imagen": "ponencia-conferencista.webp",
+      "destacado": true,
+      "fechasConfirmadas": false
     }
   ],
   "nodos": [
@@ -19,7 +20,148 @@
       "nombre": "Universidad de Nariño",
       "pais": "Colombia",
       "sitio": "https://www.udenar.edu.co/",
-      "logo": "16eRkWsySc_2FI_vmc2G0oA3sMlsvrqMO.png"
+      "logo": "",
+      "porConfirmar": false
+    },
+    {
+      "nombre": "",
+      "pais": "Argentina",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Bolivia",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Brasil",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Chile",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Costa Rica",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Cuba",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Ecuador",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "El Salvador",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "España",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Guatemala",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Honduras",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "México",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Nicaragua",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Panamá",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Paraguay",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Perú",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Portugal",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "República Dominicana",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Uruguay",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
+    },
+    {
+      "nombre": "",
+      "pais": "Venezuela",
+      "sitio": "",
+      "logo": "",
+      "porConfirmar": true
     }
   ],
   "redes": [],
@@ -28,14 +170,188 @@
     "hero_titulo": "Conectamos conocimiento,",
     "hero_destacado": "transformamos educación",
     "hero_entrada": "Creada en 1990 como área estratégica del programa CYTED, RIBIE reúne los esfuerzos de 21 países iberoamericanos para articular conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación.",
+    "boton_primario": "Conocer la red",
+    "boton_secundario": "XV Foro 2026",
+    "quienes_titulo": "Una comunidad de investigación, no un catálogo de tecnología",
     "quienes_p1": "El reto de RIBIE es articular, producir y movilizar conocimiento crítico e innovador sobre la educación mediada por las tecnologías de la información y la comunicación (TIC), tanto análogas como digitales, para transformar los sistemas educativos en la región iberoamericana con criterios de equidad, calidad y pertinencia cultural, y en busca de una soberanía tecnológica.",
     "quienes_p2": "A través de sus grupos de trabajo, RIBIE busca generar proyectos de cooperación multilateral para la innovación tecnológica en informática educativa que atiendan las necesidades de cada país participante, utilizando esta área como instrumento estratégico para el desarrollo educativo y social.",
-    "historia_p1": "La Red Iberoamericana de Informática Educativa nació en 1990 como una idea y un área estratégica del programa CYTED — Ciencia y Tecnología para el Desarrollo, integrado por organismos gubernamentales de los países de América Latina y la Península Ibérica. Bajo el Subprograma de Electrónica e Informática Aplicada, reúne los esfuerzos de 21 países integrantes para potenciar la identificación y el intercambio entre grupos de investigación y desarrollo en informática aplicada a la educación.",
-    "historia_p2": "En Colombia, RIBIE ha organizado quince congresos internacionales, quince foros de investigadores y quince convocatorias al Premio de Informática Educativa, que entre 1992 y 2018 se convocó junto al Ministerio de Educación Nacional en tres categorías: experiencias educativas, recursos educativos digitales e investigación.",
-    "cifra_anios": "36",
-    "cifra_paises": "21",
+    "frente_1_titulo": "Investigación",
+    "frente_1_texto": "Proyectos conjuntos entre grupos de la red y publicación arbitrada.",
+    "frente_2_titulo": "Formación",
+    "frente_2_texto": "Encuentros, tutorías y movilidad entre instituciones asociadas.",
+    "frente_3_titulo": "Divulgación",
+    "frente_3_texto": "Memorias, publicaciones y foros abiertos a la comunidad académica.",
+    "historia_titulo": "Treinta y seis años, recorridos en cuatro hitos",
+    "lineas_titulo": "Construimos juntos el futuro de la educación",
+    "memoria_titulo": "Quince foros de encuentro, leídos como archivo",
+    "nodos_titulo": "Una red de 21 países, nodo a nodo",
+    "nodos_intro": "Cada nodo nacional tiene una institución sede. Hoy hay un nodo confirmado; los veinte restantes están en proceso de confirmación.",
     "contacto_correo": "contacto@ribie.org",
     "contacto_ciudad": "Bogotá, Colombia",
-    "mostrar_marcas": "sí"
-  }
+    "credito_texto": "Aliado tecnológico — Creado por Renovatio Software",
+    "credito_url": "https://renovatiosoftware.com",
+    "mostrar_franja_preparacion": "sí"
+  },
+  "cifras": [
+    {
+      "id": "origen",
+      "valor": "1990",
+      "unidad": "",
+      "etiqueta": "origen en CYTED",
+      "porConfirmar": false
+    },
+    {
+      "id": "paises",
+      "valor": "21",
+      "unidad": "países",
+      "etiqueta": "países integrantes",
+      "porConfirmar": true
+    },
+    {
+      "id": "eventos",
+      "valor": "15",
+      "unidad": "+15",
+      "etiqueta": "congresos y foros",
+      "porConfirmar": false
+    },
+    {
+      "id": "anios",
+      "valor": "36",
+      "unidad": "años",
+      "etiqueta": "años de trayectoria",
+      "porConfirmar": false
+    }
+  ],
+  "hitos": [
+    {
+      "periodo": "1990",
+      "texto": "Nace dentro del programa CYTED (Ciencia y Tecnología para el Desarrollo), integrado por organismos gubernamentales de América Latina y la Península Ibérica, bajo el Subprograma de Electrónica e Informática Aplicada.",
+      "imagen": "",
+      "pieImagen": "",
+      "anioImagen": "",
+      "anioPorConfirmar": true,
+      "porConfirmar": false
+    },
+    {
+      "periodo": "1992–2018",
+      "texto": "Premio de Informática Educativa, convocado junto al Ministerio de Educación Nacional de Colombia en tres categorías: experiencias educativas, recursos educativos digitales e investigación.",
+      "imagen": "acto-mesa-principal.webp",
+      "pieImagen": "Mesa principal, acto de apertura",
+      "anioImagen": "",
+      "anioPorConfirmar": true,
+      "porConfirmar": false
+    },
+    {
+      "periodo": "15 + 15",
+      "texto": "Quince congresos internacionales y quince foros de investigadores organizados en Colombia.",
+      "imagen": "publico-asistentes-sentados.webp",
+      "pieImagen": "Público asistente a una plenaria",
+      "anioImagen": "",
+      "anioPorConfirmar": true,
+      "porConfirmar": false
+    },
+    {
+      "periodo": "2026",
+      "texto": "XV Foro de Investigadores, Universidad de Nariño.",
+      "imagen": "foro-asistentes-panoramica.webp",
+      "pieImagen": "Panorámica de los asistentes",
+      "anioImagen": "",
+      "anioPorConfirmar": true,
+      "porConfirmar": false
+    }
+  ],
+  "lineas": [
+    {
+      "numero": "01",
+      "titulo": "Innovación tecnológica",
+      "descripcion": "Integrar tecnologías emergentes para transformar los procesos de enseñanza y aprendizaje.",
+      "color": "#00AEEF",
+      "ancho": 5,
+      "porConfirmar": false
+    },
+    {
+      "numero": "02",
+      "titulo": "Colaboración regional",
+      "descripcion": "Fortalecer redes de cooperación entre investigadores e instituciones iberoamericanas.",
+      "color": "#15A7B3",
+      "ancho": 4,
+      "porConfirmar": false
+    },
+    {
+      "numero": "03",
+      "titulo": "Formación continua",
+      "descripcion": "Promover el desarrollo de competencias digitales en docentes y estudiantes.",
+      "color": "#20A395",
+      "ancho": 3,
+      "porConfirmar": false
+    },
+    {
+      "numero": "04",
+      "titulo": "Impacto social",
+      "descripcion": "Generar soluciones educativas inclusivas que respondan a los desafíos de la región.",
+      "color": "#2A9F78",
+      "ancho": 3,
+      "porConfirmar": false
+    },
+    {
+      "numero": "05",
+      "titulo": "Investigación aplicada",
+      "descripcion": "Impulsar proyectos que trasladen los hallazgos científicos a la práctica pedagógica.",
+      "color": "#359B5A",
+      "ancho": 4,
+      "porConfirmar": false
+    },
+    {
+      "numero": "06",
+      "titulo": "Divulgación académica",
+      "descripcion": "Difundir experiencias, memorias y publicaciones de la comunidad de la red.",
+      "color": "#4A941E",
+      "ancho": 5,
+      "porConfirmar": false
+    }
+  ],
+  "memoria": [
+    {
+      "imagen": "foro-fotografia-de-grupo.webp",
+      "descripcion": "Fotografía de grupo de los asistentes",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "grande"
+    },
+    {
+      "imagen": "acto-mesa-principal.webp",
+      "descripcion": "Mesa principal, acto de apertura",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "medio"
+    },
+    {
+      "imagen": "delegados-sesion-de-trabajo.webp",
+      "descripcion": "Delegados en sesión de trabajo",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "pequena"
+    },
+    {
+      "imagen": "ponencia-mesa-con-microfono.webp",
+      "descripcion": "Mesa de coordinadores nacionales",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "pequena"
+    },
+    {
+      "imagen": "panel-mesa-de-ponentes.webp",
+      "descripcion": "Panel de ponentes",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "pequena"
+    },
+    {
+      "imagen": "publico-asistentes-primer-plano.webp",
+      "descripcion": "Público asistente a una plenaria",
+      "anio": "",
+      "anioPorConfirmar": true,
+      "tamano": "pequena"
+    }
+  ]
 }

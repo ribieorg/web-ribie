@@ -1,0 +1,83 @@
+---
+/**
+ * Memoria — el archivo fotográfico de los foros.
+ *
+ * Es la sección que sostiene el argumento entero de la dirección: quince foros
+ * ocurridos, con registro. Por eso las fotografías se presentan como ARCHIVO
+ * —con su descripción y su año— y no como decoración de fondo: una imagen sin
+ * pie es ilustración; con pie es documento.
+ *
+ * El mosaico es asimétrico por dato (`tamano`), no por CSS: una pieza grande, una
+ * media y el resto pequeñas. Un grid uniforme de seis fotos iguales sería
+ * exactamente la retícula que §11.3 prohíbe.
+ *
+ * ⚠️ Ninguna foto lleva año todavía: son de foros anteriores y nadie ha
+ * confirmado cuál es cuál. Salen con chip hasta que RIBIE los aporte.
+ */
+import Duo from './Duo.astro';
+import Chip from './Chip.astro';
+import Encabezado from './Encabezado.astro';
+import { memoria } from '../data/contenido';
+
+/** Tramo de columnas y proporción de recorte según el peso de la pieza. */
+const FORMATO = {
+  grande:  { columnas: 'span 7', proporcion: '16/9', sizes: '58vw' },
+  medio:   { columnas: 'span 5', proporcion: '4/3',  sizes: '42vw' },
+  pequena: { columnas: 'span 3', proporcion: '1/1',  sizes: '25vw' },
+} as const;
+---
+
+{memoria.piezas.length > 0 && (
+  <section class="g sec" id="memoria">
+    <Encabezado eyebrow={memoria.eyebrow} titulo={memoria.titulo} />
+
+    <div class="archivo">
+      {memoria.piezas.map((p) => {
+        const f = FORMATO[p.tamano] ?? FORMATO.pequena;
+        return (
+          <figure class:list={['pieza', 'reveal', p.tamano]} style={`grid-column:${f.columnas}`}>
+            <Duo imagen={p.imagen} alt={p.descripcion} proporcion={f.proporcion} sizes={f.sizes} revela />
+            <figcaption>
+              <span>{p.descripcion}</span>
+              {p.anio
+                ? <span class="anio">{p.anio}</span>
+                : <Chip activo={p.anioPorConfirmar} texto="año por confirmar" />}
+            </figcaption>
+          </figure>
+        );
+      })}
+    </div>
+  </section>
+)}
+
+<style>
+  .archivo {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5, 1.25rem);
+    margin-top: var(--space-12);
+  }
+  .pieza { margin: 0; }
+  .pieza figcaption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: .78125rem;
+    color: var(--ink-500);
+    border-bottom: 1px solid var(--border-hairline);
+    padding: var(--space-2) 0 var(--space-3);
+  }
+  .anio { font-variant-numeric: tabular-nums; }
+
+  /* En móvil, dos columnas: la pieza grande y la media ocupan las dos; las
+     pequeñas van de a dos por fila. Apilarlas todas a ancho completo convertía
+     seis fotografías en seis pantallas de scroll y deshacía el mosaico. */
+  @media (max-width: 47.5rem) {
+    .archivo { grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+    .pieza { grid-column: span 2 !important; }
+    .pieza.pequena { grid-column: span 1 !important; }
+    .pieza figcaption { flex-direction: column; gap: 2px; align-items: flex-start; }
+  }
+</style>

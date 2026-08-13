@@ -1,243 +1,180 @@
 ---
 /**
- * Hero — dirección `institucional filoso` (DESIGN.md §11).
+ * Hero — dirección `institucional con evidencia` (DESIGN.md §14, D51).
  *
- * Tres capas y el orden importa: el hueco de fotografía ocupa el flanco
- * izquierdo, un plano de azul eléctrico entra en diagonal desde la derecha, y
- * encima van las dos columnas desiguales de contenido (62/38). La diagonal
- * grande es lo que carga el golpe visual.
+ * Lo que este hero NO tiene, y es deliberado: corte en diagonal, plano de azul
+ * eléctrico y tarjetas de color con flecha. Eso era la firma del Alan Turing
+ * Institute —incluido su `#2B2BF5`—, trasladada tal cual, y es la razón por la
+ * que el cliente decía que el sitio no lo representaba.
  *
- * Nada centrado: el titular se ancla al margen izquierdo del contenedor.
+ * Lo que tiene en su lugar: texto a la izquierda sobre blanco, fotografía real
+ * de la red sangrando por el borde derecho, y una cinta con cuatro datos
+ * verificables debajo. La evidencia manda sobre el efecto: cada pieza del hero
+ * es un dato o un registro, no un gesto.
  */
-import { Image } from 'astro:assets';
-import NodeTexture from './NodeTexture.astro';
-import Rayado from './Rayado.astro';
-import Marca from './Marca.astro';
-import { hero, foro, organizaciones } from '../data/contenido';
-
-// Astro necesita conocer las imágenes en tiempo de compilación: el glob las recoge todas.
-const archivos = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/remoto/*.{png,jpg,jpeg,webp,gif}',
-  { eager: true }
-);
-const fondoHero = hero.imagen
-  ? Object.entries(archivos).find(([ruta]) => ruta.endsWith('/' + hero.imagen))?.[1].default
-  : undefined;
+import Duo from './Duo.astro';
+import Chip from './Chip.astro';
+import { hero, cifras } from '../data/contenido';
 ---
 
-<section class="hero">
-  <!-- Flanco de fotografía: hueco declarado hasta que RIBIE entregue material -->
-  <div class="lienzo">
-    {fondoHero ? (
-      <>
-        {/* `eager` y sin lazy: es lo primero que se ve, y cargarla tarde produce el
-            salto que `astro:assets` evita reservando su tamaño. */}
-        <Image class="foto" src={fondoHero} alt={hero.pieImagen} widths={[900, 1800]} sizes="(max-width: 60rem) 100vw, 62vw" format="webp" quality={80} loading="eager" />
-        <span class="velo" aria-hidden="true"></span>
-      </>
-    ) : (
-      <Rayado
-        id="ribieHeroRayas"
-        ancho={900}
-        alto={660}
-        fondo="#0D0D0D"
-        raya="#191919"
-        pie="[ foto: sesión de trabajo de la red — 2400 × 1400 ]"
-        pieAlMargen
-      />
-    )}
-    {/* Misma regla que en la banda del Foro: la malla no se superpone a una fotografía. */}
-    {!fondoHero && <NodeTexture variante="oscura" opacidad={0.4} animada />}
-  </div>
-
-  <!-- El plano de color que entra en diagonal -->
-  <div class="plano" aria-hidden="true"></div>
-
-  <div class="capa">
-    <div class="principal">
-      <p class="eyebrow eyebrow--vivo">{hero.eyebrow}</p>
-      <h1>
-        {hero.titulo}<br />
-        {hero.tituloDestacado && <span class="resalte">{hero.tituloDestacado}</span>}
-      </h1>
-      <p class="entrada">{hero.entrada}</p>
-      <div class="acciones">
-        <a href="#quienes-somos" class="boton boton--claro">Conocer la red</a>
-        <Marca activo={hero.provisional} texto="Texto provisional" />
-      </div>
+<section class="hero g">
+  <div class="texto reveal">
+    <span class="eyebrow">{hero.eyebrow}</span>
+    <h1>
+      {hero.titulo} <em>{hero.tituloDestacado}</em>
+    </h1>
+    {hero.entrada && <p class="entrada">{hero.entrada}</p>}
+    <div class="acciones">
+      <a class="boton boton--accion" href={hero.botonPrimario.ancla}>{hero.botonPrimario.texto}</a>
+      <a class="boton boton--contorno" href={hero.botonSecundario.ancla}>{hero.botonSecundario.texto}</a>
     </div>
-
-    <aside class="fichas" aria-label="Destacados">
-      <a class="ficha" href="#foro">
-        <span class="ficha-clave">Convocatoria</span>
-        <span class="ficha-titulo">{foro.nombre}</span>
-        <span class="ficha-texto">{foro.lugar} · {foro.modalidad}</span>
-        <span class="ficha-pie">
-          <span>{foro.fecha}</span>
-          <span class="flecha" aria-hidden="true">→</span>
-        </span>
-      </a>
-
-      <a class="ficha" href="#nodos">
-        <span class="ficha-clave">La red</span>
-        <span class="ficha-titulo">Nodos e instituciones</span>
-        <span class="ficha-texto">
-          Grupos de investigación, facultades y ministerios de toda Iberoamérica.
-        </span>
-        <span class="ficha-pie">
-          <span>{organizaciones.items.length > 0 ? 'Directorio' : 'Listado en preparación'}</span>
-          <span class="flecha" aria-hidden="true">→</span>
-        </span>
-      </a>
-    </aside>
   </div>
+
+  <div class="retrato">
+    <Duo
+      imagen={hero.imagen}
+      alt={hero.pieImagen}
+      proporcion="5/4"
+      sizes="(max-width: 47.5rem) 100vw, 50vw"
+      anchos={[720, 1200, 1800]}
+      prioritaria
+      clase="parallax"
+    />
+    {hero.pieImagen && (
+      <p class="pie">
+        {hero.pieImagen} <Chip activo={hero.anioPorConfirmar} texto="año por confirmar" />
+      </p>
+    )}
+  </div>
+
+  {cifras.length > 0 && (
+    <dl class="cinta reveal">
+      {cifras.map((c) => (
+        <div class="dato">
+          <dt class="valor">
+            {c.valor}{c.unidad && <small>{c.unidad}</small>}
+          </dt>
+          <dd class="etiqueta">
+            {c.etiqueta} <Chip activo={c.porConfirmar} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
 </section>
 
 <style>
   .hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: var(--void);
-    color: #fff;
-    min-height: 41rem;
-    display: flex;
+    padding-top: clamp(3rem, 7vh, 5.5rem);
+    align-items: end;
+    row-gap: var(--space-12);
   }
 
-  /* Capa 1 — el hueco de fotografía, confinado al flanco izquierdo. El 38% de
-     recorte es lo que hace que el plano azul lo muerda en diagonal. */
-  .lienzo {
-    position: absolute;
-    inset: 0 38% 0 0;
-    overflow: hidden;
-    background: #0B0B0B;
-    z-index: -2;
+  .texto { grid-column: 1 / 7; }
+  .eyebrow {
+    display: block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand);
   }
-  /* Fotografía del hero: mismo tratamiento que la banda del Foro. El velo es
-     uniforme porque el titular ocupa casi todo el flanco, y va algo más alto (0.82)
-     porque encima cae el texto más grande del sitio. */
-  /* El plano azul entra en diagonal barriendo del 34 % (abajo) al 64 % (arriba) del
-     hero, y el lienzo llega al 62 %: con fotografía, esa diagonal la cruzaba de lado
-     a lado. Con foto, el lienzo se detiene en el 34 % —el punto más a la izquierda
-     del corte—, de modo que el ángulo ocurre entero sobre color y la imagen conserva
-     su borde recto. Sin foto no aplica: el rayado sí puede cortarse, es una textura
-     y no un registro de la red. */
-  .hero:has(.lienzo .foto) .lienzo { inset: 0 66% 0 0; }
-  .lienzo .foto {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-hero);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--ink);
+    margin: var(--space-4) 0 0;
+    text-wrap: balance;
   }
-  /* Mismo criterio que en la banda del Foro, pero el reparto aquí es vertical: el
-     texto arranca por debajo del primer tercio, así que la franja de arriba puede
-     quedar casi limpia y es donde se ve la fotografía. Bajo el titular el alfa
-     efectivo llega a 0.91. */
-  .lienzo .velo {
-    position: absolute; inset: 0;
-    background:
-      linear-gradient(to bottom,
-        rgb(0 0 0 / 0.18) 0%,
-        rgb(0 0 0 / 0.34) 9%,
-        rgb(0 0 0 / 0.86) 14%,
-        rgb(0 0 0 / 0.86) 86%,
-        rgb(0 0 0 / 0.40) 96%,
-        rgb(0 0 0 / 0.28) 100%),
-      rgb(0 0 0 / 0.10);
-  }
+  /* La segunda línea del titular en turquesa: el color de la casa entra por el
+     titular, no por un plano de fondo. */
+  h1 em { font-style: normal; color: var(--brand); }
 
-  /* Capa 2 — el plano de azul eléctrico. La diagonal ES el gesto del hero. */
-  .plano {
-    position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: 66%;
-    background: var(--viv-azul);
-    clip-path: polygon(46% 0, 100% 0, 100% 100%, 0 100%);
-    z-index: -1;
-  }
-
-  /* Capa 3 — contenido. Columnas desiguales: la simetría 50/50 es justo lo que
-     hace que un hero se lea a plantilla (§11.2). */
-  .capa {
-    position: relative;
-    display: grid;
-    grid-template-columns: 62fr 38fr;
-    width: 100%;
-    align-items: center;
-  }
-
-  .principal {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    padding: clamp(4rem, 8vw, 6rem) 4vw clamp(4rem, 8vw, 6rem) var(--margen);
-  }
-  .eyebrow--vivo { color: var(--viv-verde); font-weight: 700; }
-  h1 { color: #fff; max-width: 24ch; text-wrap: balance; }
-  .resalte { color: var(--viv-verde); }
   .entrada {
     font-size: var(--text-lead);
-    color: rgba(255, 255, 255, .88);
-    max-width: 46ch;
+    line-height: 1.55;
+    color: var(--ink-700);
+    max-width: 50ch;
+    margin: var(--space-6) 0 var(--space-8);
     text-wrap: pretty;
   }
-  .acciones { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+  .acciones { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 
-  /* Fichas sobre el plano azul: un azul más claro, sin caja ni sombra. La
-     separación la hace el salto de color, no un borde. */
-  .fichas {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding: clamp(3rem, 6vw, 4.5rem) var(--margen) clamp(3rem, 6vw, 4.5rem) 0;
+  /* La fotografía sangra por el borde derecho: es lo que impide que el hero se
+     lea como dos columnas de una plantilla. */
+  .retrato {
+    grid-column: 7 / 13;
+    margin-right: calc(var(--margen) * -1);
   }
-  .ficha {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    background: #4B4BF9;               /* blanco encima → 5,73:1 */
-    color: #fff;
-    padding: var(--space-6);
-    text-decoration: none;
-    transition: background var(--dur-micro) var(--ease-out);
+  .pie {
+    font-size: .78125rem;
+    color: var(--ink-500);
+    text-align: right;
+    margin: var(--space-3) var(--margen) 0 0;
   }
-  /* El hover aclara el fondo, así que la tinta secundaria tiene que aclararse
-     con él: #E4E4FF da 4,58:1 sobre el fondo en reposo pero solo 3,86:1 sobre el
-     de hover, y el texto de 13–15px necesita 4,5. Blanco sobre el hover son
-     4,81:1. Aclarar solo el fondo es la forma silenciosa de romper el contraste
-     en el único estado que nadie revisa. */
-  .ficha:hover { background: #5C5CFA; }
-  .ficha:hover .ficha-clave,
-  .ficha:hover .ficha-texto,
-  .ficha:hover .ficha-pie { color: #fff; }
 
-  .ficha-clave { font-size: var(--text-small); color: #E4E4FF; }
-  .ficha-titulo { font-size: 1rem; font-weight: 700; line-height: 1.35; }
-  .ficha-texto { font-size: .875rem; line-height: 1.55; color: #E4E4FF; }
-  .ficha-pie {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
+  /* Cinta de datos: cuatro cifras alineadas al margen, sin tarjetas ni iconos.
+     Un filete arriba y aire. */
+  .cinta {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    column-gap: clamp(2rem, 6vw, 6rem);
+    row-gap: var(--space-6);
+    border-top: 1px solid var(--border-strong);
     margin-top: var(--space-2);
-    font-size: .8125rem;
-    color: #E4E4FF;
+    padding-top: var(--space-6);
+    margin-bottom: 0;
   }
-  .flecha { font-size: 1rem; color: #fff; }
+  .dato { min-width: 0; }
+  .valor {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.5rem, 3.4vw, 3.5rem);
+    line-height: 1;
+    color: var(--brand-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .valor small {
+    font-family: var(--font-text);
+    font-size: .38em;
+    font-weight: 600;
+    color: var(--ink-500);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .etiqueta {
+    font-size: .875rem;
+    color: var(--ink-700);
+    margin: var(--space-2) 0 0;
+  }
 
-  /* --- Móvil: la diagonal se aplana y las columnas se apilan (§11) -------- */
-  @media (max-width: 60rem) {
-    .hero { display: block; }
-    .capa { grid-template-columns: 1fr; }
-    .lienzo { inset: 0; }
-    .plano {
-      width: 100%;
-      top: auto;
-      height: 62%;
-      clip-path: polygon(0 12%, 100% 0, 100% 100%, 0 100%);
+  @media (max-width: 47.5rem) {
+    .texto, .retrato { grid-column: 1 / 13; }
+    .retrato { margin-left: calc(var(--margen) * -1); }
+    .pie { margin-right: var(--margen); }
+    .cinta { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Parallax del duotono: solo `transform`, ligado al scroll con CSS nativo.
+     Sin librería, sin listener, sin trabajo en el hilo principal (D53). */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .retrato :global(.parallax img) {
+        animation: deriva linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 100%;
+        transform: scale(1.06);
+      }
     }
-    .principal { padding-inline: var(--margen); }
-    .fichas { padding: 0 var(--margen) clamp(3rem, 8vw, 4rem) var(--margen); }
-    /* El pie del hueco quedaría debajo del plano azul, ilegible */
-    .lienzo :global(.pie-hueco) { display: none; }
+  }
+  @keyframes deriva {
+    from { transform: scale(1.06) translateY(-2.5%); }
+    to   { transform: scale(1.06) translateY(2.5%); }
   }
 </style>

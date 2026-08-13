@@ -1,6 +1,6 @@
 /* ==========================================================================
    RIBIE — estilos base
-   Deriva de docs/DESIGN.md. Los valores viven en tokens.css: aquí no se
+   Deriva de docs/DESIGN.md §14. Los valores viven en tokens.css: aquí no se
    escriben colores, tamaños ni duraciones a mano.
    ========================================================================== */
 
@@ -14,7 +14,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem; /* el header fijo no tapa el destino del ancla */
+  scroll-padding-top: 7.5rem;  /* la cabecera fija no puede tapar el destino */
 }
 
 body {
@@ -26,173 +26,153 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-kerning: normal;
+  /* Cifras de ancho fijo: el sitio está lleno de años y cantidades, y con cifras
+     proporcionales una columna de números no alinea. */
+  font-variant-numeric: tabular-nums;
 }
 
 img, picture, svg { display: block; max-width: 100%; height: auto; }
 
-a { color: inherit; }
+a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--dur-standard) var(--ease-out),
+              text-decoration-thickness var(--dur-standard) var(--ease-out);
+}
+a:hover { color: var(--brand-deep); text-decoration-thickness: 2px; }
 
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
-ul { list-style: none; padding: 0; }
+ul, ol { list-style: none; padding: 0; }
 
-:target { scroll-margin-top: 6rem; }
+section { scroll-margin-top: 7.5rem; }
 
-/* --- Tipografía ------------------------------------------------------------ */
-h1, h2, h3 {
-  font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading);
-  text-wrap: balance;
-}
-
-h1 { font-size: var(--text-hero); font-weight: 600; line-height: var(--leading-hero); }
-h2 { font-size: var(--text-h2); }
-h3 { font-size: var(--text-h3); }
-
-p { text-wrap: pretty; }
-
-/* Título bicolor — el patrón de marca que aportan los mockups de RIBIE */
-.destacado { color: var(--brand); }
-.destacado--verde { color: var(--node-lime); }
-
-.eyebrow {
-  font-size: var(--text-eyebrow);
-  font-weight: 600;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brand);
-  margin-bottom: var(--space-3);
-}
-
-.lead { font-size: var(--text-lead); color: var(--ink-soft); }
-
-.medida { max-width: var(--measure); }
-
-/* --- Layout ---------------------------------------------------------------- */
-/* A SANGRE, sin ancho máximo centrado. La versión anterior era
-   `min(100% - 10vw, 80rem)` con `margin-inline: auto`, y ese tope centrado es lo
-   que dejaba todas las bandas dentro de la misma columna estrecha — la firma de
-   layout que §11.3 prohíbe. Ahora el bloque ocupa el ancho de la pantalla menos
-   el margen, y quien limita la medida de lectura es cada párrafo con su `ch`.
-   Los mosaicos que deben tocar el borde usan `.a-sangre`. */
-.contenedor {
+/* --- Retícula --------------------------------------------------------------
+   Doce columnas a sangre, sin ancho máximo centrado: un tope centrado deja todas
+   las bandas en la misma columna, y esa uniformidad es la firma que §11.3
+   prohíbe. Quien limita la medida de lectura es cada bloque de texto con su
+   propio `ch`. */
+.g {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--space-6);
   padding-inline: var(--margen);
 }
+.sec { padding-top: var(--section-gap); }
 
-/* Anula el margen para los bloques que van de borde a borde (mosaicos, fotos
-   apaisadas). El texto que viva dentro recupera el margen por su cuenta. */
-.a-sangre { padding-inline: 0; }
+@media (max-width: 47.5rem) {
+  .g { column-gap: var(--space-3); }
+}
 
-.seccion { padding-block: var(--section-gap); }
-
-.seccion--alt { background: var(--surface-alt); }
-
-/* --- Botones --------------------------------------------------------------- */
+/* --- Botones ---------------------------------------------------------------
+   Radio de 2px, no pastilla. El botón de una red académica no es el de una app.
+   ⚠️ El ámbar SIEMPRE con tinta oscura: blanco sobre ámbar da 2,6:1 y reprueba. */
 .boton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   min-height: 44px;                    /* objetivo táctil */
   padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: var(--text-small);
+  line-height: 1.2;
   text-decoration: none;
-  transition: transform var(--dur-micro) var(--ease-out),
-              background-color var(--dur-micro) var(--ease-out);
+  transition: background-color var(--dur-standard) var(--ease-out),
+              color var(--dur-standard) var(--ease-out);
 }
 
-/* ⚠️ Ámbar SIEMPRE con texto oscuro: blanco sobre ámbar da 2.6:1 y reprueba WCAG */
-.boton--accion {
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.boton--accion:hover { transform: translateY(-1px); }
+.boton--accion { background: var(--accent); color: var(--accent-ink); }
+.boton--accion:hover { background: var(--accent-hover); color: var(--accent-ink); text-decoration: none; }
 
-.boton--fantasma {
-  color: var(--brand);
-  box-shadow: var(--ring);
-}
-.boton--fantasma:hover { background: var(--brand-tint); }
-
-.boton--claro {
-  background: var(--surface);
+.boton--contorno {
+  border: 1px solid var(--brand);
   color: var(--brand-deep);
 }
-.boton--claro:hover { transform: translateY(-1px); }
+.boton--contorno:hover { background: var(--brand-tint); color: var(--brand-deep); text-decoration: none; }
 
-/* --- Foco visible ---------------------------------------------------------- */
+/* --- Foco visible -----------------------------------------------------------
+   🔴 El anillo ámbar sobre fondo claro da 2,49:1 y reprueba el mínimo de 3:1.
+   Afecta solo a quien navega por teclado, que es el usuario que nadie prueba: se
+   ve bien y está mal. En claro va el turquesa (5,95:1); sobre las bandas
+   oscuras, cada una devuelve el ámbar con `--focus-ring-dark` (3,57:1). */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
-/* --- Marca de contenido provisional ---------------------------------------- */
-.provisional {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0.125rem var(--space-2);
-  border-radius: var(--radius-full);
-  background: oklch(72.8% 0.156 65.9 / 0.14);
-  color: oklch(38% 0.09 65.9);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  vertical-align: middle;
+/* --- Reveal al entrar en pantalla -------------------------------------------
+   Con `animation-timeline: view()` no hay observer ni clase que añadir: lo
+   resuelve el compositor.
+
+   ⚠️ El reveal NO toca la opacidad, y esa es la corrección importante. Con
+   `from { opacity: 0 }` el contenido queda **invisible siempre que el rango
+   `entry` no llega a ejecutarse**: cuando el viewport es más alto que el
+   documento, al imprimir, y en cualquier captura de página completa —donde el
+   navegador estira la ventana y ningún elemento «entra» nunca—. Se veía media
+   portada en blanco. La regla dura de D53 es que el contenido se vea completo
+   pase lo que pase, y una animación de entrada no puede ser lo que decida si un
+   párrafo existe. Con solo `transform`, el peor caso es un bloque 18px más
+   abajo: legible, y nadie lo nota.
+
+   Los longhands, igual que en el recorrido histórico: el atajo `animation:`
+   junto a `animation-timeline` lo fusiona el minificador y se pierde la línea
+   de tiempo. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation-name: subir;
+      animation-duration: auto;
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+@keyframes subir {
+  from { transform: translateY(18px); }
+  to   { transform: none; }
 }
 
-.provisional::before {
-  content: '';
-  width: 0.375rem; height: 0.375rem;
-  border-radius: 50%;
+/* --- Barra de progreso de lectura ------------------------------------------
+   Ligada al scroll del documento, sin JavaScript. Decorativa: no anuncia nada a
+   un lector de pantalla. */
+.progreso {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 100%;
   background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  z-index: 60;
 }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .progreso {
+      animation: crecer linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+@keyframes crecer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-/* Sobre fondo oscuro (hero, banda del Foro, pie) y sobre FOTOGRAFÍA, el ámbar
-   translúcido con texto oscuro se vuelve ilegible. Ahí la marca va en ámbar SÓLIDO
-   con texto casi negro —el mismo par del botón, 7.59:1— en vez de invertir los
-   colores. Una foto puede tener cualquier cosa debajo: el sólido es lo único que
-   aguanta sin medir el contraste imagen por imagen. */
-.hero .provisional,
-.banda .provisional,
-.pie .provisional,
-figcaption .provisional {
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.hero .provisional::before,
-.banda .provisional::before,
-.pie .provisional::before,
-figcaption .provisional::before {
-  background: var(--accent-ink);
-  opacity: 0.55;
-}
-
-/* --- Reveal al hacer scroll (un solo patrón, una sola vez) ------------------ */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--dur-standard) var(--ease-out),
-              transform var(--dur-standard) var(--ease-out);
-}
-.reveal.visible { opacity: 1; transform: none; }
-
-/* Sin JavaScript, el contenido se ve igual: nunca oculto de forma permanente */
-.no-js .reveal { opacity: 1; transform: none; }
+/* Transición entre páginas — nativa. Cuando exista la página del XV Foro (D52),
+   la navegación no parpadeará en blanco. */
+@view-transition { navigation: auto; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .progreso { display: none; }
 }
 
-/* Al imprimir no hay scroll que dispare el observer: todo visible y sin adornos */
+/* Al imprimir: sin cabecera fija, sin barras y con todo visible. */
 @media print {
-  .reveal { opacity: 1 !important; transform: none !important; }
   .cabecera { position: static; }
-  .textura { display: none; }
+  .progreso { display: none; }
 }

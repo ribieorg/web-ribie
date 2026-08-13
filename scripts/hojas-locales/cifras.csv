@@ -1,0 +1,5 @@
+id,valor,unidad,etiqueta,confirmado,orden,estado,que_es
+origen,1990,,origen en CYTED,sí,1,publicado,Año de fundación
+paises,21,países,países integrantes,no,2,publicado,"CONFIRMAR: es el nº de integrantes del programa, no necesariamente nodos activos hoy"
+eventos,15,+15,congresos y foros,sí,3,publicado,15 congresos + 15 foros
+anios,36,años,años de trayectoria,sí,4,publicado,"1990 → 2026, derivado"
