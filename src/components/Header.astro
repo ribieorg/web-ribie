@@ -7,9 +7,16 @@
  * carga el argumento de la dirección: la primera línea del sitio ya es evidencia
  * —«Programa CYTED», «21 países · desde 1990»—.
  *
- * En móvil la navegación se sustituye por un enlace al índice del pie, no por un
- * panel desplegable: seis anclas no justifican un componente con estado, y ese
- * panel costaba el único JavaScript propio que quedaba en la cabecera.
+ * En móvil, menú desplegable resuelto con `<details>/<summary>`: es un
+ * desplegable NATIVO del navegador, así que trae gratis el botón accesible, el
+ * `aria-expanded`, el manejo de teclado y —lo que importa— **funciona sin una
+ * línea de JavaScript**. Si el script de abajo no llega a ejecutarse, el menú
+ * abre y cierra igual.
+ *
+ * El script propio (nueve líneas, sin dependencias) solo añade las dos
+ * cortesías que el elemento nativo no da: cerrarlo al elegir un destino —si no,
+ * el panel tapa la sección a la que se acaba de saltar— y cerrarlo al pasar a
+ * escritorio, para que no quede abierto por detrás al girar el teléfono.
  */
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-ribie.png';
@@ -30,12 +37,35 @@ import { navegacion, barra, sitio, franja, MOSTRAR_FRANJA } from '../data/conten
     <a class="marca" href="/" aria-label={`${sitio.nombre} — inicio`}>
       <Image src={logo} alt={sitio.nombre} height={44} densities={[1, 2]} loading="eager" />
     </a>
-    <nav aria-label="Principal">
+    <nav class="escritorio" aria-label="Principal">
       {navegacion.map((n) => <a href={n.ancla}>{n.texto}</a>)}
     </nav>
-    <a class="indice" href="#pie">Índice</a>
+
+    <details class="menu">
+      <summary aria-label="Menú de navegación">
+        <span class="rayas" aria-hidden="true"></span>
+        <span class="rotulo">Menú</span>
+      </summary>
+      <nav class="panel" aria-label="Principal (móvil)">
+        {navegacion.map((n) => <a href={n.ancla}>{n.texto}</a>)}
+      </nav>
+    </details>
   </div>
 </header>
+
+<script>
+  // Las dos cortesías que `<details>` no da por sí solo. Sin esto el menú sigue
+  // funcionando: abre, cierra y navega igual.
+  const menu = document.querySelector<HTMLDetailsElement>('.menu');
+  if (menu) {
+    // Al elegir un destino, el panel se cierra: si no, tapa la sección a la que
+    // se acaba de saltar.
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => { menu.open = false; }));
+    // Y al pasar a escritorio, para que no quede abierto por detrás.
+    const escritorio = window.matchMedia('(min-width: 47.5625rem)');
+    escritorio.addEventListener('change', (e) => { if (e.matches) menu.open = false; });
+  }
+</script>
 
 <style>
   .preparacion {
@@ -73,8 +103,8 @@ import { navegacion, barra, sitio, franja, MOSTRAR_FRANJA } from '../data/conten
   .marca { display: flex; line-height: 0; }
   .marca :global(img) { height: 44px; width: auto; }
 
-  nav { display: flex; gap: clamp(.875rem, 2.2vw, 2rem); }
-  nav a {
+  .escritorio { display: flex; gap: clamp(.875rem, 2.2vw, 2rem); }
+  .escritorio a {
     font-size: var(--text-small);
     font-weight: 500;
     color: var(--ink-700);
@@ -85,23 +115,96 @@ import { navegacion, barra, sitio, franja, MOSTRAR_FRANJA } from '../data/conten
     transition: border-color var(--dur-standard) var(--ease-out),
                 color var(--dur-standard) var(--ease-out);
   }
-  nav a:hover { color: var(--brand-deep); border-bottom-color: var(--brand); }
+  .escritorio a:hover { color: var(--brand-deep); border-bottom-color: var(--brand); }
 
-  .indice {
-    display: none;
+  /* --- Menú móvil ---------------------------------------------------------- */
+  .menu { display: none; position: relative; }
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    /* 44px de objetivo táctil, la medida mínima para un dedo. */
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
     font-family: var(--font-display);
     font-size: .875rem;
     letter-spacing: .08em;
     text-transform: uppercase;
     color: var(--brand-deep);
-    border: 1px solid var(--border-strong);
-    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    list-style: none;                    /* fuera el triangulito por defecto */
+  }
+  summary::-webkit-details-marker { display: none; }
+
+  /* Las tres rayas, dibujadas con bordes: sin SVG, sin icono, sin fuente. */
+  .rayas {
+    position: relative;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    transition: background var(--dur-micro) var(--ease-out);
+  }
+  .rayas::before, .rayas::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--dur-standard) var(--ease-out);
+  }
+  .rayas::before { top: -6px; }
+  .rayas::after  { top: 6px; }
+
+  /* Abierto: la raya del medio se apaga y las otras dos cruzan. El estado lo
+     lleva el propio elemento (`[open]`), no una clase que haya que sincronizar. */
+  .menu[open] .rayas { background: transparent; }
+  .menu[open] .rayas::before { transform: translateY(6px) rotate(45deg); }
+  .menu[open] .rayas::after  { transform: translateY(-6px) rotate(-45deg); }
+
+  /* ⚠️ Hay que ocultarlo a mano, aunque `<details>` cerrado oculte su contenido:
+     el navegador lo hace sobre el flujo normal, y este panel está en `absolute`
+     —para no empujar la página al abrirse—, así que se escapaba de esa regla y
+     quedaba visible con el menú cerrado. */
+  .menu:not([open]) .panel { display: none; }
+
+  /* El panel se despliega por debajo de la cabecera, anclado al borde derecho. */
+  .panel {
+    position: absolute;
+    top: calc(100% + var(--space-3));
+    right: 0;
+    min-width: 14rem;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border-hairline);
+    border-top: 3px solid var(--brand);
+    box-shadow: 0 12px 32px rgb(17 24 39 / .10);
+    padding: var(--space-2) 0;
+    z-index: 60;
+  }
+  .panel a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink-700);
     text-decoration: none;
+    padding: var(--space-3) var(--space-6);
+    border-bottom: 1px solid var(--border-hairline);
+    white-space: nowrap;
+  }
+  .panel a:last-child { border-bottom: 0; }
+  .panel a:hover { color: var(--brand-deep); background: var(--brand-tint); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rayas, .rayas::before, .rayas::after { transition: none; }
   }
 
   @media (max-width: 47.5rem) {
     .barra > div { flex-direction: column; gap: 2px; }
-    nav { display: none; }
-    .indice { display: inline-block; }
+    .escritorio { display: none; }
+    .menu { display: block; }
   }
 </style>
