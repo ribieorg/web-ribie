@@ -22,5 +22,5 @@ nodos_intro,Cada nodo nacional tiene una institución sede. Hoy hay un nodo conf
 contacto_correo,contacto@ribie.org,Funciona en Cloudflare Email Routing
 contacto_ciudad,"Bogotá, Colombia",CONFIRMAR con RIBIE cuál sede se publica
 credito_texto,Aliado tecnológico — Creado por Renovatio Software,"Obligación contractual, visible pero discreto"
-credito_url,https://renovatiosoftware.com,
+credito_url,https://renovatiosoftware.net,
 mostrar_franja_preparacion,sí,"CONTROL: mientras diga sí, el sitio muestra la franja «sitio en preparación». Poner no cuando RIBIE valide textos, cifras y años"
