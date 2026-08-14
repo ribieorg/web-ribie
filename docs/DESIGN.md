@@ -665,13 +665,19 @@ incompleto: las hojas lo están**, y hace lo correcto al no publicar lo que no e
 
 ---
 
-## 14. Dirección `institucional con evidencia` (12 ago 2026) — 🟡 PROPUESTA
+## 14. Dirección `institucional con evidencia` (12 ago 2026) — ✅ IMPLEMENTADA, SIN PUBLICAR
 
-> 🟡 **Esta sección todavía NO rige.** Corresponde a las decisiones **D51, D52, D53 y D54** del
-> `00_SDD-ADDENDUM`, que están **pendientes de validación por RIBIE** (brief en
-> `02_portal_web/BRIEF - Rediseno del sitio (12 ago 2026).md`). Hasta que la Dirección responda, el
-> sistema en vigor son **§11–§13**. Avance técnico:
-> `docs/avances/2026-08-12-rediseno-institucional-con-evidencia.md`.
+> ✅ **Esta sección rige en el código desde el 13 de agosto** (**D55**). Corresponde a las decisiones
+> **D51, D52, D53 y D54** del `00_SDD-ADDENDUM`; **RIBIE dio libertad de proceder**, así que la
+> implementación no esperó la respuesta formal al brief
+> (`02_portal_web/BRIEF - Rediseno del sitio (12 ago 2026).md`).
+>
+> 🔴 **Pero no está desplegada:** `origin/main` sigue en el commit del 11 de agosto, de modo que **lo que
+> hay publicado en `ribie.org` se sigue rigiendo por §11–§13**. Mientras eso dure, el sitio y el
+> repositorio obedecen a secciones distintas de este documento.
+>
+> Avances técnicos: `docs/avances/2026-08-12-rediseno-institucional-con-evidencia.md` (la dirección) y
+> `docs/avances/2026-08-13-implementacion-institucional-con-evidencia.md` (la implementación).
 
 ### El diagnóstico
 
@@ -736,6 +742,12 @@ suave secuestrado. Si el navegador no soporta las animaciones ligadas al scroll,
 
 ### 🔴 Defectos medidos en la maqueta de referencia del paquete
 
+> ✅ **CORREGIDOS los cuatro el 13 ago al implementar (D55).** La tinta de los bloques de color pasó a
+> `#111827`, el anillo de foco ámbar subió de **2,49:1 a 5,95:1** (3,57:1 sobre las bandas oscuras) y
+> `--turquesa-claro` y `--state-info` dejaron de usarse como texto normal. Verificado sobre el DOM
+> renderizado: **0 fallos** de contraste en escritorio y en 390 px. La tabla se conserva porque es el
+> registro de lo que traía el paquete de diseño.
+
 Auditados sobre el DOM el 12 ago. **Hay que corregirlos antes de implementar**:
 
 | Elemento | Medido | Mínimo | Causa |
@@ -746,6 +758,56 @@ Auditados sobre el DOM el 12 ago. **Hay que corregirlos antes de implementar**:
 | `--state-info #0BAAD1` | 2,73:1 | 4,5:1 | Solo como bloque con tinta oscura |
 
 Es el mismo patrón del 29 de julio: **el color se eligió mirando, no calculando.**
+
+---
+
+## 15. Lo que fijó la implementación (13 ago 2026, D55)
+
+Reglas que no estaban en la propuesta y salieron de ejecutarla. Avance completo en
+`docs/avances/2026-08-13-implementacion-institucional-con-evidencia.md`.
+
+### El movimiento ligado al scroll no se apaga en móvil
+
+La maqueta desactivaba la animación del recorrido histórico por debajo del corte y la sustituía por una
+tira con desplazamiento lateral. **Se descarta como patrón:** obliga a un gesto que nadie hace en una
+página que se lee hacia abajo, y rompe la idea de la sección —que el tiempo avanza mientras uno avanza—.
+**El mecanismo es el mismo en todos los tamaños; lo que cambia es el tamaño de las piezas.**
+
+- **`100svh`, nunca `100vh`**, en cualquier bloque fijo a pantalla completa: con `vh`, la barra del
+  navegador móvil corta el último renglón al aparecer y desaparecer.
+- Un hito por pantalla en móvil (82vw, sin escalonado vertical), y sin fotografía por debajo de 640 px de
+  alto.
+- La indicación *«desliza»* solo aparece cuando de verdad hay que deslizar a mano: sin soporte de
+  `animation-timeline` y con `prefers-reduced-motion`.
+
+### Los desplegables se resuelven con el elemento nativo
+
+El menú móvil es `<details>/<summary>`: trae botón accesible, estado expandido y teclado sin una línea de
+código, y **abre y cierra aunque el JavaScript no se ejecute**. El script propio son **218 bytes**
+inlineados que solo hacen lo que el nativo no —cerrar al elegir destino y al pasar a escritorio—. El
+estado visual sale de `[open]`, no de una clase que haya que sincronizar; el icono son dos
+pseudoelementos, sin SVG ni fuente de iconos.
+
+> ⚠️ Un panel `absolute` dentro de `<details>` **hay que ocultarlo con `:not([open])`**: el ocultado
+> nativo actúa sobre el flujo normal y se le escapa.
+
+### Tres trampas que solo se ven midiendo el build
+
+1. **`animation` y `animation-timeline` van con *longhands*.** Escritas como atajo, el minificador las
+   fusiona y deja una sola declaración `animation-range`: la animación desaparece **solo en producción**.
+2. **Un reveal nunca apaga la opacidad.** Si el rango `entry` no llega a ejecutarse —viewport más alto que
+   el documento, impresión, captura de página completa—, la mitad de la página queda en blanco. **Se
+   anima `transform` y nada más.**
+3. **`:global()` dentro de `:has()` se descarta sin aviso** del compilador. El CSS que dependa de eso se
+   genera calificado por `id`.
+
+### El contrato de contenido son nueve hojas
+
+`textos` · `eventos` · `nodos` · `colaboradores` · `redes` · `cifras` · `hitos` · `lineas` · `memoria`.
+**D54 dijo ocho y contó mal.** Reglas que el sync impone: si a una hoja le falta una columna del
+`ESQUEMA`, **esa hoja no se publica** en vez de emitir el sitio a medias; y `lineas.color_manual` solo
+acepta uno de los ocho secundarios del manual —**así fue como el sitio terminó usando el azul del
+Turing**, y ahora el dato no puede volver a hacerlo—.
 
 ---
 
