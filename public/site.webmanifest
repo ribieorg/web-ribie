@@ -1,0 +1,13 @@
+{
+  "name": "RIBIE — Red Iberoamericana de Informática Educativa",
+  "short_name": "RIBIE",
+  "lang": "es",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#096D84",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

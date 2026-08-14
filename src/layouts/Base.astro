@@ -46,6 +46,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#096D84" />
 
+    {/*
+      Iconos de marca. Solo el ISOTIPO, nunca el logotipo completo: a 16 px el
+      texto «Red RIBIE» se convierte en una mancha ilegible.
+
+      Van sobre el turquesa `#096D84` —el mismo `theme-color` de arriba— porque
+      el símbolo suelto es demasiado claro y se desvanece en las pestañas de
+      tema claro. No es una licencia nuestra: el manual de marca (p. 3, «uso
+      sobre fondos oscuros») autoriza el isotipo a color sobre fondo turquesa.
+
+      El `.ico` lleva 48, 32 y 16 px remuestreados uno a uno, no un tamaño
+      escalado: el navegador elige cuál usar, y a 16 px un buen remuestreo es
+      la diferencia entre leerlo y no.
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
