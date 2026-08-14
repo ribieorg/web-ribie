@@ -1,124 +1,132 @@
-# Qué falta cargar en las hojas del Drive
+# Carga de las hojas del Drive — contrato de nueve hojas
 
-_Diagnóstico del **29 de julio de 2026**, hecho leyendo directamente las hojas publicadas con
-`pnpm sync:check`. No es una suposición: es lo que devuelven las URLs de `scripts/hojas.config.mjs`._
+_Actualizado el **14 de agosto de 2026** (D55). Sustituye al diagnóstico del 29 de julio, que describía el
+contrato de cinco hojas y el modo demostración, ambos superados._
 
 ---
 
-## El resumen en una línea
+## Estado: ✅ las nueve hojas están cargadas y publicadas (14 ago 2026)
 
-**El sitio no está roto ni le falta código: las hojas están a medio llenar.** Cuatro celdas vacías, dos
-filas en `borrador` y cinco enlaces sin URL bastan para explicar todos los huecos que se ven hoy.
+Verificado con `pnpm sync:check` contra el Drive real, **sin una sola advertencia**:
 
-| Hoja | Lo que devuelve el Drive | Lo que llega al sitio |
+| Hoja | Filas | Contenido |
 |---|---|---|
-| `textos` | 15 filas | 11 · **4 celdas vacías** |
-| `eventos` | 1 fila | **0** · está en `borrador` |
-| `nodos` | 1 fila | 1 |
-| `colaboradores` | 1 fila | **0** · está vacía y en `borrador` |
-| `redes` | 5 filas | **0** · sin URL y con `activo = no` |
+| `textos` | **25 claves** | Todos los textos del sitio |
+| `eventos` | 1 | XV Foro, con `fechas_confirmadas` en `no` |
+| `nodos` | **21** | Colombia con sede; 20 países `por confirmar` |
+| `colaboradores` | 1 | Estructura lista, **sin datos reales** |
+| `redes` | 5 | Listadas, **sin URL** |
+| `cifras` | 4 | 1990 · 21 países · +15 eventos · 36 años |
+| `hitos` | 4 | El recorrido histórico, con tres fotografías |
+| `lineas` | 6 | Las líneas de trabajo, con color del manual |
+| `memoria` | 6 | El archivo fotográfico |
+
+**Diez imágenes se descargan del Drive** a `src/assets/remoto/` —seis del archivo, tres de los hitos y el
+logotipo de la Universidad de Nariño— y Astro las optimiza en el build.
+
+Los archivos de partida siguen en
+`02_PROYECTOS/ribie/99_referencias/RIBIE Design System/exports/hojas/*.xlsx`, y los mismos datos en CSV en
+`scripts/hojas-locales/` (es lo que lee `pnpm sync:local`).
+
+> ⚠️ **Las nueve URLs se publicaron como *documento completo*** (`pub?output=csv`, sin `gid`), así que
+> Google devuelve **la primera pestaña**. Hoy funciona porque la pestaña de datos va primera y la de `guia`
+> segunda. **Si alguien reordena las pestañas, el sync empezaría a leer la guía** — al reordenar o añadir
+> pestañas, republicar apuntando a la pestaña concreta.
+
+> 💡 **El `gid` caduca cuando se reemplaza el contenido de una pestaña.** Las cinco URLs de julio llevaban
+> `gid=…&single=true` y empezaron a dar **HTTP 400** en cuanto se importó el contenido nuevo: el documento
+> era el mismo, la pestaña ya no. Si un día cinco hojas fallan a la vez y las nuevas funcionan, es esto.
 
 ---
 
-## 1. Hoja `textos` — cuatro celdas vacías
-
-Estas cuatro claves existen pero **su columna `valor` está en blanco**. El sitio no inventa datos: por eso
-las cifras salen en gris con la nota *"por confirmar"* y el pie dice *"Correo institucional — falta
-publicarlo en la hoja"*.
-
-| Clave | Qué escribir | Nota |
-|---|---|---|
-| `cifra_paises` | El número de países miembros | ⚠️ **Lo tiene que decir RIBIE.** No es el 19 del CYTED: esos son los países que originaron la red en 1984, no sus miembros de hoy |
-| `cifra_grupos` | Grupos de investigación | ⚠️ Sin confirmar por RIBIE |
-| `cifra_instituciones` | Instituciones asociadas | ⚠️ Sin confirmar por RIBIE |
-| `contacto_correo` | `contacto@ribie.org` | ✅ **Este sí se puede escribir ya.** La dirección existe y funciona en Cloudflare Email Routing desde el 27 de julio; lo único que falta es publicarla |
-
-> 💡 Si escribes las cifras y **`mostrar_marcas` sigue en `si`**, los números aparecen pero conservan su
-> nota "por confirmar". Es lo correcto mientras RIBIE no las valide: se ve la maqueta completa y el aviso
-> sigue puesto. La nota desaparece sola cuando `mostrar_marcas` pase a `no`.
-
-## 2. Hoja `eventos` — el XV Foro está en borrador
-
-La fila `xv-foro-2026` ya existe y **trae un dato que el sitio todavía no muestra: las fechas exactas,
-5 a 7 de octubre de 2026** (`fecha_inicio` y `fecha_fin`). Está en `estado = borrador`, así que el sitio
-la descarta entera y cae al texto de respaldo ("Primera semana de octubre").
-
-Para publicarla:
-
-1. `estado` → **`publicado`**
-2. `descripcion` → está **vacía**. Hay un texto ya redactado en
-   `plantillas-hojas/demostracion/eventos.csv` que puedes pegar tal cual.
-3. `enlace_inscripcion` → déjalo vacío mientras no exista. El sitio muestra el botón desactivado con la
-   nota "Enlace pendiente de RIBIE", que es preferible a un enlace muerto.
-
-> ⚠️ Antes de publicar, **confirma las fechas con RIBIE.** Que estén escritas en la hoja no significa que
-> alguien de la red las haya validado, y una vez publicadas la gente organiza viajes con ellas.
-
-## 3. Hoja `colaboradores` — una fila vacía en borrador
-
-Hay una sola fila, con `grupo = Dirección` y **todo lo demás en blanco**, en `estado = borrador`.
-
-Aquí no hay nada que arreglar por nuestra parte: hacen falta **nombres reales de personas** (comité
-científico, organización, dirección) con su cargo e institución. Es el único contenido del sitio que
-deliberadamente **no se rellenó ni siquiera como demostración**: inventar académicos con nombre y cargo
-en el sitio de una red real es el riesgo que no vale la pena correr.
-
-Mientras tanto el sitio muestra el bloque de "aquí irá el comité científico…" con su formato.
-
-## 4. Hoja `redes` — cinco filas sin URL
-
-Instagram, Facebook y YouTube (más dos) están listadas con `url` vacía y `activo = no`. El sitio las
-descarta y muestra "Redes sociales — enlaces pendientes".
-
-Cuando RIBIE entregue sus perfiles: pegar la URL completa y poner `activo` en **`sí`**. Sin URL, dejarlas
-en `no` — un enlace roto en el pie es peor que la nota.
-
-## 5. Hoja `nodos` — solo la Universidad de Nariño
-
-Es la única cargada, y está completa (con sitio web y logotipo, que el sitio descarga solo del Drive).
-
-Faltan los demás nodos de la red. El muro de la sección "Nodos e instituciones" está hecho para mostrar
-**país arriba y sede de coordinación debajo**, así que por cada nodo hacen falta al menos `pais` y
-`nombre_oficial`. El logotipo es opcional.
-
-> ⚠️ Este listado se lee como una **afirmación de pertenencia institucional**. No conviene cargarlo con
-> una lista tomada de memorias antiguas sin que RIBIE confirme quiénes integran la red hoy: mientras no
-> lo confirmen, el sitio publica la advertencia que se ve sobre el listado.
+## Cómo se cargó (procedimiento, por si hay que repetirlo)
 
 ---
 
-## Cómo aplicar los cambios
+## 1. Las cinco que ya existían — reemplazar el contenido y **republicar**
 
-1. Abre el cuaderno de contenido en el Drive institucional y edita las celdas.
-2. Espera unos minutos: **Google cachea las hojas publicadas alrededor de 5 minutos.** Si `pnpm sync` no
-   ve el cambio recién guardado, no es un fallo del script.
-3. En el proyecto:
+> Abrir la hoja en Sheets → **Archivo → Importar → Subir** el `.xlsx` →
+> **«Reemplazar hoja actual»** → Importar datos.
+
+⚠️ **Y después, republicar.** Reemplazar el contenido **cambia el `gid` de la pestaña**, de modo que la URL
+anterior deja de servir (HTTP 400) aunque el documento sea el mismo. Hay que volver a
+**Archivo → Compartir → Publicar en la web**, copiar la URL y actualizarla en `scripts/hojas.config.mjs`.
+Fue exactamente lo que pasó el 14 de agosto con las cinco.
+
+**Qué cambió en cada una:**
+
+- **`textos`** pasa de 13 a 25 claves. Salen `cifra_anios` y `cifra_paises` (van a `cifras`),
+  `historia_p1` y `historia_p2` (van a `hitos`) y `mostrar_marcas`, reemplazada por
+  **`mostrar_franja_preparacion`**.
+- **`eventos`** gana **`fechas_confirmadas`**. Es obligatoria: sin esa columna el sync **no publica la
+  hoja** y el XV Foro desaparece del sitio. Va en `no` mientras RIBIE no valide las fechas — el sitio las
+  muestra con la marca "por confirmar" en vez de como dato firme.
+- **`nodos`** pasa de 1 a 21 filas: Colombia con la Universidad de Nariño, y los otros veinte países con
+  `estado: por confirmar` y sin institución. El muro dice **país arriba y sede debajo**, así que un país
+  sin sede se ve correcto; una sede inventada, no.
+- **`colaboradores`** y **`redes`** se reemplazan por su estructura nueva, todavía **sin datos reales**:
+  siguen esperando a RIBIE (§4).
+
+## 2. Las cuatro nuevas — crear y publicar
+
+Para cada una de `cifras`, `hitos`, `lineas` y `memoria`:
+
+1. Subir el `.xlsx` al Drive (carpeta `Contenido Web`) y abrirlo como hoja de cálculo de Google.
+2. **Archivo → Compartir → Publicar en la web** → preferiblemente seleccionar **la pestaña** de datos (no
+   *"documento completo"*) → formato **CSV** → **Publicar**.
+3. Copiar la URL y pegarla en `scripts/hojas.config.mjs`, en la clave del mismo nombre.
+
+Esa URL es de **solo lectura**: aunque alguien la encuentre, no puede modificar nada. Editar sigue
+exigiendo permiso de Editor en el Drive — la autenticación son los permisos de Drive, no la URL.
+
+**Qué contiene cada una:**
+
+- **`cifras`** — las cuatro cifras de portada: origen 1990, 21 países, +15 eventos, 36 años de trayectoria.
+  ⚠️ `paises` va con `confirmado: no`: son los integrantes del programa CYTED, y **nadie ha confirmado que
+  equivalgan a los nodos activos hoy**.
+- **`hitos`** — el recorrido histórico en cuatro tiempos: CYTED (1990), el Premio de Informática Educativa
+  con el Ministerio (1992–2018), los quince congresos y quince foros, y el XV Foro de 2026.
+- **`lineas`** — las seis líneas de trabajo. `color_manual` **solo acepta uno de los ocho secundarios del
+  manual de marca**; cualquier otro valor se descarta y el bloque cae al turquesa de la casa. `ancho` son
+  columnas de doce (3 a 5).
+- **`memoria`** — los pies del archivo fotográfico, con `tamano` (`grande` · `medio` · `pequena`) para
+  componer la retícula.
+
+---
+
+## 3. Después de cargar
 
 ```bash
 cd ~/Documentos/Proyectos/web-ribie
-pnpm sync:check   # solo valida y muestra qué trae cada hoja, NO escribe nada
+pnpm sync:check   # valida y dice qué trae cada hoja, sin escribir nada
 pnpm sync         # descarga hojas e imágenes → src/data/contenido.json
-pnpm build        # compila el sitio
+pnpm build        # compila
 ```
 
-`sync:check` es el que conviene correr primero: dice cuántas filas ve en cada hoja sin tocar el
-repositorio.
+⏱️ **Google cachea las hojas publicadas unos cinco minutos.** Si `sync:check` no ve un cambio recién
+guardado, no es un fallo del script: es el caché.
+
+**Para trabajar sin depender del Drive**, `pnpm sync:local` lee los CSV de `scripts/hojas-locales/`. No son
+un segundo origen de verdad: **en cuanto la URL esté puesta, manda la hoja**.
+
+**Dos guardas que conviene conocer** (y no desactivar): si a una hoja le falta una columna obligatoria del
+`ESQUEMA`, **esa hoja no se publica** en vez de emitir el sitio a medias; y una hoja cuya URL esté vacía
+simplemente **cae al contenido por defecto**, sin romper nada.
 
 ---
 
-## Mientras tanto: el modo demostración
+## 4. Lo que sigue dependiendo de RIBIE, no de nosotros
 
-Para ver la maqueta **llena** sin depender del Drive, el proyecto trae `src/data/demo.json`, que se
-carga **solo en desarrollo**:
+1. **Las fechas del XV Foro (5–7 oct 2026).** Están cargadas, pero **nadie de la red las ha validado**, y
+   con fechas de congreso la gente compra pasajes. Se publican con `fechas_confirmadas: no` hasta que
+   respondan; ese día se pone `sí` y desaparece la marca.
+2. **`colaboradores`** — hacen falta nombres reales con cargo e institución. Es el único contenido que
+   deliberadamente no se rellena ni como demostración: inventar académicos en el sitio de una red real no
+   vale la pena.
+3. **`redes`** — sin URL, `activo` en `no`. Un enlace roto en el pie es peor que la nota.
+4. **El número de países** (`cifras.paises`) y **la ciudad de contacto** (`textos.contacto_ciudad`).
+5. **`textos.mostrar_franja_preparacion`** — mientras diga `sí`, el sitio muestra la franja de *"sitio en
+   preparación"*. **Pasa a `no` cuando RIBIE valide textos, cifras y años**, no antes.
 
-```bash
-pnpm dev          # el sitio se ve completo: 18 nodos, noticias, proyectos, colaboradores
-```
-
-⚠️ **Ese contenido no llega nunca a producción.** `pnpm build` no activa el modo demo, y está verificado
-en cada compilación (`grep` sobre `dist/index.html`). Los datos de `demo.json` son **plausibles pero
-inventados** —"Chile → Universidad de Chile" no lo ha confirmado nadie— y por eso viven detrás de una
-puerta de entorno en vez de en las hojas.
-
-Si necesitas enseñar el mockup completo a alguien fuera de tu máquina, se puede compilar con
-`PUBLIC_DEMO=1 pnpm build`, pero **ese build no se publica en `ribie.org`** bajo ninguna circunstancia.
+> 💡 Regla que atraviesa todo lo anterior: **un dato cargado no es un dato aprobado.** Por eso el estado
+> vive en la celda, junto al dato, y no en la sección.

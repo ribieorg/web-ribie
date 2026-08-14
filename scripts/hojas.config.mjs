@@ -37,25 +37,36 @@ export const LOCAL = process.env.HOJAS_LOCALES === '1';
 const local = (nombre) => resolve(AQUI, 'hojas-locales', `${nombre}.csv`);
 
 const REMOTAS = {
+  // ⚠️ Republicadas el 14 ago 2026 SIN `gid` ni `single=true`. El documento es el
+  // mismo de julio; lo que caducó fue el identificador de la pestaña al reemplazar
+  // su contenido, y con él las URLs anteriores empezaron a dar HTTP 400. Con
+  // `pub?output=csv` Google devuelve **la primera pestaña**, que es la de datos
+  // (`guia` va segunda): si alguien las reordena, el sync leería la guía.
   textos:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHjjUEZ51z-Mjo328z28t4ffWGVUXWNBBk5wcB13o5S-Tsf5PLk8VflAqjLEeLElcdW5j4-1XvFRZW/pub?gid=790584523&single=true&output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHjjUEZ51z-Mjo328z28t4ffWGVUXWNBBk5wcB13o5S-Tsf5PLk8VflAqjLEeLElcdW5j4-1XvFRZW/pub?output=csv',
   eventos:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRagZiM9VoBhXbpFkRQ4c911WKvhli2wl4HG6JMzSqHd0D-yRi-UoRXgs5Zz90FsIfQwsFRNPrc4sR/pub?gid=1567752043&single=true&output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRRagZiM9VoBhXbpFkRQ4c911WKvhli2wl4HG6JMzSqHd0D-yRi-UoRXgs5Zz90FsIfQwsFRNPrc4sR/pub?output=csv',
   nodos:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFtDnTmfeWM3DcyAp1-WmBeLSoT0pcMiwQ0MDONQbQaZfrjWk6MoHS2gO9u9TRgZdAxbE4ioZMknBp/pub?gid=1392215937&single=true&output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFtDnTmfeWM3DcyAp1-WmBeLSoT0pcMiwQ0MDONQbQaZfrjWk6MoHS2gO9u9TRgZdAxbE4ioZMknBp/pub?output=csv',
   colaboradores:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQy0P9-Phay3ZXUeNUeK77fomOhEgDEqeVQZT3iZOVZP6rkakG-7zEM4vVNgyPo6esKBalElusuHlI0/pub?gid=656455943&single=true&output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQy0P9-Phay3ZXUeNUeK77fomOhEgDEqeVQZT3iZOVZP6rkakG-7zEM4vVNgyPo6esKBalElusuHlI0/pub?output=csv',
   redes:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5bY1dV86VLuvsOclT-OXtLSlev-OwFy-Vii6OBMrm7_fIqyf6tfVBOgmuxi-7f5I-Ropqt1Is6J-h/pub?gid=1383537062&single=true&output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5bY1dV86VLuvsOclT-OXtLSlev-OwFy-Vii6OBMrm7_fIqyf6tfVBOgmuxi-7f5I-Ropqt1Is6J-h/pub?output=csv',
 
-  // ⚠️ Pestañas que hay que CREAR en el cuaderno del Drive y publicar como CSV.
-  // Los archivos de partida están en `scripts/hojas-locales/*.csv` (y como .xlsx
-  // en el paquete de diseño). Mientras la URL esté vacía y no se use el modo
-  // local, esas secciones conservan lo que hubiera: no tener hoja no rompe nada.
-  cifras: '',
-  hitos: '',
-  lineas: '',
-  memoria: '',
+  // Publicadas el 14 ago 2026. ⚠️ Estas cuatro se publicaron como **documento
+  // completo** (`pub?output=csv`, sin `gid` ni `single=true`), de modo que Google
+  // devuelve **la primera pestaña**. Funciona porque la pestaña de datos va
+  // primera y la de `guia` segunda: si alguien las reordena, el sync empieza a
+  // leer la guía. Al reordenar o añadir pestañas, republicar apuntando a la
+  // pestaña concreta.
+  cifras:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDqjF4RhssyFjcE9kwqVDofBdgEuidHg-24GdCBdeVs6Ezgoh2U9V0UC84vknU6w/pub?output=csv',
+  hitos:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8IKEgF78hbgNTssQmQvHWIwMOm8HKeliCfdZAEB1UBRn-aYZlolnmWXG4C46_ew/pub?output=csv',
+  lineas:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSvmXZIf_wwI6AWn4QOjtYo71vtAxmyta8o-7ztiICDORnZn1Cu6f4UXs80klKHEw/pub?output=csv',
+  memoria:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgShuAnBxre5yu3b4N0CUGZA_qrzv2pMzcX-Hszbef1i_OZiv0Eclgs1Zp4zqiGA/pub?output=csv',
 };
 
 export const HOJAS = LOCAL

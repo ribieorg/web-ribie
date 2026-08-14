@@ -20,7 +20,7 @@
       "nombre": "Universidad de Nariño",
       "pais": "Colombia",
       "sitio": "https://www.udenar.edu.co/",
-      "logo": "",
+      "logo": "16eRkWsySc_2FI_vmc2G0oA3sMlsvrqMO.png",
       "porConfirmar": false
     },
     {
@@ -235,7 +235,7 @@
     {
       "periodo": "1992–2018",
       "texto": "Premio de Informática Educativa, convocado junto al Ministerio de Educación Nacional de Colombia en tres categorías: experiencias educativas, recursos educativos digitales e investigación.",
-      "imagen": "acto-mesa-principal.webp",
+      "imagen": "1qufrbSELtIUgp7gdj_q_a3UHQ_TMr0Y0.webp",
       "pieImagen": "Mesa principal, acto de apertura",
       "anioImagen": "",
       "anioPorConfirmar": true,
@@ -244,7 +244,7 @@
     {
       "periodo": "15 + 15",
       "texto": "Quince congresos internacionales y quince foros de investigadores organizados en Colombia.",
-      "imagen": "publico-asistentes-sentados.webp",
+      "imagen": "1Vss6GPfcQ9J9z31s4e_L_ZKixZ4lyTAv.webp",
       "pieImagen": "Público asistente a una plenaria",
       "anioImagen": "",
       "anioPorConfirmar": true,
@@ -253,7 +253,7 @@
     {
       "periodo": "2026",
       "texto": "XV Foro de Investigadores, Universidad de Nariño.",
-      "imagen": "foro-asistentes-panoramica.webp",
+      "imagen": "1CcHrW8PBpSzB23HAFlVHsG1p5Pn8yaCk.webp",
       "pieImagen": "Panorámica de los asistentes",
       "anioImagen": "",
       "anioPorConfirmar": true,
@@ -312,42 +312,42 @@
   ],
   "memoria": [
     {
-      "imagen": "foro-fotografia-de-grupo.webp",
+      "imagen": "1H9kYdzHFnn0kmt9aYKwUdGj9T09CAZyS.webp",
       "descripcion": "Fotografía de grupo de los asistentes",
       "anio": "",
       "anioPorConfirmar": true,
       "tamano": "grande"
     },
     {
-      "imagen": "acto-mesa-principal.webp",
+      "imagen": "1phlSc7M-bdwKVkoKLyHrshvkW3q8Wr22.webp",
       "descripcion": "Mesa principal, acto de apertura",
       "anio": "",
       "anioPorConfirmar": true,
       "tamano": "medio"
     },
     {
-      "imagen": "delegados-sesion-de-trabajo.webp",
+      "imagen": "1D6y2jF4v5eV2pm-GPO8pz-dmCXvpUrx_.webp",
       "descripcion": "Delegados en sesión de trabajo",
       "anio": "",
       "anioPorConfirmar": true,
       "tamano": "pequena"
     },
     {
-      "imagen": "ponencia-mesa-con-microfono.webp",
+      "imagen": "1bc1x3VdnxkWa7fQ2ikV3LCdP4LtIRK_l.webp",
       "descripcion": "Mesa de coordinadores nacionales",
       "anio": "",
       "anioPorConfirmar": true,
       "tamano": "pequena"
     },
     {
-      "imagen": "panel-mesa-de-ponentes.webp",
+      "imagen": "1nUHpMqBgPWecySY9VwngQwuMz0g72s1Z.webp",
       "descripcion": "Panel de ponentes",
       "anio": "",
       "anioPorConfirmar": true,
       "tamano": "pequena"
     },
     {
-      "imagen": "publico-asistentes-primer-plano.webp",
+      "imagen": "1SG_XuXWOa_YBZio-n-wtY0xNp5Y_UWFY.webp",
       "descripcion": "Público asistente a una plenaria",
       "anio": "",
       "anioPorConfirmar": true,
