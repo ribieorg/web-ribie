@@ -665,19 +665,19 @@ incompleto: las hojas lo están**, y hace lo correcto al no publicar lo que no e
 
 ---
 
-## 14. Dirección `institucional con evidencia` (12 ago 2026) — ✅ IMPLEMENTADA, SIN PUBLICAR
+## 14. Dirección `institucional con evidencia` (12 ago 2026) — ✅ VIGENTE Y EN PRODUCCIÓN
 
-> ✅ **Esta sección rige en el código desde el 13 de agosto** (**D55**). Corresponde a las decisiones
-> **D51, D52, D53 y D54** del `00_SDD-ADDENDUM`; **RIBIE dio libertad de proceder**, así que la
-> implementación no esperó la respuesta formal al brief
-> (`02_portal_web/BRIEF - Rediseno del sitio (12 ago 2026).md`).
+> ✅ **Este es el sistema del sitio.** Implementada el 13 de agosto (**D55**) y **desplegada el 14**:
+> `ribie.org` sirve esta dirección, verificado sobre el dominio —53 297 bytes, **cero apariciones del azul
+> `#2B2BF5`** del Alan Turing Institute—. Corresponde a las decisiones **D51, D52, D53 y D54** del
+> `00_SDD-ADDENDUM`; **RIBIE dio libertad de proceder**, así que la implementación no esperó la respuesta
+> formal al brief (`02_portal_web/BRIEF - Rediseno del sitio (12 ago 2026).md`).
 >
-> 🔴 **Pero no está desplegada:** `origin/main` sigue en el commit del 11 de agosto, de modo que **lo que
-> hay publicado en `ribie.org` se sigue rigiendo por §11–§13**. Mientras eso dure, el sitio y el
-> repositorio obedecen a secciones distintas de este documento.
+> **§11–§13 pasan a ser historia**: describen la dirección `institucional filoso`, que ya no rige ni en el
+> código ni en producción. Se conservan por su diagnóstico, no como sistema vigente.
 >
-> Avances técnicos: `docs/avances/2026-08-12-rediseno-institucional-con-evidencia.md` (la dirección) y
-> `docs/avances/2026-08-13-implementacion-institucional-con-evidencia.md` (la implementación).
+> Avances técnicos: `2026-08-12-…` (la dirección) · `2026-08-13-…` (la implementación) ·
+> `2026-08-14-hojas-nueve-y-despliegue-real.md` (las nueve hojas y el despliegue).
 
 ### El diagnóstico
 
