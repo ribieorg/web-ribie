@@ -113,6 +113,20 @@ CYTED ×5 · 1990 ×8 · XV Foro ×4 · 74 marcas «por confirmar»
 
 ---
 
+## 3-bis. Un error que solo se vio con el sitio en vivo
+
+El pie publicaba el enlace del Aliado Tecnológico a **`renovatiosoftware.com`**, un dominio que no es del
+estudio. El valor por defecto de `contenido.ts` era correcto (`.net`): **lo estropeó la celda `credito_url`
+de la hoja `textos`** al sobrescribirlo.
+
+Corregido en los tres puntos —la celda del Drive (la que manda), `scripts/hojas-locales/textos.csv` y el
+`textos.xlsx` del paquete de diseño— y verificado en producción.
+
+No es un enlace cualquiera: es **la visibilidad del Aliado Tecnológico que fijó D47**, y que el Anexo C
+dejó indeterminada dentro del convenio firmado. Deja una regla: el contenido de las hojas necesita la misma
+revisión que el código, y los datos que son **obligación contractual** merecen verificación explícita
+después de cada carga.
+
 ## 4. Lo que sigue abierto
 
 1. 🔴 **La página propia del XV Foro (D52)** no existe: el build emite una sola página. La decisión sigue
