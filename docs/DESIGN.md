@@ -811,8 +811,52 @@ Turing**, y ahora el dato no puede volver a hacerlo—.
 
 ---
 
+## 16. Los iconos de aplicación (15 ago 2026, D57)
+
+Hasta hoy este documento **no decía nada** sobre el icono de pestaña: §2 fija la marca y §7.6 pide que el
+logo respire, pero ninguna regla cubría el archivo de 16 px. Ese vacío es lo que permitió que el 14 de
+agosto el sitio saliera con un icono **derivado por nosotros** —el isotipo recortado y montado sobre el
+turquesa `#096D84`— sin que nada lo contradijera. La regla que faltaba:
+
+> **Los iconos son material entregado, no material derivado.** Salen del paquete que envió RIBIE, se
+> publican **byte a byte** y no se recolorean, recortan ni remontan. Si una razón técnica aconseja
+> cambiarlos, **se propone y se espera respuesta**; no se aplica de oficio.
+
+Es la misma regla que en **D32** impidió corregir de oficio la grafía del Director, y la que **D28** y
+**D43** dejaron a deber cuando se sustituyó la tipografía del manual y se añadieron seis colores ajenos.
+
+**Los archivos.** El paquete original vive versionado en `src/favico/favicon_io/` — el comprimido no, se
+ignora. De ahí salen, sin tocarlos, los cuatro que sirve el sitio:
+
+| Publicado | Origen | Para qué |
+|---|---|---|
+| `public/favicon.ico` | `favicon.ico` | pestaña — lleva **48, 32 y 16 px** dentro |
+| `public/apple-touch-icon.png` | `apple-touch-icon.png` (180 px) | pantalla de inicio de iOS |
+| `public/icon-192.png` | `android-chrome-192x192.png` | manifiesto |
+| `public/icon-512.png` | `android-chrome-512x512.png` | manifiesto |
+
+Se conservan **nuestros nombres** (`icon-192`, no `android-chrome-192x192`) porque son los que ya declara
+`site.webmanifest`, y el manifiesto propio se mantiene sobre el que trae el generador: el suyo llega con
+`name` y `short_name` **vacíos** y `display: standalone`, que convertiría el sitio en una falsa aplicación
+instalable. El nuestro declara el nombre completo de la red, `display: browser` y `theme_color: #096D84`
+—el turquesa sigue siendo el color de la casa **en el sitio**, aunque ya no se aplique al icono—.
+
+**Lo que declara el `<head>`** (`src/layouts/Base.astro`): `rel="icon"` con `sizes="48x48 32x32 16x16"`,
+`rel="apple-touch-icon"` y `rel="manifest"`. El atributo `sizes` **debe decir la verdad de lo que hay
+dentro del archivo**, y eso se comprueba abriéndolo (`Image.open(...).ico.sizes()`), no con `file`, que
+declara *«3 icons»* y enumera dos.
+
+**Lo que se sabe y se acepta:** sobre su fondo blanco, a 16 px, el isotipo se lee como una nube de puntos,
+y en pestañas de tema oscuro los nodos verdes pierden contra el fondo. Se midió, se propuso la alternativa
+—los mismos PNG aplanados sobre el turquesa— y **la red se queda con su archivo**. Queda escrito para que
+no se vuelva a "arreglar" por iniciativa propia dentro de seis meses.
+
+---
+
 ## Anexos
 
+- **Iconos de aplicación:** son los que entregó RIBIE, **sin retoque** — §16 y decisión **D57**. No se
+  recolorean ni se regeneran sin consultarlo.
 - **Sustitución de fuente:** `Haettenschweiler` → **Oswald** — decisión **D28** del
   `00_SDD-ADDENDUM`. Debe consultarse con RIBIE por respeto al manual.
 - **Extensión de paleta:** el ámbar `--accent` **no está en el manual de marca**; se adopta como color
