@@ -54,11 +54,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       va sobre su propio fondo blanco. Si alguna vez se regeneran, que sea
       desde ese mismo original y no reescalando estos.
 
-      El `.ico` lleva 32 y 16 px remuestreados uno a uno, no un tamaño
+      El `.ico` lleva 48, 32 y 16 px remuestreados uno a uno, no un tamaño
       escalado: el navegador elige cuál usar, y a 16 px un buen remuestreo es
-      la diferencia entre leerlo y no.
+      la diferencia entre leerlo y no. Los tamaños se comprueban abriendo el
+      archivo (`Image.open(...).ico.sizes()`), no con `file`, que enumera
+      menos entradas de las que declara.
     */}
-    <link rel="icon" href="/favicon.ico" sizes="32x32 16x16" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
