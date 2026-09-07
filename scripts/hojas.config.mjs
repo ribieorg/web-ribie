@@ -67,6 +67,21 @@ const REMOTAS = {
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vSvmXZIf_wwI6AWn4QOjtYo71vtAxmyta8o-7ztiICDORnZn1Cu6f4UXs80klKHEw/pub?output=csv',
   memoria:
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgShuAnBxre5yu3b4N0CUGZA_qrzv2pMzcX-Hszbef1i_OZiv0Eclgs1Zp4zqiGA/pub?output=csv',
+
+  /**
+   * Los tres encuentros que se celebran juntos: el XV Foro de RIBIE, el V
+   * Seminario de TIC y el VIII Seminario de Prácticas Pedagógicas.
+   *
+   * Va como HOJA y no como columnas de `eventos` porque es una lista: hoy son
+   * tres y el año que viene pueden ser dos o cuatro. Como columnas habría que
+   * tocar el código para añadir uno; como filas, se añade una fila.
+   *
+   * Publicada el 7 sep 2026 como documento propio —igual que las demás— y no
+   * como pestaña de `eventos`: al publicar «documento completo» Google devuelve
+   * la PRIMERA pestaña, así que la de datos tiene que ir siempre delante.
+   */
+  foro_programa:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5QBNXvcT01GcYNLOGDls9tE8U71hZKJfV-ubsJ9HJBPZ5E0iObvnF_tA5AwQ6GrW7m9B6yZcmy_q2/pub?output=csv',
 };
 
 export const HOJAS = LOCAL
@@ -86,6 +101,7 @@ export const ESQUEMA = {
   hitos: ['orden', 'periodo', 'texto', 'estado'],
   lineas: ['orden', 'numero', 'titulo', 'descripcion', 'color_manual', 'ancho', 'estado'],
   memoria: ['orden', 'imagen', 'descripcion', 'tamano', 'estado'],
+  foro_programa: ['orden', 'numeral', 'nombre', 'estado'],
   // `unidad`, `pie_imagen`, `anio`, `anio_confirmado` y `que_es` quedan fuera a
   // propósito: son opcionales, y exigirlas haría que borrar una columna accesoria
   // tumbase la hoja entera. Aquí solo van las que el diseño consume sí o sí.

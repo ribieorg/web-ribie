@@ -853,6 +853,97 @@ no se vuelva a "arreglar" por iniciativa propia dentro de seis meses.
 
 ---
 
+## 17. La franja de convocatoria (7 sep 2026, D58)
+
+> ✅ **En el sistema desde el 7 de septiembre.** Corona la portada mientras el encuentro está vivo y
+> **desaparece sola** cuando pasa. Es lo único del sitio que caduca por fecha: el resto de la página
+> sigue siendo cierto en enero.
+
+### Qué es y qué no es
+
+La franja es la **acción**: qué encuentro es, cuánto falta y dónde inscribirse. La banda `Foro.astro`,
+más abajo, es el **detalle**. Sin esa división las dos dirían lo mismo con dos diseños distintos, que
+es como un sitio empieza a repetirse.
+
+### Por qué hay una cuenta atrás en un sitio institucional
+
+Porque hay un plazo real que corre y no lo dice ninguna otra parte del sitio: la recepción de ponencias
+cierra el **17 de septiembre**, tres semanas antes del encuentro. El reloj tiene **dos fases** y cambia
+solo: mientras el plazo está abierto cuenta al cierre de convocatoria; después, al primer día del
+encuentro. Nadie tiene que acordarse de nada.
+
+### La ejecución NO se copia de la referencia
+
+El sitio del programa de Licenciatura de la UdeNar (`licinfor.udenar.edu.co/evento-2026/`) tiene el
+mismo componente. De ahí se toma **el patrón** —cuatro casillas, la más grande primero— y no su
+ejecución: ni el verde institucional, ni la cápsula de esquina redonda, que en este sistema es firma de
+producto de consumo (§tokens, radios) y no de una red académica de treinta y seis años. Es la misma
+distinción que §14 tuvo que aprender por las malas con el Alan Turing Institute: **de una referencia se
+toma qué problema resuelve, nunca su firma**.
+
+### El movimiento: ninguno
+
+Los dígitos **no se animan**. Un volteo o un desvanecido por segundo son sesenta animaciones por minuto
+compitiendo con el resto de la página, y no comunican nada que el número no diga solo. Lo único que
+responde al gesto es el botón, que baja un 3 % al pulsarse (`global.css`, `.boton:active`) — la única
+animación del sitio ligada a una acción del visitante, anulada bajo `prefers-reduced-motion`.
+
+### Lo que hace que un reloj no se sienta hecho a medias
+
+| Detalle | Por qué |
+|---|---|
+| Todo anclado a **UTC−5** | Un plazo no es un momento distinto para cada quien. Contra la medianoche local, alguien en Madrid vería un día menos que alguien en Pasto — y el público de la red está en 21 países |
+| Los números salen **del build**, no de un hueco | No hay `--` ni parpadeo ni ancho que cambie: el cliente solo corrige el desfase acumulado desde que se construyó la página |
+| **Relleno a dos dígitos** + `tabular-nums` | La casilla no cambia de tamaño nunca; sin esto el reloj tiembla una vez por segundo |
+| El latido **se detiene** en pestañas ocultas | Un `setInterval` en segundo plano gasta batería para nadie, y los navegadores lo estrangulan: al volver mostraría una hora atrasada si no recalculara |
+| Se escribe **solo si el dígito cambió** | Los días no se reescriben sesenta veces por minuto |
+| Sin `aria-live` | Un conteo que se anuncia solo interrumpiría la lectura en cada cambio. El dato que importa —la fecha límite— está en texto y se lee una vez |
+| Sin encabezado `h1`–`h6` | El `h1` de la página es el del hero, que va debajo. El nombre accesible de la región lo da `aria-labelledby` sobre un párrafo |
+
+### El apagado va en dos sitios, y no es redundancia
+
+El build no arma la franja si el encuentro ya pasó, **y** el script la oculta igualmente en el
+navegador. Parece cinturón y tirantes hasta que se recuerda que **entre el 16 de agosto y el 6 de
+septiembre este sitio estuvo veintidós días sin reconstruirse** (D59). En ese escenario, una franja que
+solo dependiera del build se habría quedado anunciando un encuentro pasado con el reloj en negativo.
+
+### El oso: material del evento, no de la red
+
+La ilustración la entregó la Licenciatura y va **tal cual**: sin recortar, sin recolorear, sin cambiarle
+el fondo — la regla de **D57**. Trae verdes y amarillos ajenos al manual de marca de RIBIE, y **eso es
+correcto**: es la imagen del encuentro, no de la red, y la franja es lo único del sitio que habla del
+encuentro. Sobre el turquesa profundo funciona porque el disco crema del fondo la recorta.
+
+Sale de la **hoja** (`eventos.ilustracion`) y no de un `import` del código: cambiar la ilustración del
+año que viene no puede exigir tocar el repositorio (D39). El sync la **descarga** al repositorio y Astro
+la sirve en cinco tamaños con `widths` + `sizes`; el sitio nunca le pide nada a Drive en tiempo de visita.
+
+### Contraste medido sobre `--brand-deep`
+
+| Par | Medido | Mínimo |
+|---|---|---|
+| Título y cifras: blanco | **8,88:1** | 4,5 |
+| Rótulos: `--brand-on-deep` | **5,32:1** | 4,5 |
+| Unidades y pies: blanco 78 % | **6,10:1** | 4,5 |
+| Botón de acción: tinta sobre ámbar | **7,13:1** | 4,5 |
+| Borde de casilla: blanco 45 % | **3,09:1** | 3,0 |
+| Anillo de foco: ámbar sobre la banda | **3,57:1** | 3,0 |
+
+🔴 **Tres cifras de `tokens.css` están mal** y se detectaron al medir esto: `--brand-on-deep` dice
+7,26:1 y son **5,32**; `--ink` sobre blanco dice 16,1 y son **17,74**; la tinta sobre ámbar dice 7,59 y
+son **7,13**. Ninguna crea un defecto —las tres siguen pasando—, pero es la tabla que se consulta para
+elegir colores. Pendiente de corregir.
+
+### El orden cambia en móvil, y por qué
+
+En pantalla estrecha el reloj sube por delante de la ficha de datos: con el título, el lema y los tres
+datos duros delante, la cuenta atrás quedaba a dos pantallas de scroll — enterrando justamente lo que la
+franja viene a decir. El orden del DOM se conserva para lectores de pantalla (qué es → cuándo → dónde) y
+lo que se reordena es la presentación.
+
+
+---
+
 ## Anexos
 
 - **Iconos de aplicación:** son los que entregó RIBIE, **sin retoque** — §16 y decisión **D57**. No se

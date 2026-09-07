@@ -234,6 +234,29 @@ if (resultado.eventos) {
     modalidad: f.modalidad,
     descripcion: f.descripcion,
     enlace: f.enlace_inscripcion || '',
+    /**
+     * Los tres campos de la convocatoria. Son OPCIONALES a propósito —no entran
+     * en el `ESQUEMA`—, así que un evento sin plazo de ponencias se publica
+     * igual: lo único que ocurre es que la franja no muestra su primera fase.
+     *
+     * `cierre_convocatoria` se escribe con hora Y zona
+     * (`2026-09-17T23:59:00-05:00`). Sin la zona, cada visitante contaría contra
+     * su propia medianoche: el público de la red está repartido en 21 países y
+     * el plazo es uno solo, el de Pasto.
+     */
+    cierreConvocatoria: f.cierre_convocatoria || '',
+    enlaceAgenda: f.enlace_agenda || '',
+    correoPonencias: f.correo_ponencias || '',
+    /** `rotulo` es la categoría del encuentro («Foro y Seminario Internacional»)
+     *  y `subtitulo` la frase que lo explica. Ambos opcionales: sin ellos la
+     *  franja se arma igual, solo con menos contexto. */
+    rotulo: f.rotulo || '',
+    subtitulo: f.subtitulo || '',
+    /** La ilustración de la franja —el oso del encuentro—, distinta de `imagen`,
+     *  que es la fotografía de la banda del Foro. Sale de la hoja y no de un
+     *  `import` del código para que cambiarla no exija tocar el repositorio:
+     *  es material del evento y el evento cambia todos los años. */
+    ilustracion: await traerImagen(f.ilustracion, `ilustración de ${f.id || f.titulo}`),
     imagen: await traerImagen(f.imagen, `evento ${f.id || f.titulo}`),
     destacado: esSi(f.destacado),
     /** Mientras esto sea `false`, el sitio pinta el chip «por confirmar» junto al
@@ -333,6 +356,21 @@ if (resultado.memoria) {
       };
     })
   )).filter((f) => f.imagen);           // sin fotografía no hay pieza de archivo
+}
+
+/**
+ * FORO_PROGRAMA — los encuentros que se celebran juntos.
+ *
+ * `numeral` es el ordinal en romanos (XV, V, VIII) y se muestra grande: es lo
+ * que dice de un vistazo que esto no es un evento nuevo sino la decimoquinta
+ * edición de algo. Sin numeral la fila igual se publica, solo que sin cifra.
+ */
+if (resultado.foro_programa) {
+  salida.foroPrograma = resultado.foro_programa.filter(publicado).sort(porOrden).map((f) => ({
+    numeral: (f.numeral ?? '').trim(),
+    nombre: (f.nombre ?? '').trim(),
+    entidad: (f.entidad ?? '').trim(),
+  })).filter((f) => f.nombre);          // sin nombre no hay nada que anunciar
 }
 
 if (resultado.nodos) {

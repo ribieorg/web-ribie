@@ -2,11 +2,18 @@ name: Sincronizar contenido desde las hojas
 
 on:
   schedule:
-    - cron: '0 * * * *'   # cada hora, en punto (UTC)
+    # ⚠️ «Cada hora» es una intención, no una garantía: los workflows programados
+    # de GitHub son *best effort* y con carga alta se retrasan o se descartan. El
+    # 6 de septiembre de 2026 las corridas reales fueron 13:51, 16:36, 18:46,
+    # 20:58, 22:44 y 00:33 UTC — cada dos horas y con hasta 40 min de retraso.
+    # Con algo urgente encima, se dispara a mano desde Actions.
+    - cron: '0 * * * *'
   workflow_dispatch:       # y a demanda, desde la pestaña Actions
 
 permissions:
   contents: write
+  # Necesario para invocar `deploy.yml` con `gh workflow run` (ver el último paso).
+  actions: write
 
 concurrency:
   group: contenido
@@ -27,12 +34,16 @@ jobs:
       - name: Descargar el contenido de las hojas
         run: node scripts/sync-contenido.mjs
 
-      # Solo se hace commit si algo cambió. Ese push dispara el despliegue
-      # (deploy.yml), así que el sitio se reconstruye sin pasos extra.
+      # Se commitea el JSON **y** las imágenes: el sync descarga a
+      # `src/assets/remoto/` lo que citan las hojas, y publicar el JSON sin ellas
+      # dejaría el contenido apuntando a archivos que no están en el repositorio.
+      # También hay borrados que registrar — el sync limpia lo que ya nadie usa.
       - name: Publicar si hubo cambios
+        id: publicar
         run: |
-          if git diff --quiet -- src/data/contenido.json; then
+          if [ -z "$(git status --porcelain -- src/data/contenido.json src/assets/remoto)" ]; then
             echo "Sin cambios en el contenido."
+            echo "hubo_cambios=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # La cuenta de servicios NO se nombra aquí: este repo es público y ese
@@ -42,6 +53,24 @@ jobs:
           # lo que corresponde: el commit no lo hace una persona.
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/contenido.json
+          git add src/data/contenido.json src/assets/remoto
           git commit -m "Contenido actualizado desde las hojas"
           git push
+          echo "hubo_cambios=true" >> "$GITHUB_OUTPUT"
+
+      # 🔴 Este paso existe porque el push de arriba NO despliega por sí solo.
+      #
+      # GitHub bloquea deliberadamente que un push autenticado con el
+      # `GITHUB_TOKEN` de Actions dispare otros workflows: es su protección contra
+      # bucles recursivos. Durante veintidós días —del 16 de agosto al 6 de
+      # septiembre de 2026— este workflow commiteó cinco veces y `ribie.org`
+      # siguió sirviendo el build del 16, sin que nada reportara un fallo. El
+      # comentario que había aquí afirmaba lo contrario, y era falso (D59).
+      #
+      # Invocar `workflow_dispatch` por la API sí funciona con el token por
+      # defecto: la restricción alcanza al evento `push`, no a este.
+      - name: Desplegar el sitio con el contenido nuevo
+        if: steps.publicar.outputs.hubo_cambios == 'true'
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,464 @@
+---
+/**
+ * Franja de convocatoria — corona la portada mientras el encuentro está vivo.
+ *
+ * Qué hace y qué NO hace, porque la diferencia importa: esta franja es la
+ * **acción** —qué es, cuánto falta, dónde inscribirse—; la banda `Foro.astro`,
+ * más abajo, es el **detalle**. Sin esa división las dos dirían lo mismo con dos
+ * diseños distintos, que es como un sitio empieza a repetirse.
+ *
+ * No lleva encabezado (`h1`–`h6`) a propósito. El `h1` de la página es el del
+ * hero, que va justo debajo; abrir el documento con un `h2` deja la jerarquía de
+ * encabezados al revés para quien navega con lector de pantalla. El nombre
+ * accesible de la región lo da `aria-labelledby` sobre un párrafo, que es válido
+ * y no ocupa un nivel.
+ *
+ * Tampoco lleva `aria-live`. Un conteo que se anuncia solo interrumpiría la
+ * lectura cada vez que cambia; el dato que de verdad importa —la fecha límite—
+ * está escrito en texto, y ahí se lee una vez, como cualquier otro contenido.
+ *
+ * El movimiento: los dígitos NO se animan. El número cambia, y ya. Un volteo o
+ * un desvanecido por segundo son sesenta animaciones por minuto compitiendo con
+ * el resto de la página, y no comunican nada que el número no diga solo. Lo
+ * único que responde al gesto es el botón, que baja un 3 % al pulsarse
+ * (`global.css`).
+ *
+ * ⚠️ **El oso es material del encuentro, no de RIBIE.** Va tal cual lo entregó
+ * la Licenciatura: sin recortar, sin recolorear y sin ajustarle el fondo, que es
+ * la regla que dejó **D57**. Trae verdes y amarillos que no están en el manual
+ * de marca de la red, y eso es correcto: es la imagen del evento, no de la red,
+ * y la franja es justamente lo único del sitio que habla del evento.
+ */
+import { Image } from 'astro:assets';
+import Chip from './Chip.astro';
+import { convocatoria as c } from '../data/contenido';
+import { foto } from '../lib/imagenes';
+
+/** Sale de la hoja, no de un `import`: cambiar la ilustración del encuentro no
+ *  puede exigir tocar el repositorio. Si la celda está vacía o el archivo no
+ *  llegó, no hay imagen y la franja se arma igual. */
+const ilustracion = foto(c?.ilustracion);
+---
+
+{c && (
+  <section
+    class="convocatoria"
+    aria-labelledby="convocatoria-titulo"
+    data-objetivo={c.objetivoISO}
+    data-fin={c.finISO}
+  >
+    <div class="g">
+      <div class="dicho">
+        {c.rotuloEvento && <p class="rotulo-evento">{c.rotuloEvento}</p>}
+        <p class="titulo" id="convocatoria-titulo">{c.titulo}</p>
+        {c.subtitulo && <p class="subtitulo">{c.subtitulo}</p>}
+      </div>
+
+      {/* La ficha va fuera del bloque de título para poder moverla sola: en un
+          teléfono el reloj tiene que caber en la primera pantalla, y con los
+          tres datos duros por delante quedaba a dos pantallas de scroll. */}
+      <dl class="ficha">
+        <dt>Fechas</dt>
+        <dd>
+          <time datetime={c.fechaISO}>{c.fecha}</time>
+          <Chip activo={c.fechasPorConfirmar} oscuro />
+        </dd>
+        <dt>Sede</dt>
+        <dd>{c.lugar}</dd>
+        <dt>Modalidad</dt>
+        <dd>{c.modalidad}</dd>
+      </dl>
+
+      <div class="reloj">
+        {c.fase === 'encurso' ? (
+          <p class="ahora">{c.enCurso}</p>
+        ) : (
+          <>
+            <p class="rotulo">{c.rotulo}</p>
+            {/*
+              Cuatro casillas, como cualquier cuenta atrás reconocible. Lo que
+              NO se copia del sitio de la Licenciatura es su ejecución: ni el
+              verde, ni la cápsula de esquina redonda —que en este sistema es
+              firma de producto de consumo, no de una red académica de 36 años
+              (`tokens.css`, radios)—. Mismo patrón, otro acento.
+            */}
+            <ul class="casillas">
+              {c.unidades.map((u) => (
+                <li class="casilla">
+                  <span class="numero" data-unidad={u.clave}>{u.valor}</span>
+                  <span class="rotulo-unidad">{u.rotulo}</span>
+                </li>
+              ))}
+            </ul>
+            {c.limite && <p class="limite">hasta el {c.limite}</p>}
+          </>
+        )}
+
+        {(c.inscripcion || c.agenda) && (
+          <div class="acciones">
+            {c.inscripcion && (
+              <a class="boton boton--accion" href={c.inscripcion.url}>{c.inscripcion.texto}</a>
+            )}
+            {c.agenda && (
+              <a class="boton boton--sobre-oscuro" href={c.agenda.url}>{c.agenda.texto}</a>
+            )}
+          </div>
+        )}
+      </div>
+
+      {ilustracion && (
+      <div class="retrato">
+        {/*
+          `widths` + `sizes` en vez de `densities`: con densidades se sirve
+          siempre el mismo archivo grande a todo el mundo, y aquí el oso mide
+          ~300 px en escritorio y ~215 px en un teléfono. Con esto cada equipo
+          descarga el tamaño que va a pintar y no más.
+
+          `eager` porque entra en la primera pantalla —en `lazy` aparecería de
+          golpe—, pero `fetchpriority="low"` para que no le dispute el ancho de
+          banda a la fotografía del hero, que es la que mide el LCP.
+        */}
+        <Image
+          src={ilustracion}
+          alt="Oso de anteojos entre frailejones, ilustración del encuentro"
+          widths={[240, 320, 480, 640]}
+          sizes="(max-width: 47.5rem) 58vw, (max-width: 64rem) 34vw, 23vw"
+          format="webp"
+          quality={68}
+          loading="eager"
+          fetchpriority="low"
+        />
+      </div>
+      )}
+
+      {c.programa.length > 0 && (
+        <ul class="programa">
+          {c.programa.map((p) => (
+            <li>
+              {p.numeral && <span class="numeral">{p.numeral}</span>}
+              <span class="nombre">{p.nombre}</span>
+              {p.entidad && <span class="entidad">{p.entidad}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+)}
+{/*
+  El único trabajo del cliente es corregir el desfase: el HTML ya llegó con los
+  números puestos en el build, así que aquí no se «rellena» nada y no hay ni
+  hueco ni parpadeo — como mucho, un número que se ajusta en el primer frame.
+
+  `is:inline` a propósito: bundlearlo costaría una petición más que este sitio
+  no necesita hacer, y el archivo pesa menos que la cabecera HTTP que lo pediría.
+*/}
+<script is:inline>
+  (() => {
+    const franja = document.querySelector('.convocatoria');
+    if (!franja) return;
+
+    const fin = Date.parse(franja.dataset.fin || '');
+    const objetivo = Date.parse(franja.dataset.objetivo || '');
+    const reloj = franja.querySelector('.reloj');
+    const casillas = {
+      dias: franja.querySelector('[data-unidad="dias"]'),
+      horas: franja.querySelector('[data-unidad="horas"]'),
+      minutos: franja.querySelector('[data-unidad="minutos"]'),
+      segundos: franja.querySelector('[data-unidad="segundos"]'),
+    };
+
+    const dd = (n) => String(n).padStart(2, '0');
+
+    function pintar() {
+      const ahora = Date.now();
+
+      // Se apaga sola. El build también la retira, pero el build puede tardar:
+      // entre el 16 de agosto y el 6 de septiembre este sitio estuvo sin
+      // reconstruirse, y en ese escenario una franja vencida se quedaría
+      // anunciando un encuentro que ya ocurrió, con el reloj en negativo.
+      if (Number.isFinite(fin) && ahora > fin) {
+        franja.hidden = true;
+        return;
+      }
+      if (!Number.isFinite(objetivo) || !casillas.dias) return;
+
+      // Alcanzado el plazo, el conteo desaparece y la información se queda. El
+      // cambio de fase lo hace la siguiente reconstrucción, no el navegador.
+      if (ahora >= objetivo) {
+        if (reloj) reloj.hidden = true;
+        return;
+      }
+
+      const restante = objetivo - ahora;
+      const valores = {
+        dias: Math.floor(restante / 86400000),
+        horas: Math.floor(restante / 3600000) % 24,
+        minutos: Math.floor(restante / 60000) % 60,
+        segundos: Math.floor(restante / 1000) % 60,
+      };
+
+      for (const clave in casillas) {
+        const nodo = casillas[clave];
+        if (!nodo) continue;
+        const texto = dd(valores[clave]);
+        // Solo se escribe si cambió. Tocar `textContent` cada segundo en cuatro
+        // nodos obliga al navegador a rehacer el texto aunque diga lo mismo, y
+        // los días cambian una vez al día, no sesenta veces por minuto.
+        if (nodo.textContent !== texto) nodo.textContent = texto;
+      }
+    }
+
+    pintar();
+
+    /**
+     * Con segundos en pantalla el reloj tiene que latir cada segundo, pero solo
+     * mientras alguien lo esté mirando: en una pestaña de fondo se detiene y se
+     * reanuda al volver, ya recalculado contra el reloj real. Un `setInterval`
+     * que corre en una pestaña oculta gasta batería para nadie, y además los
+     * navegadores lo estrangulan, de modo que al volver mostraría una hora
+     * atrasada si no se recalculara.
+     */
+    let latido = null;
+    function arrancar() {
+      pintar();
+      if (latido === null) latido = setInterval(pintar, 1000);
+    }
+    function detener() {
+      if (latido !== null) { clearInterval(latido); latido = null; }
+    }
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? detener() : arrancar();
+    });
+    if (!document.hidden) arrancar();
+  })();
+</script>
+<style>
+  .convocatoria {
+    background: var(--brand-deep);
+    color: #fff;
+  }
+  .convocatoria .g {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    align-items: start;
+    row-gap: var(--space-6);
+  }
+
+  .dicho { grid-column: 1 / 6; }
+
+  .rotulo-evento,
+  .rotulo {
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand-on-deep);        /* 5,32:1 sobre --brand-deep */
+    margin: 0;
+  }
+
+  .titulo {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2.125rem);
+    line-height: 1.12;
+    letter-spacing: var(--tracking-display);
+    margin: var(--space-3) 0 0;
+    text-wrap: balance;
+    max-width: 30ch;
+  }
+  .subtitulo {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: rgb(255 255 255 / .78);      /* 6,10:1 */
+    margin: var(--space-3) 0 0;
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+
+  /* Los tres datos duros como pares término/definición y no como tres líneas
+     sueltas: un lector de pantalla los anuncia como lo que son. Mismo recurso
+     que la ficha de `Foro.astro`. */
+  .ficha {
+    grid-column: 1 / 6;
+    align-self: start;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--space-4);
+    row-gap: var(--space-1);
+    margin: var(--space-6) 0 0;
+    font-size: var(--text-small);
+  }
+  .ficha dt {
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--brand-on-deep);
+    padding-top: .2em;
+  }
+  .ficha dd {
+    margin: 0;
+    color: rgb(255 255 255 / .92);
+  }
+
+  .reloj { grid-column: 6 / 10; }
+  .casillas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin: var(--space-3) 0 0;
+  }
+  /* Casilla plana, sin sombra y de esquina casi recta: el radio grande es lo
+     que convierte una cuenta atrás en promoción de tienda, y el sistema lo
+     tiene prohibido desde §14. El relieve lo da el escalón de luz sobre el
+     turquesa, no una sombra. */
+  .casilla {
+    flex: 1 1 0;
+    min-width: 4.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-2);
+    background: rgb(255 255 255 / .1);
+    border: 1px solid rgb(255 255 255 / .16);
+    border-radius: var(--radius-md);
+  }
+  .numero {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.375rem);
+    line-height: 1;
+    color: #fff;
+    /* Cifras de ancho fijo: sin esto los dígitos bailan de ancho y el reloj
+       tiembla una vez por segundo, que es justo lo que se nota sin saber por
+       qué. Con el relleno a dos dígitos, la casilla no cambia nunca de tamaño. */
+    font-variant-numeric: tabular-nums;
+  }
+  .rotulo-unidad {
+    font-size: .625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgb(255 255 255 / .78);
+    text-align: center;
+  }
+  .limite {
+    font-size: var(--text-small);
+    color: rgb(255 255 255 / .78);
+    margin: var(--space-3) 0 0;
+  }
+  .ahora {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.625rem);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  /* El ámbar se reserva para la acción principal. La secundaria va en contorno
+     claro: sobre el turquesa profundo, el `--brand` del contorno normal no se
+     distingue del fondo. */
+  .boton--sobre-oscuro {
+    border: 1px solid rgb(255 255 255 / .45);
+    color: #fff;
+  }
+  .boton--sobre-oscuro:hover {
+    background: rgb(255 255 255 / .1);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* El oso baja hasta el borde inferior de la banda, sin recuadro ni disco
+     detrás: la ilustración ya trae su propio fondo y añadirle uno sería
+     derivar material que no es nuestro (D57). */
+  .retrato {
+    grid-column: 10 / 13;
+    align-self: end;
+    margin-bottom: calc(var(--space-8) * -1);
+  }
+  .retrato img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Los tres encuentros, al pie de la banda y separados por un filete: dicen
+     que esto no es un evento nuevo sino la decimoquinta edición de algo. */
+  .programa {
+    grid-column: 1 / 10;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    list-style: none;
+    padding: var(--space-6) 0 0;
+    margin: var(--space-2) 0 0;
+    border-top: 1px solid rgb(255 255 255 / .18);
+  }
+  .programa li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--space-3);
+    align-items: baseline;
+  }
+  .numeral {
+    grid-row: 1 / 3;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--brand-on-deep);
+  }
+  .programa .nombre {
+    font-size: var(--text-small);
+    line-height: 1.35;
+    color: rgb(255 255 255 / .92);
+  }
+  .programa .entidad {
+    grid-column: 2;
+    font-size: .75rem;
+    color: rgb(255 255 255 / .7);
+    margin-top: 2px;
+  }
+
+  /* Sobre las bandas oscuras el anillo de foco vuelve al ámbar (3,57:1); el
+     turquesa de `--focus-ring` se perdería contra este fondo. */
+  .convocatoria :focus-visible { outline-color: var(--focus-ring-dark); }
+
+  /* El oso NO desaparece en pantallas pequeñas: es la imagen del encuentro y
+     en un teléfono es donde más se va a ver. Lo que cambia es dónde se pone —
+     al costado del texto en tableta, centrado bajo él en móvil— y cuánto ocupa,
+     que lo resuelve el `sizes` de arriba. */
+  @media (max-width: 64rem) {
+    .dicho    { grid-column: 1 / 8; }
+    .retrato  { grid-column: 8 / 13; align-self: center; margin-bottom: 0; }
+    .reloj    { grid-column: 1 / 13; }
+    .programa { grid-column: 1 / 13; }
+  }
+  @media (max-width: 47.5rem) {
+    .dicho, .reloj, .programa { grid-column: 1 / 13; }
+    .acciones .boton { flex: 1 1 auto; }
+    .programa { grid-template-columns: 1fr; gap: var(--space-4); }
+    .ficha { grid-template-columns: 1fr; row-gap: 0; }
+    .ficha dt { margin-top: var(--space-3); }
+
+    /* El DOM va texto → reloj → oso → encuentros, que es el orden correcto para
+       un lector de pantalla (primero qué es, luego cuándo). En pantalla estrecha
+       el oso sube justo debajo del texto, donde acompaña en vez de interrumpir
+       la lectura entre el reloj y los botones. */
+    .dicho    { order: 1; }
+    .reloj    { order: 2; }
+    .retrato  { order: 3; grid-column: 1 / 13; max-width: 13rem; margin-inline: auto; }
+    .ficha    { order: 4; grid-column: 1 / 13; margin-top: 0; }
+    .programa { order: 5; }
+  }
+</style>

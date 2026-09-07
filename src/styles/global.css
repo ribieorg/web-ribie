@@ -82,7 +82,19 @@ section { scroll-margin-top: 7.5rem; }
   line-height: 1.2;
   text-decoration: none;
   transition: background-color var(--dur-standard) var(--ease-out),
-              color var(--dur-standard) var(--ease-out);
+              color var(--dur-standard) var(--ease-out),
+              transform var(--dur-micro) var(--ease-out);
+}
+
+/* Hundido al pulsar. Es la única animación de la interfaz que responde a un
+   gesto, y por eso se queda: confirma que el botón oyó el clic en el momento
+   exacto en que el usuario está mirando. 3 % es suficiente — más se nota como
+   efecto, y un sitio institucional no debe llamar la atención sobre su propia
+   mecánica. Solo `transform`, que no toca layout ni pintura. */
+.boton:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .boton:active { transform: none; }
 }
 
 .boton--accion { background: var(--accent); color: var(--accent-ink); }

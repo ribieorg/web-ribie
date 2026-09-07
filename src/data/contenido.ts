@@ -45,7 +45,13 @@ type Evento = {
   id: string; titulo: string; fechaInicio: string; fechaFin: string; lugar: string;
   modalidad: string; descripcion: string; enlace: string; imagen: string;
   destacado: boolean; fechasConfirmadas: boolean;
+  /** Opcionales: sin ellos el evento se publica igual, solo que la franja de
+   *  convocatoria pierde su primera fase, sus enlaces secundarios o su contexto. */
+  cierreConvocatoria?: string; enlaceAgenda?: string; correoPonencias?: string;
+  rotulo?: string; subtitulo?: string; ilustracion?: string;
 };
+/** Un encuentro de los que se celebran juntos bajo el mismo título. */
+type ForoPrograma = { numeral: string; nombre: string; entidad: string };
 type Nodo = { nombre: string; pais: string; sitio: string; logo: string; porConfirmar: boolean };
 
 type Externo = {
@@ -55,6 +61,7 @@ type Externo = {
   lineas?: Linea[];
   memoria?: Pieza[];
   eventos?: Evento[];
+  foroPrograma?: ForoPrograma[];
   nodos?: Nodo[];
   colaboradores?: { nombre: string; cargo: string; institucion: string; grupo: string; foto: string }[];
   redes?: { nombre: string; url: string }[];
@@ -196,6 +203,115 @@ export const foro = destacado && {
   imagen: destacado.imagen,
   pieImagen: T('foro_imagen_pie', 'Conferencia central del foro de investigadores'),
 };
+
+/* ───────────────────────────────────────────────────────────────────────────
+ * CONVOCATORIA — la franja que corona la portada mientras el encuentro vive.
+ *
+ * Se arma aquí, en el build, y NO en el navegador. Dos razones:
+ *
+ *  1. **No hay salto ni parpadeo.** El HTML sale ya con los números puestos, de
+ *     modo que nadie ve un hueco, un «--» ni un ancho que cambia cuando el
+ *     script despierta. Lo único que hace el cliente es corregir el desfase
+ *     acumulado desde que se construyó la página.
+ *  2. **Sin JavaScript se ve completo**, que es la regla de D53: el visitante
+ *     lee las fechas, el plazo y los enlaces; lo que se pierde es el conteo,
+ *     no la información.
+ *
+ * ⚠️ Todo se ancla a la hora de Colombia. Un plazo no es un momento distinto
+ * para cada quien: si se calculara contra la medianoche local, alguien en
+ * Madrid vería un día menos que alguien en Pasto para el mismo cierre, y el
+ * público de la red está repartido en 21 países.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+const ZONA_EVENTO = '-05:00';
+
+/** Fecha suelta (`2026-09-17`) o instante completo con zona. Sin zona explícita
+ *  se asume la del evento, nunca la del navegador que abra la página. */
+function momento(valor: string | undefined, finDeDia = false): number | null {
+  const v = valor?.trim();
+  if (!v) return null;
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(v)
+    ? `${v}T${finDeDia ? '23:59:59' : '00:00:00'}${ZONA_EVENTO}`
+    : v;
+  const t = new Date(iso).getTime();
+  return Number.isNaN(t) ? null : t;
+}
+
+/** Cuatro casillas, siempre a dos dígitos: `09`, no `9`. El ancho de la casilla
+ *  deja de depender del número que le toque, que es lo que hace que una cuenta
+ *  atrás no tiemble mientras corre. */
+function cuenta(desde: number, hasta: number) {
+  const ms = Math.max(0, hasta - desde);
+  const dd = (n: number) => String(n).padStart(2, '0');
+  return [
+    { clave: 'dias', rotulo: 'días', valor: dd(Math.floor(ms / 86_400_000)) },
+    { clave: 'horas', rotulo: 'horas', valor: dd(Math.floor(ms / 3_600_000) % 24) },
+    { clave: 'minutos', rotulo: 'minutos', valor: dd(Math.floor(ms / 60_000) % 60) },
+    { clave: 'segundos', rotulo: 'segundos', valor: dd(Math.floor(ms / 1_000) % 60) },
+  ];
+}
+
+export const convocatoria = (() => {
+  if (!destacado) return null;
+
+  const inicio = momento(destacado.fechaInicio);
+  const fin = momento(destacado.fechaFin || destacado.fechaInicio, true);
+  if (inicio === null || fin === null) return null;
+
+  const ahora = Date.now();
+  if (ahora > fin) return null;          // ya pasó: la franja no se arma siquiera
+
+  /** Un cierre posterior al propio encuentro es un error de captura, no una
+   *  fase: se ignora y el reloj cuenta directo al evento. */
+  const cierre = momento(destacado.cierreConvocatoria, true);
+  const enPlazo = cierre !== null && cierre <= inicio && ahora < cierre;
+
+  const objetivo = enPlazo ? cierre : ahora < inicio ? inicio : null;
+  /**
+   * Los segundos del HTML estático nacen viejos: entre que se construye la
+   * página y alguien la abre pasan horas o días. No importa —el script los
+   * corrige en el primer frame—, y sirven para lo que están: reservar el sitio
+   * exacto para que nada se mueva cuando lleguen los valores buenos.
+   */
+  const unidades = objetivo === null ? [] : cuenta(ahora, objetivo);
+
+  return {
+    fase: objetivo === null ? 'encurso' : enPlazo ? 'ponencias' : 'evento',
+    /** Ojo con el nombre: `rotuloEvento` es la categoría del encuentro y
+     *  `rotulo`, más abajo, el del reloj. Se llamaban igual y el segundo pisaba
+     *  al primero en silencio, que es lo que hacen dos claves iguales en un
+     *  objeto literal. */
+    rotuloEvento: destacado.rotulo ?? '',
+    ilustracion: destacado.ilustracion ?? '',
+    subtitulo: destacado.subtitulo ?? '',
+    /** Sin hoja publicada no hay fila: las listas no tienen respaldo en el
+     *  código (§8.5), y tres encuentros inventados serían peor que ninguno. */
+    programa: ext.foroPrograma ?? [],
+    titulo: destacado.titulo,
+    fecha: rangoDeFechas(destacado.fechaInicio, destacado.fechaFin),
+    fechaISO: destacado.fechaInicio,
+    fechasPorConfirmar: !destacado.fechasConfirmadas,
+    lugar: destacado.lugar,
+    modalidad: destacado.modalidad,
+    rotulo: enPlazo
+      ? T('convocatoria_rotulo_ponencias', 'Cierra la recepción de ponencias y talleres')
+      : T('convocatoria_rotulo_evento', 'Faltan para el encuentro'),
+    enCurso: T('convocatoria_en_curso', 'El encuentro se está realizando'),
+    unidades,
+    /** Lo que el cliente necesita para corregirse y para apagarse solo. */
+    objetivoISO: objetivo === null ? '' : new Date(objetivo).toISOString(),
+    finISO: new Date(fin).toISOString(),
+    limite: enPlazo && destacado.cierreConvocatoria
+      ? rangoDeFechas(destacado.cierreConvocatoria.slice(0, 10))
+      : '',
+    inscripcion: destacado.enlace
+      ? { texto: T('convocatoria_boton', 'Inscribirse al encuentro'), url: destacado.enlace }
+      : null,
+    agenda: destacado.enlaceAgenda
+      ? { texto: T('convocatoria_boton_agenda', 'Ver la agenda'), url: destacado.enlaceAgenda }
+      : null,
+  };
+})();
 
 export const nodos = {
   eyebrow: T('nodos_eyebrow', 'Nodos y organizaciones'),

@@ -14,6 +14,7 @@
  */
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
+import Convocatoria from '../components/Convocatoria.astro';
 import Hero from '../components/Hero.astro';
 import QuienesSomos from '../components/QuienesSomos.astro';
 import LineaTiempo from '../components/LineaTiempo.astro';
@@ -29,6 +30,12 @@ import Footer from '../components/Footer.astro';
   <Header />
 
   <main id="contenido">
+    {/*
+      La franja del encuentro va ANTES del hero y desaparece sola cuando el
+      evento pasa (`convocatoria` devuelve `null`). Es lo único del sitio que
+      caduca por fecha: el resto de la portada sigue siendo cierto en enero.
+    */}
+    <Convocatoria />
     <Hero />
     <QuienesSomos />
     <LineaTiempo />
