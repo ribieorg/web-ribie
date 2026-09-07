@@ -867,10 +867,17 @@ es como un sitio empieza a repetirse.
 
 ### Por qué hay una cuenta atrás en un sitio institucional
 
-Porque hay un plazo real que corre y no lo dice ninguna otra parte del sitio: la recepción de ponencias
-cierra el **17 de septiembre**, tres semanas antes del encuentro. El reloj tiene **dos fases** y cambia
-solo: mientras el plazo está abierto cuenta al cierre de convocatoria; después, al primer día del
-encuentro. Nadie tiene que acordarse de nada.
+Porque el encuentro es la razón por la que la mayoría va a entrar al sitio entre septiembre y octubre, y
+la cuenta atrás es la forma reconocible de decir cuánto falta.
+
+**El reloj cuenta al encuentro, nunca al plazo de ponencias.** Del 7 de septiembre contó al cierre de
+convocatoria, con el argumento de que era lo accionable. Lo tumbó un argumento mejor: **el sitio de la
+Licenciatura anuncia el mismo encuentro con su propio reloj**, y quien abriera los dos vería 28 días en
+uno y 10 en el otro, sin manera de saber que contaban cosas distintas — concluiría que uno está mal. Dos
+relojes del mismo evento tienen que decir lo mismo.
+
+El plazo no se pierde: baja a **una línea de texto** bajo las casillas, y **desaparece sola** el día que
+vence. Un dato al lado del reloj, no compitiendo con él.
 
 ### La ejecución NO se copia de la referencia
 

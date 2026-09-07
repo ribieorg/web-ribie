@@ -90,7 +90,7 @@ const ilustracion = foto(c?.ilustracion);
                 </li>
               ))}
             </ul>
-            {c.limite && <p class="limite">hasta el {c.limite}</p>}
+            {c.plazo && <p class="plazo">{c.plazo}</p>}
           </>
         )}
 
@@ -357,7 +357,10 @@ const ilustracion = foto(c?.ilustracion);
     color: rgb(255 255 255 / .78);
     text-align: center;
   }
-  .limite {
+  /* El plazo de ponencias, en texto y no en casillas: es un dato, no la cuenta
+     atrás. Compite con el reloj si se le da el mismo peso, y el reloj es del
+     encuentro. */
+  .plazo {
     font-size: var(--text-small);
     color: rgb(255 255 255 / .78);
     margin: var(--space-3) 0 0;

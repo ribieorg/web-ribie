@@ -261,12 +261,23 @@ export const convocatoria = (() => {
   const ahora = Date.now();
   if (ahora > fin) return null;          // ya pasó: la franja no se arma siquiera
 
-  /** Un cierre posterior al propio encuentro es un error de captura, no una
-   *  fase: se ignora y el reloj cuenta directo al evento. */
+  /**
+   * El reloj cuenta SIEMPRE al encuentro, nunca al cierre de convocatoria.
+   *
+   * Contó al plazo de ponencias hasta el 7 de septiembre, con el argumento de
+   * que era lo accionable. El argumento que lo tumba es mejor: el sitio de la
+   * Licenciatura anuncia el mismo encuentro con su propio reloj, y quien abra
+   * los dos vería dos números distintos sin manera de saber que cuentan cosas
+   * distintas — concluiría que uno está mal. Dos relojes del mismo evento tienen
+   * que decir lo mismo.
+   *
+   * El plazo no se pierde: baja a una línea de texto, y desaparece sola cuando
+   * vence.
+   */
   const cierre = momento(destacado.cierreConvocatoria, true);
-  const enPlazo = cierre !== null && cierre <= inicio && ahora < cierre;
+  const plazoVivo = cierre !== null && cierre <= inicio && ahora < cierre;
 
-  const objetivo = enPlazo ? cierre : ahora < inicio ? inicio : null;
+  const objetivo = ahora < inicio ? inicio : null;
   /**
    * Los segundos del HTML estático nacen viejos: entre que se construye la
    * página y alguien la abre pasan horas o días. No importa —el script los
@@ -276,7 +287,7 @@ export const convocatoria = (() => {
   const unidades = objetivo === null ? [] : cuenta(ahora, objetivo);
 
   return {
-    fase: objetivo === null ? 'encurso' : enPlazo ? 'ponencias' : 'evento',
+    fase: objetivo === null ? 'encurso' : 'evento',
     /** Ojo con el nombre: `rotuloEvento` es la categoría del encuentro y
      *  `rotulo`, más abajo, el del reloj. Se llamaban igual y el segundo pisaba
      *  al primero en silencio, que es lo que hacen dos claves iguales en un
@@ -293,16 +304,16 @@ export const convocatoria = (() => {
     fechasPorConfirmar: !destacado.fechasConfirmadas,
     lugar: destacado.lugar,
     modalidad: destacado.modalidad,
-    rotulo: enPlazo
-      ? T('convocatoria_rotulo_ponencias', 'Cierra la recepción de ponencias y talleres')
-      : T('convocatoria_rotulo_evento', 'Faltan para el encuentro'),
+    rotulo: T('convocatoria_rotulo_evento', 'Faltan para el encuentro'),
     enCurso: T('convocatoria_en_curso', 'El encuentro se está realizando'),
     unidades,
     /** Lo que el cliente necesita para corregirse y para apagarse solo. */
     objetivoISO: objetivo === null ? '' : new Date(objetivo).toISOString(),
     finISO: new Date(fin).toISOString(),
-    limite: enPlazo && destacado.cierreConvocatoria
-      ? rangoDeFechas(destacado.cierreConvocatoria.slice(0, 10))
+    /** El plazo de ponencias, como dato y no como cuenta atrás. Cae solo el día
+     *  que vence: no hay que acordarse de retirarlo. */
+    plazo: plazoVivo && destacado.cierreConvocatoria
+      ? `${T('convocatoria_plazo', 'Ponencias y talleres, hasta el')} ${rangoDeFechas(destacado.cierreConvocatoria.slice(0, 10))}`
       : '',
     inscripcion: destacado.enlace
       ? { texto: T('convocatoria_boton', 'Inscribirse al encuentro'), url: destacado.enlace }
