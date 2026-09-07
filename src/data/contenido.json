@@ -3,16 +3,16 @@
   "eventos": [
     {
       "id": "xv-foro-2026",
-      "titulo": "XV Foro de Investigadores en Informática Educativa",
-      "fechaInicio": "2026-10-05",
+      "titulo": "Seminario y Foro Internacional: Aprendizaje Humano, Pedagogía e Inteligencia Artificial (IA)",
+      "fechaInicio": "2026-10-06",
       "fechaFin": "2026-10-07",
-      "lugar": "Universidad de Nariño · Pasto, Colombia",
+      "lugar": "Hotel Cuellar (Cra. 23 #15-50) y Universidad de Nariño · Pasto, Colombia",
       "modalidad": "Híbrida — presencial y virtual",
-      "descripcion": "El XV Foro se pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento.",
-      "enlace": "",
+      "descripcion": "En el marco del encuentro se realiza el XV Foro de Investigadores de Informática Educativa de RIBIE, junto al V Seminario de TIC Aplicadas a la Educación y el VIII Seminario Internacional de Actualización en Prácticas Pedagógicas. El encuentro pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento. Las propuestas de ponencias y talleres se reciben hasta el 17 de septiembre de 2026 en eventolicinfo@udenar.edu.co.",
+      "enlace": "https://docs.google.com/forms/d/e/1FAIpQLSdfuVTVDjRqwvGrCNONqaiN3Zri_fx8tYZzO5bbPJH6Mo17dw/viewform",
       "imagen": "ponencia-conferencista.webp",
       "destacado": true,
-      "fechasConfirmadas": false
+      "fechasConfirmadas": true
     }
   ],
   "nodos": [
