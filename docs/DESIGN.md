@@ -934,6 +934,19 @@ la sirve en cinco tamaños con `widths` + `sizes`; el sitio nunca le pide nada a
 son **7,13**. Ninguna crea un defecto —las tres siguen pasando—, pero es la tabla que se consulta para
 elegir colores. Pendiente de corregir.
 
+### El reparto va por FILAS declaradas, y hay que redeclararlas en cada corte
+
+La franja tiene tres columnas de alturas muy distintas. Sin `grid-row` explícito, el auto-placement deja
+que el bloque más alto —la ilustración— defina el alto de la primera fila: el reloj queda colgado del
+techo, la ficha empujada al fondo y aparece un socavón de aire de unos 380 px en la columna izquierda.
+Con las filas declaradas, las columnas se comportan como columnas.
+
+🔴 **La trampa que trae eso, y que hay que recordar antes de tocar los cortes:** las filas declaradas
+**se heredan en los media queries**. Al colapsar a una sola columna, todos los bloques conservan su
+`grid-row` de escritorio, caen en las mismas celdas y **se pintan unos encima de otros** — ilegible, no
+"un poco apretado". Cada corte tiene que **redeclarar** su reparto (tableta) o **anularlo** con
+`grid-row: auto` (móvil, donde manda `order`). Se descubrió probando: en el HTML no se ve.
+
 ### El orden cambia en móvil, y por qué
 
 En pantalla estrecha el reloj sube por delante de la ficha de datos: con el título, el lema y los tres
