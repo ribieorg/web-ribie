@@ -360,6 +360,44 @@
       "tamano": "pequena"
     }
   ],
+  "estructura": {
+    "convocatoria": {
+      "mostrar": true,
+      "rotuloMenu": ""
+    },
+    "hero": {
+      "mostrar": false,
+      "rotuloMenu": ""
+    },
+    "red": {
+      "mostrar": true,
+      "rotuloMenu": "Sobre Nosotros"
+    },
+    "historia": {
+      "mostrar": false,
+      "rotuloMenu": ""
+    },
+    "lineas": {
+      "mostrar": false,
+      "rotuloMenu": "Líneas de trabajo"
+    },
+    "foro": {
+      "mostrar": false,
+      "rotuloMenu": "Eventos"
+    },
+    "memoria": {
+      "mostrar": false,
+      "rotuloMenu": ""
+    },
+    "nodos": {
+      "mostrar": false,
+      "rotuloMenu": "Nodos"
+    },
+    "contacto": {
+      "mostrar": false,
+      "rotuloMenu": "Contacto"
+    }
+  },
   "foroPrograma": [
     {
       "numeral": "XV",

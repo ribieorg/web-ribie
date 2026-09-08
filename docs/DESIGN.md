@@ -964,6 +964,42 @@ lo que se reordena es la presentación.
 
 ---
 
+## 18. La portada se compone desde una hoja (8 sep 2026, D60)
+
+**Qué cambia.** Qué secciones se publican deja de ser una decisión del código y pasa a ser un dato: la hoja
+`estructura`, una fila por sección con `mostrar` en sí/no y el rótulo que le toca en el menú. Es la
+extensión natural de D39 —el contenido lo mantiene el grupo, no nosotros— al único frente que seguía
+exigiendo un despliegue nuestro: **retirar algo de la portada.**
+
+**Por qué hoja propia y no filas en `textos`.** La sección es una entidad con atributos —se muestra o no,
+y cómo se llama en el menú—, y eso es una fila. En `textos` no hay una fila por sección: hay 25 pares
+clave/valor, y una columna `oculto` allí no tendría a qué aplicarse. Mismo argumento que llevó
+`foro_programa` a hoja propia en §17.
+
+**La regla de fallo va al revés que en todo lo demás, y es deliberado.** La §8.5 dice que sin contenido la
+sección no existe; aquí, sin hoja, **todas las secciones existen**. `estructura` es configuración, no
+contenido: si se aplicara la regla general, un `HTTP 400` dejaría el sitio en blanco. Apagar solo puede ser
+el resultado de que alguien escriba `no`; ni la red, ni una errata, ni una fila borrada apagan nada.
+
+**El menú se deriva, no se mantiene.** `navegacion` se calcula desde las secciones visibles, así que una
+sección apagada desaparece del menú —y del pie, que repite la lista— sin que nadie tenga que acordarse.
+Cierra la clase de defecto en la que el menú promete algo que la página ya no tiene: es la misma familia
+del chip de separados que prometía pares inexistentes, y aquí queda imposible por construcción.
+
+**Lo que la hoja NO puede hacer, y por qué.** Reordenar la portada. El recorrido —qué es la red, qué dice
+de sí misma, qué ha hecho, en qué trabaja— es el argumento de §14, no una preferencia: está razonado en
+`index.astro` y se sostiene o se cambia entero. Apagar una sección no la mueve; al encenderla, vuelve a su
+sitio.
+
+**Primer uso (8 sep 2026).** A petición de RIBIE, la portada queda con la franja del encuentro y la
+sección de Historia, rotulada «Sobre nosotros» en el menú. Las otras siete, apagadas.
+
+⏰ **Y hereda una fecha de §17:** la franja se apaga sola cuando el encuentro pasa. Con el resto apagado,
+el 8 de octubre la portada se queda con una sola sección. La hoja lo resuelve en una celda, pero **hay que
+acordarse de abrirla** — la caducidad automática y el apagado manual se suman, y nadie los pensó juntos.
+
+---
+
 ## Anexos
 
 - **Iconos de aplicación:** son los que entregó RIBIE, **sin retoque** — §16 y decisión **D57**. No se

@@ -13,13 +13,21 @@ interface Props {
   /** Arranca en la columna 1 en vez de la 2 (secciones a sangre completa). */
   desdeElMargen?: boolean;
   claro?: boolean;
+  /**
+   * `1` cuando esta sección es lo primero publicado de la portada y le toca el
+   * `h1` (D60: con el hero apagado desde la hoja, la página se quedaría sin él).
+   * El estilo es el mismo en los dos casos; lo que cambia es la jerarquía del
+   * documento, que es lo que recorre un lector de pantalla.
+   */
+  nivel?: 1 | 2;
 }
-const { eyebrow, titulo, desdeElMargen = false, claro = false } = Astro.props;
+const { eyebrow, titulo, desdeElMargen = false, claro = false, nivel = 2 } = Astro.props;
+const Titulo = nivel === 1 ? 'h1' : 'h2';
 ---
 
 <div class:list={['encabezado', { desde1: desdeElMargen, claro }]}>
   <span class="eyebrow">{eyebrow}</span>
-  <h2>{titulo}</h2>
+  <Titulo>{titulo}</Titulo>
 </div>
 
 <style>
@@ -36,7 +44,7 @@ const { eyebrow, titulo, desdeElMargen = false, claro = false } = Astro.props;
     margin-bottom: var(--space-3);
   }
 
-  h2 {
+  h1, h2 {
     font-family: var(--font-display);
     font-weight: 500;
     font-size: var(--text-h2);

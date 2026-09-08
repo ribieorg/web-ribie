@@ -11,7 +11,12 @@
  * tercio del recorrido como huecos declarados desde el 29 de julio y el contenido
  * no llegó. La regla §8.5 —si no hay contenido real, la sección no existe—
  * también las alcanza. Vuelven solas el día que el grupo cargue una fila.
+ *
+ * El ORDEN de abajo es fijo y es el argumento; lo que la hoja `estructura`
+ * decide es cuáles de estas secciones se publican hoy (D60). Apagar no reordena:
+ * al encender una sección, vuelve a su sitio en el recorrido, no al final.
  */
+import { visible } from '../data/contenido';
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Convocatoria from '../components/Convocatoria.astro';
@@ -36,14 +41,14 @@ import Footer from '../components/Footer.astro';
       caduca por fecha: el resto de la portada sigue siendo cierto en enero.
     */}
     <Convocatoria />
-    <Hero />
-    <QuienesSomos />
-    <LineaTiempo />
-    <LineasTrabajo />
-    <Foro />
-    <ArchivoMemoria />
-    <MapaNodos />
-    <Contacto />
+    {visible('hero') && <Hero />}
+    {visible('red') && <QuienesSomos />}
+    {visible('historia') && <LineaTiempo />}
+    {visible('lineas') && <LineasTrabajo />}
+    {visible('foro') && <Foro />}
+    {visible('memoria') && <ArchivoMemoria />}
+    {visible('nodos') && <MapaNodos />}
+    {visible('contacto') && <Contacto />}
   </main>
 
   <Footer />

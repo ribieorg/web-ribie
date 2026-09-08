@@ -7,8 +7,9 @@
  * más abajo, es el **detalle**. Sin esa división las dos dirían lo mismo con dos
  * diseños distintos, que es como un sitio empieza a repetirse.
  *
- * No lleva encabezado (`h1`–`h6`) a propósito. El `h1` de la página es el del
- * hero, que va justo debajo; abrir el documento con un `h2` deja la jerarquía de
+ * Su título es un `<p>` mientras el hero esté publicado, porque el `h1` de la
+ * página es el del hero, que va justo debajo; abrir el documento con un `h2` deja
+ * la jerarquía de
  * encabezados al revés para quien navega con lector de pantalla. El nombre
  * accesible de la región lo da `aria-labelledby` sobre un párrafo, que es válido
  * y no ocupa un nivel.
@@ -31,13 +32,20 @@
  */
 import { Image } from 'astro:assets';
 import Chip from './Chip.astro';
-import { convocatoria as c } from '../data/contenido';
+import { convocatoria as c, llevaH1 } from '../data/contenido';
 import { foto } from '../lib/imagenes';
 
 /** Sale de la hoja, no de un `import`: cambiar la ilustración del encuentro no
  *  puede exigir tocar el repositorio. Si la celda está vacía o el archivo no
  *  llegó, no hay imagen y la franja se arma igual. */
 const ilustracion = foto(c?.ilustracion);
+
+/**
+ * `h1` cuando la franja es lo primero publicado —el hero apagado desde la hoja
+ * `estructura`—, `p` cuando el hero está y se lo queda él. El estilo va por la
+ * clase `.titulo`, así que la etiqueta no cambia nada de lo que se ve.
+ */
+const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
 ---
 
 {c && (
@@ -50,7 +58,7 @@ const ilustracion = foto(c?.ilustracion);
     <div class="g">
       <div class="dicho">
         {c.rotuloEvento && <p class="rotulo-evento">{c.rotuloEvento}</p>}
-        <p class="titulo" id="convocatoria-titulo">{c.titulo}</p>
+        <Titulo class="titulo" id="convocatoria-titulo">{c.titulo}</Titulo>
         {c.subtitulo && <p class="subtitulo">{c.subtitulo}</p>}
       </div>
 

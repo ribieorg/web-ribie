@@ -1,16 +1,19 @@
-# Carga de las hojas del Drive — contrato de nueve hojas
+# Carga de las hojas del Drive — contrato de once hojas
 
-_Actualizado el **14 de agosto de 2026** (D55). Sustituye al diagnóstico del 29 de julio, que describía el
-contrato de cinco hojas y el modo demostración, ambos superados._
+_Actualizado el **8 de septiembre de 2026** (D60). Sustituye al diagnóstico del 29 de julio —que describía
+el contrato de cinco hojas y el modo demostración— y al estado del 14 de agosto, que hablaba de nueve: se
+sumaron `foro_programa` (D58) y `estructura` (D60)._
 
 ---
 
-## Estado: ✅ las nueve hojas están cargadas y publicadas (14 ago 2026)
+## Estado: ✅ las once hojas están cargadas y publicadas
 
 Verificado con `pnpm sync:check` contra el Drive real, **sin una sola advertencia**:
 
 | Hoja | Filas | Contenido |
 |---|---|---|
+| `estructura` | 9 | ⚙️ **Qué secciones se publican** y cómo se llaman en el menú |
+| `foro_programa` | 3 | Los tres encuentros que se celebran juntos |
 | `textos` | **25 claves** | Todos los textos del sitio |
 | `eventos` | 1 | XV Foro, con `fechas_confirmadas` en `no` |
 | `nodos` | **21** | Colombia con sede; 20 países `por confirmar` |
@@ -28,7 +31,7 @@ Los archivos de partida siguen en
 `02_PROYECTOS/ribie/99_referencias/RIBIE Design System/exports/hojas/*.xlsx`, y los mismos datos en CSV en
 `scripts/hojas-locales/` (es lo que lee `pnpm sync:local`).
 
-> ⚠️ **Las nueve URLs se publicaron como *documento completo*** (`pub?output=csv`, sin `gid`), así que
+> ⚠️ **Las URLs se publicaron como *documento completo*** (`pub?output=csv`, sin `gid`), así que
 > Google devuelve **la primera pestaña**. Hoy funciona porque la pestaña de datos va primera y la de `guia`
 > segunda. **Si alguien reordena las pestañas, el sync empezaría a leer la guía** — al reordenar o añadir
 > pestañas, republicar apuntando a la pestaña concreta.
@@ -36,6 +39,40 @@ Los archivos de partida siguen en
 > 💡 **El `gid` caduca cuando se reemplaza el contenido de una pestaña.** Las cinco URLs de julio llevaban
 > `gid=…&single=true` y empezaron a dar **HTTP 400** en cuanto se importó el contenido nuevo: el documento
 > era el mismo, la pestaña ya no. Si un día cinco hojas fallan a la vez y las nuevas funcionan, es esto.
+
+---
+
+## 0. La hoja `estructura` — qué se publica y qué no
+
+Es la única hoja que **no dice qué contiene el sitio, sino qué se ve de él**. Una fila por sección, en el
+orden en que salen en la portada:
+
+| Columna | Para qué sirve |
+|---|---|
+| `seccion` | El nombre que conoce el sitio: `convocatoria`, `hero`, `red`, `historia`, `lineas`, `foro`, `memoria`, `nodos`, `contacto`. **No se inventan**: uno que no esté en esa lista se ignora y el sync avisa (casi siempre es una errata). |
+| `nombre` | Para entender la fila al leerla. No sale en ninguna parte del sitio. |
+| `mostrar` | `sí` publica la sección · `no` la retira. |
+| `rotulo_menu` | Cómo se llama en el menú de arriba. Un guion `-` o la celda vacía = **no va al menú**. |
+
+**Encender y apagar es todo lo que hace.** No borra contenido: la sección apagada sigue con sus datos en su
+hoja, y vuelve tal cual estaba en cuanto la celda diga `sí`. Tampoco cambia el orden — al encender una
+sección, vuelve a su sitio en el recorrido, no al final.
+
+> 🔒 **Apagar exige decirlo.** Si la hoja se cae, si se borra una fila o si `mostrar` trae algo que no es
+> sí/no, **la sección se publica**. Es al revés que en las demás hojas —donde sin contenido no hay
+> sección—, y a propósito: un error de red no puede dejar el sitio en blanco.
+
+**El menú se arma solo con lo que esté encendido**, y el pie repite esa misma lista. Por eso no hay que
+acordarse de quitar un enlace al apagar una sección: es imposible que el menú apunte a algo que no está.
+
+### Estado hoy (8 sep 2026)
+
+Portada reducida al encuentro, **a petición de RIBIE**: se publican la **franja del XV Foro** y la sección
+de **Historia**, esta última rotulada **«Sobre nosotros»** en el menú. Las otras siete están en `no`.
+
+> ⏰ **Fecha que hay que atender: el 8 de octubre.** La franja del encuentro **se apaga sola** cuando el
+> foro pasa (es su diseño, D58). Con el resto en `no`, ese día la portada queda solo con «Sobre nosotros» y
+> el pie. Antes de esa fecha hay que decidir con RIBIE qué se vuelve a encender.
 
 ---
 
@@ -117,9 +154,9 @@ simplemente **cae al contenido por defecto**, sin romper nada.
 
 ## 4. Lo que sigue dependiendo de RIBIE, no de nosotros
 
-1. **Las fechas del XV Foro (5–7 oct 2026).** Están cargadas, pero **nadie de la red las ha validado**, y
-   con fechas de congreso la gente compra pasajes. Se publican con `fechas_confirmadas: no` hasta que
-   respondan; ese día se pone `sí` y desaparece la marca.
+1. **Las fechas del XV Foro — 6 y 7 de octubre de 2026** (corregidas el 7 sep, D58: la hoja decía 5–7).
+   Siguen **sin validar por la red**, y con fechas de congreso la gente compra pasajes. Se publican con
+   `fechas_confirmadas: no` hasta que respondan; ese día se pone `sí` y desaparece la marca.
 2. **`colaboradores`** — hacen falta nombres reales con cargo e institución. Es el único contenido que
    deliberadamente no se rellena ni como demostración: inventar académicos en el sitio de una red real no
    vale la pena.

@@ -4,7 +4,7 @@ import externo from './contenido.json';
  * CONTENIDO DEL SITIO.
  *
  * Un solo origen real: `contenido.json`, que escribe `scripts/sync-contenido.mjs`
- * desde las ocho hojas del Drive (D39 + D54). Lo que hay en este archivo son los
+ * desde las once hojas del Drive (D39 + D54 + D60). Lo que hay en este archivo son los
  * **textos estructurales de respaldo** —titulares y rótulos— para que una hoja
  * caída no deje la página muda.
  *
@@ -54,7 +54,11 @@ type Evento = {
 type ForoPrograma = { numeral: string; nombre: string; entidad: string };
 type Nodo = { nombre: string; pais: string; sitio: string; logo: string; porConfirmar: boolean };
 
+type Seccion = { mostrar: boolean; rotuloMenu: string };
+
 type Externo = {
+  /** Configuración, no contenido: qué secciones se publican (hoja `estructura`). */
+  estructura?: Record<string, Seccion>;
   textos?: Record<string, string>;
   cifras?: Cifra[];
   hitos?: Hito[];
@@ -76,6 +80,37 @@ const T = (clave: string, base = ''): string => {
 };
 
 const esSi = (v?: string) => ['sí', 'si', 'yes', 'true', '1'].includes((v ?? '').trim().toLowerCase());
+
+/**
+ * ¿Se publica esta sección? Lo dice la hoja `estructura` (D60).
+ *
+ * **Sin dato, se muestra.** Es deliberado y va en la misma dirección que el
+ * sync: una hoja caída, una fila borrada o un `contenido.json` de antes de que
+ * la hoja existiera dejan el sitio como estaba, nunca en blanco. Apagar una
+ * sección solo puede ser el resultado de que alguien escriba «no».
+ */
+export const visible = (seccion: string): boolean => ext.estructura?.[seccion]?.mostrar ?? true;
+
+/** Rótulo de la sección en el menú. Vacío —o «-» en la hoja— = no va al menú. */
+const rotuloMenu = (seccion: string): string => ext.estructura?.[seccion]?.rotuloMenu ?? '';
+
+/**
+ * QUIÉN LLEVA EL `<h1>` DE LA PORTADA.
+ *
+ * Hasta D60 la respuesta era fija —el hero— y la franja del encuentro declaraba
+ * por eso que no lleva encabezado (§17). Ese supuesto caduca en cuanto el hero se
+ * puede apagar desde una hoja: la portada quedaría **sin `h1` y abriendo en
+ * `h2`**, que rompe la navegación por encabezados de un lector de pantalla.
+ *
+ * Así que el `h1` viaja al primer bloque publicado, en el orden en que aparecen.
+ * No es una preferencia de estilo: el `h1` es «de qué trata esta página», y de
+ * qué trata la página cambia cuando cambia lo que la página contiene.
+ */
+const ORDEN_H1 = ['hero', 'convocatoria', 'historia', 'red', 'lineas', 'foro', 'memoria', 'nodos', 'contacto'];
+
+/** ¿Este bloque es el primero publicado y, por tanto, el que lleva el `h1`? */
+export const llevaH1 = (bloque: string): boolean =>
+  ORDEN_H1.find((b) => visible(b)) === bloque;
 
 /**
  * FRANJA «SITIO EN PREPARACIÓN».
@@ -252,6 +287,10 @@ function cuenta(desde: number, hasta: number) {
 }
 
 export const convocatoria = (() => {
+  /** La hoja puede retirar la franja antes de que el encuentro pase; la fecha,
+   *  más abajo, la retira sola cuando pasa. Lo primero es una decisión, lo
+   *  segundo una caducidad, y no se estorban. */
+  if (!visible('convocatoria')) return null;
   if (!destacado) return null;
 
   const inicio = momento(destacado.fechaInicio);
@@ -372,15 +411,30 @@ export const pie = {
     '© 1990–2026 Red Iberoamericana de Informática Educativa. Todos los derechos reservados.'),
 };
 
-/** Navegación — anclas de la portada. El XV Foro tendrá página propia (D52). */
-export const navegacion = [
-  { texto: 'La red', ancla: '#red' },
-  { texto: 'Historia', ancla: '#historia' },
-  { texto: 'Líneas de trabajo', ancla: '#lineas' },
+/**
+ * Navegación — anclas de la portada. El XV Foro tendrá página propia (D52).
+ *
+ * Se DERIVA de lo que está publicado (D60): una sección apagada en la hoja
+ * `estructura` desaparece del menú sin que nadie tenga que acordarse de
+ * quitarla, que es la forma en que un menú termina apuntando al vacío. Como el
+ * pie repite esta misma lista, se corrige con ella.
+ *
+ * El rótulo sale de `rotulo_menu` en la hoja; el de aquí es el respaldo. Por eso
+ * el menú puede decir «Sobre nosotros» sobre la sección de Historia sin tocar
+ * código: es una decisión de cómo se presenta la red, no del programa.
+ */
+const ANCLAS = [
+  { id: 'red', ancla: '#red', base: 'La red' },
+  { id: 'historia', ancla: '#historia', base: 'Historia' },
+  { id: 'lineas', ancla: '#lineas', base: 'Líneas de trabajo' },
   /** «Eventos» y no «XV Foro»: el rótulo de la navegación nombra la sección, no
    *  la edición que hay en cartel. Con el XV Foro pasado habría que editar el
    *  menú; con «Eventos», no. */
-  { texto: 'Eventos', ancla: '#foro' },
-  { texto: 'Nodos', ancla: '#nodos' },
-  { texto: 'Contacto', ancla: '#contacto' },
+  { id: 'foro', ancla: '#foro', base: 'Eventos' },
+  { id: 'nodos', ancla: '#nodos', base: 'Nodos' },
+  { id: 'contacto', ancla: '#contacto', base: 'Contacto' },
 ];
+
+export const navegacion = ANCLAS
+  .filter((n) => visible(n.id))
+  .map((n) => ({ texto: rotuloMenu(n.id) || n.base, ancla: n.ancla }));

@@ -37,6 +37,24 @@ export const LOCAL = process.env.HOJAS_LOCALES === '1';
 const local = (nombre) => resolve(AQUI, 'hojas-locales', `${nombre}.csv`);
 
 const REMOTAS = {
+  /**
+   * ⚙️ CONFIGURACIÓN, NO CONTENIDO — y de ahí sale su regla de fallo.
+   *
+   * Una fila por sección de la portada, con `mostrar` en sí/no. Es la hoja que
+   * decide QUÉ se publica; las otras diez deciden QUÉ DICE lo publicado.
+   *
+   * Va como hoja propia, y no como filas `mostrar_*` en `textos`, por la misma
+   * razón que `foro_programa` (D58): la sección es una entidad con atributos
+   * —se muestra o no, y cómo se llama en el menú—, y eso es una FILA. En
+   * `textos` no hay una fila por sección: hay 25 pares clave/valor.
+   *
+   * ⚠️ Su ausencia NO apaga nada. La regla §8.5 —sin contenido, la sección no
+   * existe— vale para el contenido; invertida aquí dejaría el sitio en blanco
+   * ante un HTTP 400. Sin esta hoja, todas las secciones se muestran.
+   */
+  estructura:
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPxgE5DlwRORJ5shstuDMMxi5XlfriSZ8alsgh4J7-dc059KCg7AxsdPW-SaTHv4wLc-zBko9ZD-fu/pub?output=csv',
+
   // ⚠️ Republicadas el 14 ago 2026 SIN `gid` ni `single=true`. El documento es el
   // mismo de julio; lo que caducó fue el identificador de la pestaña al reemplazar
   // su contenido, y con él las URLs anteriores empezaron a dar HTTP 400. Con
@@ -90,6 +108,9 @@ export const HOJAS = LOCAL
 
 /** Columnas obligatorias por hoja: si falta alguna, el sync avisa y no publica esa hoja. */
 export const ESQUEMA = {
+  // `nombre` y `rotulo_menu` quedan fuera a propósito: son accesorias, y exigirlas
+  // haría que borrar una columna de ayuda apagase la portada entera.
+  estructura: ['seccion', 'mostrar'],
   textos: ['clave', 'valor'],
   // `fechas_confirmadas` no es opcional: sin esa columna, un rango sin validar se
   // publicaría como firme, que es exactamente el riesgo que D52 vino a cerrar.
@@ -119,4 +140,18 @@ export const ESQUEMA = {
 export const SECUNDARIOS_MANUAL = [
   '#00AEEF', '#0BAAD1', '#15A7B3', '#20A395',
   '#2A9F78', '#359B5A', '#3F983C', '#4A941E',
+];
+
+/**
+ * Las secciones de la portada que el código sabe pintar, en el orden en que salen.
+ *
+ * La hoja `estructura` puede apagarlas y renombrarlas en el menú, pero no crear
+ * una nueva ni reordenarlas: el recorrido de la portada —qué es la red, qué dice
+ * de sí misma, qué ha hecho— es una decisión de diseño argumentada en
+ * `index.astro`, no un dato. Una `seccion` que no esté en esta lista se ignora
+ * con aviso, porque lo más probable es que sea una errata.
+ */
+export const SECCIONES = [
+  'convocatoria', 'hero', 'red', 'historia',
+  'lineas', 'foro', 'memoria', 'nodos', 'contacto',
 ];

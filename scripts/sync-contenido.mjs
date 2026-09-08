@@ -18,7 +18,7 @@
 import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HOJAS, ESQUEMA, LOCAL, SECUNDARIOS_MANUAL } from './hojas.config.mjs';
+import { HOJAS, ESQUEMA, LOCAL, SECUNDARIOS_MANUAL, SECCIONES } from './hojas.config.mjs';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DESTINO = resolve(RAIZ, 'src/data/contenido.json');
@@ -208,6 +208,47 @@ if (configuradas > 0 && leidas === 0) {
 /* ------ Transformar filas → estructura que consume el sitio ---------------- */
 
 const salida = {};
+
+/**
+ * ⚙️ ESTRUCTURA — qué secciones se publican y cómo se llaman en el menú.
+ *
+ * Tres reglas, y las tres apuntan al mismo sitio: **apagar una sección exige
+ * decirlo a propósito.** Nada la apaga por omisión, por errata ni por fallo.
+ *
+ *   - Sección sin fila en la hoja  → se muestra.
+ *   - Celda `mostrar` vacía o con un valor que no es sí/no → se muestra, con aviso.
+ *   - Hoja caída, vacía o sin columnas → no se escribe nada aquí, y el merge del
+ *     final conserva la estructura de ayer (o, si nunca hubo, todo visible).
+ *
+ * `rotulo_menu` admite «-» además de la celda vacía: es como se escribe «esta
+ * sección no va al menú» en una hoja de cálculo, donde el vacío no se ve.
+ */
+if (resultado.estructura) {
+  const esNo = (v) => ['no', 'false', '0', 'n'].includes(String(v).toLowerCase().trim());
+  const filas = new Map(resultado.estructura.map((f) => [(f.seccion ?? '').toLowerCase(), f]));
+
+  for (const s of filas.keys()) {
+    if (!SECCIONES.includes(s)) {
+      avisos.push(`⚠️  estructura: "${s}" no es una sección del sitio — fila ignorada (¿errata?)`);
+    }
+  }
+
+  salida.estructura = Object.fromEntries(SECCIONES.map((seccion) => {
+    const f = filas.get(seccion);
+    let mostrar = true;
+    if (f) {
+      if (esSi(f.mostrar)) mostrar = true;
+      else if (esNo(f.mostrar)) mostrar = false;
+      else avisos.push(`⚠️  estructura/${seccion}: "mostrar" dice "${f.mostrar}" y no sí/no — la sección se publica`);
+    }
+    const rotulo = (f?.rotulo_menu ?? '').trim();
+    return [seccion, { mostrar, rotuloMenu: rotulo === '-' ? '' : rotulo }];
+  }));
+
+  const apagadas = SECCIONES.filter((s) => !salida.estructura[s].mostrar);
+  console.log(`  ⚙️  estructura: ${SECCIONES.length - apagadas.length} visible(s)`
+    + (apagadas.length ? ` · apagadas: ${apagadas.join(', ')}` : ''));
+}
 
 if (resultado.textos) {
   // Las claves terminadas en `_imagen` no son texto: son un enlace de Drive, y se
@@ -430,8 +471,18 @@ delete previo.sincronizado;
  * pero esa misma virtud dejaría vivo para siempre el contenido de una sección
  * retirada. Lo que sale del contrato sale también del archivo.
  */
+/**
+ * Clave del contenido → hoja que la alimenta, para las que no se llaman igual.
+ *
+ * Sin esto, `foroPrograma` no encontraba su hoja `foro_programa` y la limpieza de
+ * abajo la daba por retirada del contrato en cada corrida. Hoy no se nota porque
+ * `salida` la repone acto seguido; el día que esa hoja falle, se borraría el
+ * contenido de ayer — que es exactamente lo que el merge existe para impedir.
+ */
+const HOJA_DE = { foroPrograma: 'foro_programa' };
+
 for (const clave of Object.keys(previo)) {
-  if (!(clave in HOJAS)) {
+  if (!((HOJA_DE[clave] ?? clave) in HOJAS)) {
     delete previo[clave];
     console.log(`  ✕ "${clave}" ya no está en el contrato de hojas — retirada del contenido`);
   }

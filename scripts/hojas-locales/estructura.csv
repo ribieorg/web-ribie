@@ -1,0 +1,10 @@
+seccion,nombre,mostrar,rotulo_menu
+convocatoria,Franja del encuentro,sí,-
+hero,Presentación de la portada,no,-
+red,Quiénes somos,no,La red
+historia,Historia,sí,Sobre nosotros
+lineas,Líneas de trabajo,no,Líneas de trabajo
+foro,Eventos,no,Eventos
+memoria,Memoria (archivo de foros),no,-
+nodos,Nodos de la red,no,Nodos
+contacto,Contacto,no,Contacto

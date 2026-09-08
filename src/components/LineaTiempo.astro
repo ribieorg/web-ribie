@@ -19,7 +19,7 @@
 import Duo from './Duo.astro';
 import Chip from './Chip.astro';
 import Encabezado from './Encabezado.astro';
-import { historia } from '../data/contenido';
+import { historia, llevaH1 } from '../data/contenido';
 
 /** El escalonado vertical rompe la fila perfecta. Es irregular a propósito:
  *  tres alturas alternas leen como una cinta de tiempo, no como una tabla. */
@@ -29,7 +29,14 @@ const ALTURAS = ['', 'alto', 'bajo', ''];
 {historia.hitos.length > 0 && (
   <section class="sec" id="historia">
     <div class="g">
-      <Encabezado eyebrow={historia.eyebrow} titulo={historia.titulo} desdeElMargen />
+      {/* Se queda con el `h1` si la franja del encuentro ya pasó y el hero está
+          apagado: la portada no puede abrir en `h2` (D60). */}
+      <Encabezado
+        eyebrow={historia.eyebrow}
+        titulo={historia.titulo}
+        desdeElMargen
+        nivel={llevaH1('historia') ? 1 : 2}
+      />
     </div>
 
     <div class="recorrido">

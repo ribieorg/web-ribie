@@ -11,11 +11,12 @@
  * reconocible del contenido generado (§11.3).
  */
 import Encabezado from './Encabezado.astro';
-import { quienesSomos as qs } from '../data/contenido';
+import { quienesSomos as qs, llevaH1 } from '../data/contenido';
 ---
 
 <section class="g sec" id="red">
-  <Encabezado eyebrow={qs.eyebrow} titulo={qs.titulo} />
+  {/* Toma el `h1` si es lo primero publicado de la portada (D60). */}
+  <Encabezado eyebrow={qs.eyebrow} titulo={qs.titulo} nivel={llevaH1('red') ? 1 : 2} />
 
   <div class="cuerpo reveal">
     {qs.parrafos.map((p) => <p>{p}</p>)}
