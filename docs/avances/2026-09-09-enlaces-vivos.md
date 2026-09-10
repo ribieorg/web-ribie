@@ -1,6 +1,6 @@
 # El botón del encuentro llevaba a un 404, y nada lo miraba
 
-_9 de septiembre de 2026_
+_9 de septiembre de 2026 · decisión **D61**_
 
 ## Lo que se encontró
 
@@ -62,8 +62,12 @@ bloquea al visitante y tiene que seguir avisando, por eso no entra en la excepci
 fotos que las de Google— una validación de prueba se llevó por delante diez imágenes en uso. Ahora la
 limpieza queda tras `SOLO_VALIDAR`.
 
-## Pendiente
+## Cerrado el mismo día
 
-Las dos celdas equivalentes en las hojas de Google (`eventos.enlace_agenda` y
-`textos.convocatoria_boton_agenda`). Mientras no se editen, la corrida horaria de `contenido.yml`
-revierte el contenido a lo anterior — el commit del repositorio no es la fuente de verdad.
+Las dos celdas de las hojas de Google —`eventos.enlace_agenda` y `textos.convocatoria_boton_agenda`—
+**ya están editadas**, así que la corrida horaria confirma el valor en vez de revertirlo. Verificado
+contra las hojas reales: el chequeo ya no reporta el 404, y `ribie.org` sirve el botón nuevo.
+
+Vale la pena dejarlo dicho porque el orden importa: el commit del repositorio **no es la fuente de
+verdad** del contenido. Mientras las celdas no cambien, `contenido.yml` deshace lo que se commitee a
+mano — arreglar esto en el código habría durado menos de dos horas.
