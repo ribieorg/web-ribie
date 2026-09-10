@@ -24,3 +24,4 @@ contacto_ciudad,"Bogotá, Colombia",CONFIRMAR con RIBIE cuál sede se publica
 credito_texto,Aliado tecnológico — Creado por Renovatio Software,"Obligación contractual, visible pero discreto"
 credito_url,https://renovatiosoftware.net,
 mostrar_franja_preparacion,sí,"CONTROL: mientras diga sí, el sitio muestra la franja «sitio en preparación». Poner no cuando RIBIE valide textos, cifras y años"
+convocatoria_boton_agenda,Ver la información del evento,"Rótulo del segundo botón de la franja del encuentro. Va con enlace_agenda de la hoja eventos: si esa celda apunta a la página del evento y no a una agenda con horarios, el rótulo tiene que decirlo"

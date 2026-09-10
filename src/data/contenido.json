@@ -11,7 +11,7 @@
       "descripcion": "En el marco del encuentro se realiza el XV Foro de Investigadores de Informática Educativa de RIBIE, junto al V Seminario de TIC Aplicadas a la Educación y el VIII Seminario Internacional de Actualización en Prácticas Pedagógicas. El encuentro pregunta en qué medida los modelos cognitivos que sustentan la inteligencia artificial reproducen, transforman o limitan las formas humanas de aprender, razonar y construir conocimiento. Las propuestas de ponencias y talleres se reciben hasta el 17 de septiembre de 2026 en eventolicinfo@udenar.edu.co.",
       "enlace": "https://docs.google.com/forms/d/e/1FAIpQLSdfuVTVDjRqwvGrCNONqaiN3Zri_fx8tYZzO5bbPJH6Mo17dw/viewform",
       "cierreConvocatoria": "2026-09-17T23:59:00-05:00",
-      "enlaceAgenda": "https://licinfor.udenar.edu.co/wp-content/uploads/2026/09/agenda-e-identidad-EVENTO-RIBIE-2026f.pdf",
+      "enlaceAgenda": "https://licinfor.udenar.edu.co/evento-2026/",
       "correoPonencias": "eventolicinfo@udenar.edu.co",
       "rotulo": "Foro y Seminario Internacional",
       "subtitulo": "Un espacio académico de formación, reflexión e intercambio sobre las relaciones entre tecnología, cognición y desarrollo humano",
@@ -196,7 +196,8 @@
     "contacto_ciudad": "Bogotá, Colombia",
     "credito_texto": "Aliado tecnológico — Creado por Renovatio Software",
     "credito_url": "https://renovatiosoftware.net",
-    "mostrar_franja_preparacion": "sí"
+    "mostrar_franja_preparacion": "sí",
+    "convocatoria_boton_agenda": "Ver la información del evento"
   },
   "cifras": [
     {
