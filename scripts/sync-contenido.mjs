@@ -4,6 +4,7 @@
  *
  *   node scripts/sync-contenido.mjs            # descarga y escribe src/data/contenido.json
  *   node scripts/sync-contenido.mjs --check    # solo valida, no escribe (para revisar antes)
+ *   node scripts/sync-contenido.mjs --sin-enlaces  # sin comprobar los enlaces externos
  *
  * Principio de diseño: **el sitio nunca se rompe por un error en la hoja.**
  * Si una descarga falla, si faltan columnas o si una hoja viene vacía, esa sección
@@ -17,6 +18,7 @@
 
 import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { request as pedirHTTPS } from 'node:https';
 import { fileURLToPath } from 'node:url';
 import { HOJAS, ESQUEMA, LOCAL, SECUNDARIOS_MANUAL, SECCIONES } from './hojas.config.mjs';
 
@@ -438,10 +440,178 @@ if (resultado.redes) {
   }));
 }
 
+/* --------------------------------------------------------- enlaces vivos -- */
+
+/**
+ * Los enlaces de las hojas apuntan a sitios de terceros, y los terceros mueven
+ * sus archivos sin avisar a nadie.
+ *
+ * El botón del encuentro estuvo llevando a un PDF que la Licenciatura había
+ * renombrado —un 404 en la portada— y se descubrió porque alguien lo pulsó. El
+ * sync ya comprueba que las fotos citadas por nombre existan en el repositorio
+ * (`traerImagen`); esto es lo mismo, aplicado a lo que vive fuera.
+ *
+ * Comprueba, **no corrige**. Un enlace que responde mal no se retira del
+ * contenido: la comprobación puede equivocarse —un WAF que rechaza al runner,
+ * un timeout, una cadena de certificados incompleta— y quitar un botón bueno
+ * por sospecha sería peor que dejar uno roto. La decisión es de quien lee el
+ * aviso.
+ */
+const SIN_ENLACES = process.argv.includes('--sin-enlaces');
+
+/** Saca del contenido ya armado las URLs que el sitio va a pintar. Recorre el
+ *  objeto entero en vez de listar campos: una clave nueva en las hojas queda
+ *  cubierta sin que haya que acordarse de añadirla aquí. */
+function urlsDe(valor, vistas = new Set()) {
+  if (typeof valor === 'string') {
+    if (/^https?:\/\//i.test(valor.trim())) vistas.add(valor.trim());
+  } else if (Array.isArray(valor)) valor.forEach((v) => urlsDe(v, vistas));
+  else if (valor && typeof valor === 'object') Object.values(valor).forEach((v) => urlsDe(v, vistas));
+  return vistas;
+}
+
+/**
+ * CINCO desenlaces, no dos — y la diferencia es el punto entero.
+ *
+ * `roto` es el servidor diciendo que el recurso no está (404/410): eso se
+ * arregla en la hoja. `incomprobable` es no haber podido preguntar, y no dice
+ * nada sobre el enlace. El sitio de la Licenciatura, sin ir más lejos, sirve su
+ * certificado sin la cadena intermedia: Node no lo verifica **aunque la página
+ * esté viva** —los navegadores lo disimulan buscando el intermedio por su
+ * cuenta—. Si los dos casos gritaran igual, el aviso se volvería ruido y el
+ * próximo 404 real pasaría inadvertido entre falsos positivos.
+ */
+const UA = 'Mozilla/5.0 (compatible; sync-ribie/1.0; +https://ribie.org)';
+
+/**
+ * Segundo intento para un caso concreto: el certificado no se puede verificar
+ * porque el servidor sirve la hoja SIN la cadena intermedia.
+ *
+ * Es justo lo que hace `licinfor.udenar.edu.co`, y sin esto el chequeo entero
+ * sería inútil para el único sitio que lo motivó: el TLS falla antes de que se
+ * llegue a ver el 404, así que el PDF renombrado seguiría pasando por «no se
+ * pudo comprobar». Los navegadores salvan esa cadena por su cuenta —por eso la
+ * página se ve bien— y aquí se hace lo análogo.
+ *
+ * La verificación se relaja SOLO para leer el código de estado de un recurso
+ * público, nunca para traer contenido: la respuesta se descarta (`res.resume()`)
+ * y lo único que sale de aquí es un número. Acotado a este error y a ningún
+ * otro — un certificado vencido o de otro dominio sí bloquea a los visitantes y
+ * tiene que seguir avisando.
+ */
+function estadoSinVerificar(url, saltos = 0) {
+  return new Promise((listo) => {
+    const req = pedirHTTPS(url, {
+      method: 'HEAD', rejectUnauthorized: false, timeout: 15000, headers: { 'user-agent': UA },
+    }, (res) => {
+      res.resume();
+      const destino = res.headers.location;
+      if (destino && [301, 302, 303, 307, 308].includes(res.statusCode) && saltos < 5) {
+        // Un `Location` malformado tira `new URL`, y esto corre dentro de un
+        // callback: la excepción no la recogería nadie y se llevaría el sync.
+        try { listo(estadoSinVerificar(new URL(destino, url).href, saltos + 1)); }
+        catch { listo(res.statusCode); }
+      } else listo(res.statusCode);
+    });
+    req.on('timeout', () => { req.destroy(); listo(null); });
+    req.on('error', () => listo(null));
+    req.end();
+  });
+}
+
+function clasificar(status) {
+  if (status < 400) return { estado: 'ok', detalle: `HTTP ${status}` };
+  if ([404, 410].includes(status)) return { estado: 'roto', detalle: `HTTP ${status}` };
+  return { estado: 'dudoso', detalle: `HTTP ${status}` };
+}
+
+async function comprobarEnlace(url) {
+  const opciones = {
+    redirect: 'follow',
+    signal: AbortSignal.timeout(15000),
+    // Sin `user-agent`, más de un servidor contesta 403 a un cliente anónimo.
+    headers: { 'user-agent': UA },
+  };
+  try {
+    let r = await fetch(url, { ...opciones, method: 'HEAD' });
+    // HEAD es opcional en HTTP y hay servidores que lo rechazan de plano; antes
+    // de dar por malo el enlace se pregunta como preguntaría un navegador.
+    if ([403, 405, 501].includes(r.status)) {
+      r = await fetch(url, { ...opciones, method: 'GET' });
+      await r.body?.cancel();          // solo interesa el estado, no el cuerpo
+    }
+    return clasificar(r.status);
+  } catch (e) {
+    const codigo = e.cause?.code ?? e.message;
+    if (codigo !== 'UNABLE_TO_VERIFY_LEAF_SIGNATURE') return { estado: 'incomprobable', detalle: codigo };
+
+    const status = await estadoSinVerificar(url);
+    if (status === null) return { estado: 'incomprobable', detalle: codigo };
+    const veredicto = clasificar(status);
+    // El enlace sirve, pero el servidor de enfrente tiene un problema que a
+    // algún visitante le va a estallar. Se dice, sin confundirlo con un roto.
+    return veredicto.estado === 'ok'
+      ? { estado: 'cadena', detalle: `HTTP ${status}` }
+      : veredicto;
+  }
+}
+
+/**
+ * Bajo `try`, como todo lo de este archivo: la regla es que el sitio no se rompe
+ * por lo que pase aquí, y esto es lo ÚLTIMO que debería impedir una publicación
+ * — su trabajo es avisar, no decidir.
+ */
+if (!SIN_ENLACES) try {
+  const cola = [...urlsDe(salida)];
+  const total = cola.length;
+  const rotos = [];
+  console.log(`\nComprobando ${total} enlace(s) externo(s)…`);
+
+  // De a cinco: son sitios ajenos y no hay prisa que justifique aparecer en sus
+  // registros como una ráfaga.
+  await Promise.all(Array.from({ length: Math.min(5, total) }, async () => {
+    for (let url = cola.shift(); url; url = cola.shift()) {
+      const { estado, detalle } = await comprobarEnlace(url);
+      if (estado === 'ok') continue;
+      if (estado === 'roto') {
+        rotos.push(url);
+        avisos.push(`⚠️  enlace ROTO (${detalle}) — hay que corregirlo en la hoja: ${url}`);
+      } else if (estado === 'cadena') {
+        avisos.push(`·  ${url} responde ${detalle}, pero su servidor sirve el certificado sin la cadena intermedia — se ve bien en navegadores y falla en clientes estrictos`);
+      } else if (estado === 'dudoso') {
+        avisos.push(`·  enlace que responde ${detalle}: ${url} — puede ser el servidor rechazando al robot`);
+      } else {
+        avisos.push(`·  no se pudo comprobar ${url} (${detalle}) — no significa que esté roto`);
+      }
+    }
+  }));
+
+  /**
+   * Anotación de Actions: un aviso dentro de un log que corre cada hora no lo
+   * lee nadie; así aparece en la portada de la corrida.
+   *
+   * No se falla el job. Lo que está mal es un destino ajeno, no el contenido de
+   * las hojas, y bloquear la publicación por eso dejaría el sitio sin las demás
+   * correcciones del día.
+   */
+  if (rotos.length && process.env.GITHUB_ACTIONS) {
+    console.log(`::warning title=Enlaces rotos en las hojas::${rotos.length} de ${total} enlace(s) devuelven 404 — ${rotos.join(' · ')}`);
+  }
+} catch (e) {
+  avisos.push(`·  la comprobación de enlaces falló entera (${e.message}) — el contenido se publica igual`);
+}
+
 /* ------------------------------------------------------ escribir y cerrar -- */
 
-// Imágenes que ya nadie referencia: se borran para que el repo no acumule basura.
-if (existsSync(IMAGENES) && usadas.size > 0) {
+/**
+ * Imágenes que ya nadie referencia: se borran para que el repo no acumule basura.
+ *
+ * Con `--check` NO se borra nada. La opción promete «solo valida, no escribe» y
+ * esta limpieza la desmentía: bastaba correrla con las hojas locales desfasadas
+ * —que citan menos fotos que las de Google— para que una validación de prueba
+ * se llevara por delante diez imágenes en uso.
+ */
+if (!SOLO_VALIDAR && existsSync(IMAGENES) && usadas.size > 0) {
   for (const f of readdirSync(IMAGENES)) {
     if (!usadas.has(f)) { unlinkSync(resolve(IMAGENES, f)); console.log(`  ✕ retirada ${f} (ya no se usa)`); }
   }

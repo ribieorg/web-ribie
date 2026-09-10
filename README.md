@@ -39,6 +39,11 @@ Hojas de Google  ──CSV──▶  scripts/sync-contenido.mjs  ──▶  src/
 - **A mano:** `pnpm sync` (descarga) · `pnpm sync:check` (valida sin escribir nada).
 - **Automático:** `.github/workflows/contenido.yml`, cada hora y a demanda.
 
+Cada corrida **comprueba además que los enlaces de las hojas sigan vivos** y avisa de los que
+devuelven 404 — los destinos son sitios ajenos y los sitios ajenos renombran archivos sin avisar. Es
+un aviso, nunca una corrección: un enlace sospechoso no se retira del sitio. Se salta con
+`--sin-enlaces`.
+
 **El sitio no puede romperse por un error en una hoja.** Si una descarga falla, faltan columnas o una
 hoja viene vacía, esa sección **conserva lo anterior** y el proceso avisa. Los valores por defecto de
 `src/data/contenido.ts` son el respaldo permanente.
