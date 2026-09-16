@@ -11,7 +11,8 @@
     "check": "astro check",
     "sync": "node scripts/sync-contenido.mjs",
     "sync:local": "HOJAS_LOCALES=1 node scripts/sync-contenido.mjs",
-    "sync:check": "node scripts/sync-contenido.mjs --check"
+    "sync:check": "node scripts/sync-contenido.mjs --check",
+    "publicar": "bash scripts/publicar-contenido.sh"
   },
   "dependencies": {
     "astro": "^7.1.3",

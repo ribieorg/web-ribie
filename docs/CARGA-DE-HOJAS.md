@@ -143,6 +143,23 @@ pnpm build        # compila
 ⏱️ **Google cachea las hojas publicadas unos cinco minutos.** Si `sync:check` no ve un cambio recién
 guardado, no es un fallo del script: es el caché.
 
+### Publicar de verdad, sin esperar al cron
+
+Lo de arriba sincroniza **en local**. Para que un cambio de las hojas llegue al sitio sin esperar la corrida
+horaria —que es *best effort* y llega a retrasarse 40 minutos (**D59**)—:
+
+```bash
+pnpm publicar     # o, desde Claude Code:  /sincronizar-ribie
+```
+
+Dispara `contenido.yml` en GitHub, espera, dice **qué celdas cambiaron**, espera el despliegue y **comprueba
+contra `ribie.org` que lo servido es lo nuevo**. Esa última comprobación es el motivo de que el guion exista:
+entre el 16 de agosto y el 6 de septiembre de 2026 el workflow reportó éxito mientras el sitio servía el
+build del día 16 (**D59**), así que aquí no basta con que Actions termine en verde.
+
+Si las hojas dicen lo mismo que el repo, avisa y **reintenta una sola vez a los 90 s** —por si es el caché de
+Google—. Si tampoco entonces, termina sin publicar: relánzalo pasados unos minutos.
+
 **Para trabajar sin depender del Drive**, `pnpm sync:local` lee los CSV de `scripts/hojas-locales/`. No son
 un segundo origen de verdad: **en cuanto la URL esté puesta, manda la hoja**.
 
