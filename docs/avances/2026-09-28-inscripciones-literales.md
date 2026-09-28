@@ -39,6 +39,11 @@ Registro en el repo documental: `00_BITACORA` (entrada del 28 sep) y `00_SDD-ADD
 - Enlaces: los 11 de cada panel están en las anotaciones `/URI` del PDF, sin que sobre ni falte ninguno.
 - 1440 px y 390 px: sin desbordamiento horizontal; en móvil los botones van apilados bajo el reloj.
 
+## Publicación
+
+En producción el 28 sep (`8790fc6`). Verificado en el HTML de `ribie.org`, no en Actions. En el mismo push
+salió `679d47c` → `408eab3`, el guion `pnpm publicar` del 15 sep, que nunca se había subido.
+
 ## Abierto
 
 - 🔴 Sede: el PDF dice **Hotel Don Saúl** para el martes 6; `eventos.lugar` dice Hotel Cuellar. Se le
