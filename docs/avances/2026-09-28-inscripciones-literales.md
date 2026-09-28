@@ -46,8 +46,8 @@ salió `679d47c` → `408eab3`, el guion `pnpm publicar` del 15 sep, que nunca s
 
 ## Abierto
 
-- 🔴 Sede: el PDF dice **Hotel Don Saúl** para el martes 6; `eventos.lugar` dice Hotel Cuellar. Se le
-  pregunta a la red; no se corrige solo.
+- ✅ ~~Sede~~: falsa alarma. La hoja dice Hotel Don Saul desde el 16 sep (`a26f580`); el «Cuellar» salió
+  de una copia local atrasada. Verificar contra `origin/main` o `ribie.org`, no contra el `contenido.json` local.
 - ⏰ Tercer enlace: la inscripción presencial del miércoles 7 llegará después. Se añade como tercer mensaje
   en `inscripciones.ts`, o dentro del anexo del segundo, según lo que mande la red.
 - La franja entera caduca el 7 de octubre (D58); los botones se van con ella. No caducan el 5, que es el
