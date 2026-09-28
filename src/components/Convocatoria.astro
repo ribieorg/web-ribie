@@ -32,6 +32,7 @@
  */
 import { Image } from 'astro:assets';
 import Chip from './Chip.astro';
+import Inscripciones from './Inscripciones.astro';
 import { convocatoria as c, llevaH1 } from '../data/contenido';
 import { foto } from '../lib/imagenes';
 
@@ -102,14 +103,12 @@ const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
           </>
         )}
 
-        {(c.inscripcion || c.agenda) && (
+        {/* El botón único «Inscribirse al encuentro» llevaba al formulario
+            PRESENCIAL del martes 6, que se llenó (200 cupos). Lo reemplazan los
+            dos de inscripción virtual, abajo, con el texto de la red (D62). */}
+        {c.agenda && (
           <div class="acciones">
-            {c.inscripcion && (
-              <a class="boton boton--accion" href={c.inscripcion.url}>{c.inscripcion.texto}</a>
-            )}
-            {c.agenda && (
-              <a class="boton boton--sobre-oscuro" href={c.agenda.url}>{c.agenda.texto}</a>
-            )}
+            <a class="boton boton--sobre-oscuro" href={c.agenda.url}>{c.agenda.texto}</a>
           </div>
         )}
       </div>
@@ -138,6 +137,8 @@ const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
         />
       </div>
       )}
+
+      <Inscripciones />
 
       {c.programa.length > 0 && (
         <ul class="programa">
@@ -422,9 +423,16 @@ const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
 
   /* Los tres encuentros, al pie de la banda y separados por un filete: dicen
      que esto no es un evento nuevo sino la decimoquinta edición de algo. */
-  .programa {
+  /* Las inscripciones, a lo ancho del texto y el reloj: con los rótulos de la
+     red —dos frases largas— la columna del reloj las partía en cinco líneas. */
+  .convocatoria :global(.inscripciones) {
     grid-column: 1 / 10;
     grid-row: 3;
+  }
+
+  .programa {
+    grid-column: 1 / 10;
+    grid-row: 4;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-6);
@@ -476,14 +484,16 @@ const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
     .ficha    { grid-column: 1 / 8;  grid-row: 2; }
     .reloj    { grid-column: 1 / 8;  grid-row: 3; align-self: start; }
     .retrato  { grid-column: 8 / 13; grid-row: 1 / 4; align-self: center; margin-bottom: 0; }
-    .programa { grid-column: 1 / 13; grid-row: 4; }
+    .convocatoria :global(.inscripciones) { grid-column: 1 / 13; grid-row: 4; }
+    .programa { grid-column: 1 / 13; grid-row: 5; }
   }
   @media (max-width: 47.5rem) {
     /* 🔴 Aquí las filas se ANULAN. Con una sola columna, conservar el `grid-row`
        de arriba hace que los bloques caigan en las mismas celdas y se pinten
        unos encima de otros — ilegible. Con `auto` vuelve a mandar el
        auto-placement y `order` recupera su efecto. */
-    .dicho, .ficha, .reloj, .retrato, .programa { grid-row: auto; }
+    .dicho, .ficha, .reloj, .retrato, .programa,
+    .convocatoria :global(.inscripciones) { grid-row: auto; grid-column: 1 / 13; }
     .dicho, .reloj, .programa { grid-column: 1 / 13; }
     .acciones .boton { flex: 1 1 auto; }
     .programa { grid-template-columns: 1fr; gap: var(--space-4); }
@@ -496,8 +506,9 @@ const Titulo = llevaH1('convocatoria') ? 'h1' : 'p';
        la lectura entre el reloj y los botones. */
     .dicho    { order: 1; }
     .reloj    { order: 2; }
-    .retrato  { order: 3; grid-column: 1 / 13; max-width: 13rem; margin-inline: auto; }
-    .ficha    { order: 4; grid-column: 1 / 13; margin-top: 0; }
-    .programa { order: 5; }
+    .convocatoria :global(.inscripciones) { order: 3; }
+    .retrato  { order: 4; grid-column: 1 / 13; max-width: 13rem; margin-inline: auto; }
+    .ficha    { order: 5; grid-column: 1 / 13; margin-top: 0; }
+    .programa { order: 6; }
   }
 </style>

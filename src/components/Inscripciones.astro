@@ -1,0 +1,313 @@
+---
+/**
+ * Inscripciones — dos botones, cada uno con su mensaje literal en un panel (D62).
+ *
+ * El texto no es nuestro: es el de la red, palabra por palabra
+ * (`data/inscripciones.ts`). Lo que decidimos aquí es solo cómo se lee, y la
+ * decisión es un panel porque los mensajes ocupan una página cada uno —«están
+ * un poco extensos», dijo la propia red— y metidos en la franja la volverían un
+ * muro que empuja el reloj y el oso fuera de la primera pantalla.
+ *
+ * Tres maneras de llegar al mensaje, y las tres tienen que funcionar:
+ *
+ *  1. **Pulsando el botón**, con JavaScript: `showModal()`. Foco dentro del
+ *     panel, Esc para cerrar, el fondo inerte — todo lo hace el `<dialog>`
+ *     nativo, sin reimplementar nada.
+ *  2. **Con el enlace compartido** (`ribie.org/#inscripcion-udenar`): el panel
+ *     abre solo al cargar. Es lo que la red va a pegar en WhatsApp.
+ *  3. **Sin JavaScript**: el botón es un `<a href="#…">` y el panel se muestra
+ *     en línea por `:target`. Se pierde la ventana, no el mensaje (D53).
+ */
+import { inscripciones } from '../data/inscripciones';
+---
+
+<div class="inscripciones">
+  <ul class="opciones">
+    {inscripciones.map((m) => (
+      <li>
+        <a class="boton boton--accion opcion" href={`#${m.id}`} data-abre={m.id} aria-haspopup="dialog">
+          <span>{m.boton}</span>
+          <svg class="flecha" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+            <path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" />
+          </svg>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  {inscripciones.map((m) => (
+    <dialog class="panel" id={m.id} aria-labelledby={`${m.id}-titulo`} closedby="any">
+      <div class="cabeza">
+        <p class="para">{m.boton}</p>
+        <form method="dialog">
+          <button class="cerrar" type="submit" aria-label="Cerrar">
+            <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+              <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.75" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="cuerpo">
+        {m.antetitulo && <p class="antetitulo">{m.antetitulo}</p>}
+        <h2 class="titulo-panel" id={`${m.id}-titulo`}>{m.titulo}</h2>
+
+        {m.antes.map((p) => <p set:html={p} />)}
+
+        <p class="formulario">
+          <a class="boton boton--accion" href={m.formulario} target="_blank" rel="noopener">
+            {m.formulario}
+            <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
+              <path d="M5 3h8v8M13 3L4 12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" />
+            </svg>
+            <span class="sr">(se abre en otra pestaña)</span>
+          </a>
+        </p>
+
+        <p>{m.introMedios}</p>
+        <ul class="medios">
+          {m.medios.map((x) => (
+            <li>{x.url ? <a href={x.url} target="_blank" rel="noopener">{x.texto}</a> : x.texto}</li>
+          ))}
+        </ul>
+
+        {m.despues.map((p) => <p set:html={p} />)}
+
+        {m.anexo && (
+          <section class="anexo" aria-labelledby={`${m.id}-anexo`}>
+            <h3 id={`${m.id}-anexo`}>{m.anexo.titulo}</h3>
+            <p>{m.anexo.texto}</p>
+          </section>
+        )}
+      </div>
+    </dialog>
+  ))}
+</div>
+
+<script is:inline>
+  (() => {
+    const raiz = document.querySelector('.inscripciones');
+    if (!raiz || typeof HTMLDialogElement !== 'function') return;
+    // Apaga la versión sin script (`:target`, abajo en el CSS). Hace falta porque
+    // `replaceState` limpia el ancla de la URL pero NO actualiza `:target`: sin
+    // esta marca, al cerrar el modal el panel reaparecía en línea en la franja.
+    raiz.classList.add('con-script');
+
+    const abrir = (id, desde) => {
+      const d = document.getElementById(id);
+      if (!(d instanceof HTMLDialogElement) || d.open) return;
+      d.showModal();
+      // El foco va al panel y no al botón de cerrar: si cae en la ✕, el primer
+      // Enter de quien llega por teclado cierra lo que acaba de abrir.
+      d.focus();
+      d.addEventListener('close', () => {
+        // Se limpia el ancla: si no, recargar la página volvería a abrir el panel
+        // que la persona acaba de cerrar.
+        if (location.hash === `#${id}`) history.replaceState(null, '', location.pathname + location.search);
+        desde?.focus();
+      }, { once: true });
+    };
+
+    raiz.addEventListener('click', (e) => {
+      const boton = e.target.closest('[data-abre]');
+      if (boton) {
+        e.preventDefault();
+        abrir(boton.dataset.abre, boton);
+        return;
+      }
+      // Pulsar fuera del recuadro cierra. `closedby="any"` lo hace solo en los
+      // navegadores que ya lo entienden; esto cubre a los demás.
+      if (e.target instanceof HTMLDialogElement && e.target.open) {
+        const r = e.target.getBoundingClientRect();
+        const dentro = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        if (!dentro) e.target.close();
+      }
+    });
+
+    const desdeAncla = () => {
+      const id = location.hash.slice(1);
+      if (id && raiz.querySelector(`dialog[id="${CSS.escape(id)}"]`)) abrir(id, raiz.querySelector(`[data-abre="${CSS.escape(id)}"]`));
+    };
+    desdeAncla();
+    window.addEventListener('hashchange', desdeAncla);
+  })();
+</script>
+
+<style>
+  .opciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .opciones li { display: flex; }
+
+  /* Los rótulos son de la red y son largos: el botón crece en alto, alinea a la
+     izquierda como un párrafo y lleva la flecha al final. Los dos son ámbar
+     porque son la MISMA acción para dos públicos: ninguno es secundario. */
+  .opcion {
+    flex: 1;
+    justify-content: space-between;
+    text-align: left;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+  /* Sobre la banda oscura el anillo vuelve al ámbar, como en el resto de la
+     franja: la regla de `Convocatoria.astro` no alcanza a este componente. */
+  .opcion:focus-visible { outline-color: var(--focus-ring-dark); }
+  .flecha { flex: none; transition: transform var(--dur-standard) var(--ease-out); }
+  .opcion:hover .flecha { transform: translateX(3px); }
+
+  /* ── El panel ─────────────────────────────────────────────────────────── */
+  .panel {
+    width: min(44rem, calc(100vw - 2rem));
+    max-height: min(52rem, calc(100dvh - 2rem));
+    /* `margin: auto` es lo que centra un `<dialog>` modal, y el reset de
+       `global.css` se lo quita: sin esta línea el panel se pega a la esquina. */
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+    overflow: hidden;
+    flex-direction: column;
+  }
+  .panel[open] { display: flex; }
+  .panel:focus { outline: none; }
+  .panel::backdrop { background: rgb(6 81 99 / .72); }
+  /* Con el panel abierto la portada no se desplaza por debajo: en un teléfono,
+     el gesto que llega al final del mensaje seguiría bajando la página. */
+  :global(html:has(.panel[open])) { overflow: hidden; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .panel[open] { animation: entra var(--dur-max) var(--ease-out); }
+    .panel[open]::backdrop { animation: aparece var(--dur-standard) var(--ease-out); }
+  }
+  @keyframes entra { from { opacity: 0; transform: translateY(12px); } }
+  @keyframes aparece { from { opacity: 0; } }
+
+  /* La cabeza no se desplaza: el botón de cerrar tiene que estar siempre a la
+     vista, y el rótulo recuerda qué botón se pulsó cuando ya se bajó medio texto. */
+  .cabeza {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-6);
+    background: var(--brand-deep);
+    color: #fff;
+  }
+  .para {
+    margin: 0;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: .04em;
+    line-height: 1.4;
+    color: var(--brand-on-deep);
+  }
+  .cabeza form { margin: 0; }
+  .cerrar {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+  }
+  .cerrar:hover { background: rgb(255 255 255 / .12); }
+  .cabeza :focus-visible { outline-color: var(--focus-ring-dark); }
+
+  .cuerpo {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-6) var(--space-6) var(--space-8);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+  }
+  .cuerpo p { margin: 0 0 var(--space-4); max-width: var(--measure); }
+  .cuerpo a:not(.boton) { color: var(--brand); text-underline-offset: 2px; }
+
+  .antetitulo {
+    font-size: var(--text-small);
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: var(--space-2) !important;
+  }
+  .titulo-panel {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.25rem, 1.1rem + .6vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
+    color: var(--brand-deep);
+    margin: 0 0 var(--space-6);
+    text-wrap: balance;
+  }
+
+  /* El enlace del formulario es la razón del panel: se escribe tal cual viene
+     en el mensaje, pero con peso de botón para que no se pierda en el texto. */
+  .formulario .boton { word-break: break-all; font-size: 1rem; }
+
+  .medios {
+    columns: 2;
+    column-gap: var(--space-8);
+    margin: 0 0 var(--space-6);
+    padding-left: 1.25rem;
+    /* El reset de `global.css` quita las viñetas; el mensaje de la red las trae. */
+    list-style: disc;
+    font-size: var(--text-small);
+  }
+  .medios li { break-inside: avoid; margin-bottom: var(--space-1); }
+  .medios li::marker { color: var(--brand); }
+
+  .anexo {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-hairline);
+  }
+  .anexo h3 {
+    font-size: var(--text-small);
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--ink);
+    margin: 0 0 var(--space-3);
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Sin JavaScript: el ancla hace `:target` y el panel se pinta en línea, bajo
+     los botones. Solo sin script: con él, manda el modal. */
+  .inscripciones:not(.con-script) .panel:target {
+    display: flex;
+    position: static;
+    width: auto;
+    max-height: none;
+    margin: var(--space-6) 0 0;
+  }
+  .inscripciones:not(.con-script) .panel:target .cabeza form { display: none; }
+
+  @media (max-width: 47.5rem) {
+    .opciones { grid-template-columns: 1fr; }
+    .panel { width: calc(100vw - 1rem); max-height: calc(100dvh - 1rem); }
+    .cuerpo { padding: var(--space-4) var(--space-4) var(--space-6); }
+    .medios { columns: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flecha, .opcion:hover .flecha { transition: none; transform: none; }
+  }
+</style>

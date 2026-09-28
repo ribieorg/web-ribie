@@ -354,9 +354,9 @@ export const convocatoria = (() => {
     plazo: plazoVivo && destacado.cierreConvocatoria
       ? `${T('convocatoria_plazo', 'Ponencias y talleres, hasta el')} ${rangoDeFechas(destacado.cierreConvocatoria.slice(0, 10))}`
       : '',
-    inscripcion: destacado.enlace
-      ? { texto: T('convocatoria_boton', 'Inscribirse al encuentro'), url: destacado.enlace }
-      : null,
+    /* Ya no hay `inscripcion` aquí: `destacado.enlace` es el formulario
+     * presencial del martes 6, lleno desde el 28 de septiembre. La franja lleva
+     * ahora los dos mensajes de inscripción virtual de `inscripciones.ts` (D62). */
     agenda: destacado.enlaceAgenda
       ? { texto: T('convocatoria_boton_agenda', 'Ver la agenda'), url: destacado.enlaceAgenda }
       : null,
