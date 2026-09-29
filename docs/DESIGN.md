@@ -998,6 +998,35 @@ sección de Historia, rotulada «Sobre nosotros» en el menú. Las otras siete, 
 el 8 de octubre la portada se queda con una sola sección. La hoja lo resuelve en una celda, pero **hay que
 acordarse de abrirla** — la caducidad automática y el apagado manual se suman, y nadie los pensó juntos.
 
+## 19. Inscripciones: dos botones y un panel con el texto de la red (28 sep 2026, D62)
+
+**Qué es.** En la franja (§17), bajo el reloj y a lo ancho de texto y reloj, van dos botones de inscripción
+virtual. Cada uno abre un `<dialog>` con el mensaje que RIBIE pidió publicar **textualmente**. Componente:
+`Inscripciones.astro`. Texto: `src/data/inscripciones.ts`, que **no sale de las hojas** (ver D62).
+
+**Dos ámbar juntos, y es a propósito.** §2 reserva el ámbar para *la* acción principal. Aquí hay dos, pero
+son **la misma acción para dos públicos**: ninguno es secundario, y pintar uno en contorno le diría a una
+de las dos comunidades que su inscripción importa menos. «Ver la información del evento» baja a contorno.
+
+**Rótulos largos, botón que crece.** Los rótulos son de la red y no se acortan: el botón alinea a la
+izquierda como un párrafo, crece en alto y lleva la flecha al final. En móvil se apilan.
+
+**El panel.** Superficie blanca, cabeza en `--brand-deep` que **no se desplaza** (la ✕ siempre a la vista y
+el rótulo recuerda qué botón se pulsó), cuerpo con `overflow` propio y `overscroll-behavior: contain`, y la
+portada bloqueada debajo. Entra con `--dur-max` subiendo 12 px; con `prefers-reduced-motion`, sin
+animación. El enlace del formulario se escribe **tal cual lo trae el mensaje**, pero con peso de botón.
+
+**Tres caminos al mensaje, y los tres funcionan.** El clic (`showModal()`); el ancla compartida
+(`#inscripcion-ribie`, `#inscripcion-udenar`), que abre el panel al cargar; y **sin JavaScript**, `:target`
+lo pinta en línea (D53). Dos trampas que costaron un defecto cada una:
+
+- El reset de `global.css` pone `margin: 0` y **descentra el `<dialog>`**, que se centra con `margin: auto`.
+- `history.replaceState` limpia el ancla de la URL pero **no actualiza `:target`**. La regla sin script va
+  condicionada a `.inscripciones:not(.con-script)`, o el panel reaparece en línea al cerrarlo.
+
+⏰ **Caduca con la franja** (7 oct). No el 5, que es el cierre del plazo: el mensaje lo dice y nadie pidió
+retirarlos antes.
+
 ---
 
 ## Anexos
